@@ -5,7 +5,7 @@ class ImageProcessorJob < ApplicationJob
     blob = self.arguments.first
     maybe_champ = blob&.attachments&.first&.record
 
-    if rib?(maybe_champ)
+    if ocr_compatible?(maybe_champ)
       :default # UI is waiting
     else
       :low # thumbnails and watermarks. Execution depends of virus scanner which is more urgent
@@ -126,16 +126,16 @@ class ImageProcessorJob < ApplicationJob
 
   def add_ocr_data(blob)
     champ = blob&.attachments&.first&.record
-    return if !rib?(champ)
+    return if !ocr_compatible?(champ)
     return if !champ.may_fetch? # a previous blob may have already been analyzed
 
     champ.fetch!
   end
 
-  def rib?(champ)
-    return false if !champ.is_a?(Champs::PieceJustificativeChamp)
+  def ocr_compatible?(maybe_champ)
+    return false if !maybe_champ.is_a?(Champs::PieceJustificativeChamp)
 
-    champ.RIB?
+    maybe_champ.ocr_compatible?
   end
 
   def retry_or_discard(exception)

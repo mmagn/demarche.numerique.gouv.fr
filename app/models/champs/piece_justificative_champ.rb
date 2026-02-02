@@ -28,9 +28,7 @@ class Champs::PieceJustificativeChamp < Champ
     false
   end
 
-  def has_async_external_data?
-    RIB?
-  end
+  def has_async_external_data? = ocr_compatible?
 
   private
 

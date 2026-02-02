@@ -337,6 +337,8 @@ class Champ < ApplicationRecord
     dossier.update_columns(attributes)
   end
 
+  def ocr_compatible? = RIB? || justificatif_domicile?
+
   class NotImplemented < ::StandardError
     def initialize(method)
       super(":#{method} not implemented")
