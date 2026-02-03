@@ -11,3 +11,18 @@ fr:
               special_characters_forbidden: 'ne doit pas contenir de caractères spéciaux'
               min_character_length_rule: 'doit faire au moins %{min} caractères'
               max_character_length_rule: 'doit faire moins de %{max} caractères'
+    attributes:
+      champs/formatted_champ:
+        hints:
+          allowed:
+            letters: "Le champ ne peut contenir que des lettres."
+            numbers: "Le champ ne peut contenir que des chiffres."
+            special_characters: "Le champ ne peut contenir que des caractères spéciaux."
+            letters_and_numbers: "Le champ peut contenir des lettres et des chiffres."
+            letters_and_special_characters: "Le champ peut contenir des lettres et des caractères spéciaux."
+            numbers_and_special_characters: "Le champ peut contenir des chiffres et des caractères spéciaux."
+            letters_and_numbers_and_special_characters: "Le champ peut contenir des lettres, des chiffres et des caractères spéciaux."
+          range:
+            both: "Le champ doit faire entre %{min} et %{max} caractères."
+            min_only: "Le champ doit faire au moins %{min} caractères."
+            max_only: "Le champ doit faire moins de %{max} caractères."
