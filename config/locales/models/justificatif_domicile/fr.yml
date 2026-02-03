@@ -1,0 +1,11 @@
+---
+fr:
+  activemodel:
+    attributes:
+      justificatif_domicile:
+        beneficiary: Bénéficiaire
+        address: Adresse
+        postal_code: Code postal
+        locality: Localité
+        country: Pays
+        issue_date: Date d’émission
