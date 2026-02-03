@@ -3,6 +3,7 @@
 class EditableChamp::ChampLabelContentComponent < ApplicationComponent
   include ApplicationHelper
   include Dsfr::InputErrorable
+  include ChampAriaLabelledbyHelper
 
   attr_reader :attribute
 
@@ -30,15 +31,21 @@ class EditableChamp::ChampLabelContentComponent < ApplicationComponent
     true
   end
 
-  def formatted_hints
-    generate_formatted_hints
+  def hints_for_champ
+    if @champ.formatted?
+      formatted_champ_hints
+    elsif @champ.date? || @champ.datetime?
+      date_hints
+    elsif @champ.integer_number? || @champ.decimal_number?
+      number_hints
+    else
+      []
+    end
   end
 
   private
 
-  def generate_formatted_hints
-    return [] if !@champ.formatted?
-
+  def formatted_champ_hints
     if @champ.formatted_simple?
       hints = []
 
@@ -60,29 +67,68 @@ class EditableChamp::ChampLabelContentComponent < ApplicationComponent
       max = @champ.max_character_length
 
       if min.present? && max.present?
-        hints << I18n.t(
-          'activerecord.attributes.champs/formatted_champ.hints.range.both',
-          min: min,
-          max: max
-        )
+        hints << I18n.t('activerecord.attributes.champs/formatted_champ.hints.range.both', min: min, max: max)
       elsif min.present?
-        hints << I18n.t(
-          'activerecord.attributes.champs/formatted_champ.hints.range.min_only',
-          min: min
-        )
+        hints << I18n.t('activerecord.attributes.champs/formatted_champ.hints.range.min_only', min: min)
       elsif max.present?
-        hints << I18n.t(
-          'activerecord.attributes.champs/formatted_champ.hints.range.max_only',
-          max: max
-        )
+        hints << I18n.t('activerecord.attributes.champs/formatted_champ.hints.range.max_only', max: max)
       end
 
       hints
-
     elsif @champ.formatted_advanced?
       []
     else
       []
     end
+  end
+
+  def date_hints
+    hints = []
+
+    if @champ.date_in_past?
+      hints << I18n.t('activerecord.attributes.champs/date_champ.hints.date_in_past')
+    end
+
+    if @champ.range_date?
+      start_date = @champ.start_date.presence
+      end_date   = @champ.end_date.presence
+
+      if start_date && end_date
+        hints << I18n.t('activerecord.attributes.champs/date_champ.hints.range.both',
+                        start_date: I18n.l(Time.zone.parse(start_date), format: :short),
+                        end_date: I18n.l(Time.zone.parse(end_date), format: :short))
+      elsif start_date
+        hints << I18n.t('activerecord.attributes.champs/date_champ.hints.range.start_date_only',
+                        start_date: I18n.l(Time.zone.parse(start_date), format: :short))
+      elsif end_date
+        hints << I18n.t('activerecord.attributes.champs/date_champ.hints.range.end_date_only',
+                        end_date: I18n.l(Time.zone.parse(end_date), format: :short))
+      end
+    end
+
+    hints
+  end
+
+  def number_hints
+    hints = []
+
+    if @champ.positive_number?
+      hints << I18n.t('activerecord.attributes.champs/decimal_number_champ.hints.positive_number')
+    end
+
+    if @champ.range_number?
+      min = @champ.min_number.presence
+      max = @champ.max_number.presence
+
+      if min && max
+        hints << I18n.t('activerecord.attributes.champs/decimal_number_champ.hints.range.both', min: min, max: max)
+      elsif min
+        hints << I18n.t('activerecord.attributes.champs/decimal_number_champ.hints.range.min_only', min: min)
+      elsif max
+        hints << I18n.t('activerecord.attributes.champs/decimal_number_champ.hints.range.max_only', max: max)
+      end
+    end
+
+    hints
   end
 end
