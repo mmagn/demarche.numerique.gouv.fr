@@ -28,9 +28,6 @@ class ImageProcessorJob < ApplicationJob
     'attempt to perform an operation not allowed by the security policy',
     'no decode delegate for this image format',
   ]
-  # If the file is not analyzed or scanned for viruses yet, retry later
-  # (to avoid modifying the file while it is being scanned).
-  retry_on FileNotScannedYetError, wait: :polynomially_longer, attempts: 10
 
   # Usually invalid image or ImageMagick decoder blocked for this format
   retry_on MiniMagick::Invalid, attempts: 3
