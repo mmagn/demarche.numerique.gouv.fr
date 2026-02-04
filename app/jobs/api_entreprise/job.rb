@@ -2,7 +2,6 @@
 
 class APIEntreprise::Job < ApplicationJob
   DEFAULT_MAX_ATTEMPTS_API_ENTREPRISE_JOBS = 5 # 5 days
-  POLYNOMIALLY_LONGER_MAX_ATTEMPTS = 22 # ~ 65 hours
 
   queue_as :default
 
@@ -20,11 +19,6 @@ class APIEntreprise::Job < ApplicationJob
   rescue_from(APIEntreprise::API::Error::InternalServerError) do |exception|
     retry_or_discard(exception)
   end
-
-  # We guess the backend is slow but not broken
-  # and the information we are looking for is available
-  # so we retry few seconds later (exponentially to avoid overload)
-  retry_on APIEntreprise::API::Error::TimedOut, wait: :polynomially_longer, attempts: POLYNOMIALLY_LONGER_MAX_ATTEMPTS
 
   # If by the time the job runs the Etablissement has been deleted
   # (it can happen through EtablissementUpdateJob for instance), ignore the job
