@@ -20,11 +20,15 @@ class Columns::ReadAgreementColumn < Columns::DossierColumn
   end
 
   def filtered_ids_for_values(dossiers, values)
+    return dossiers.ids if values.blank?
     return dossiers.ids if values.include?("true") && values.include?("false")
+
     if values == ["true"]
       dossiers.where.not(accuse_lecture_agreement_at: nil).ids
-    else
+    elsif values == ["false"]
       dossiers.where(accuse_lecture_agreement_at: nil).ids
+    else
+      dossiers.ids
     end
   end
 end
