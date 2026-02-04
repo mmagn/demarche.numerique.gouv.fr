@@ -30,6 +30,8 @@ class Champs::PieceJustificativeChamp < Champ
 
   def has_async_external_data? = ocr_compatible?
 
+  def rib = RIB.new(value_json&.dig('rib'))
+
   private
 
   def fetch_external_data_later(wait: nil)
