@@ -423,6 +423,7 @@ en:
     instructeurs:
       procedure_menu: "Files of the procedure number %{id}"
       procedures_menu: "Procedures"
+      customise_order: "Customise the order"
       dossiers:
         dossier_menu: "File number %{id}"
         tab_steps:

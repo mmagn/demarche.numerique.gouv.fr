@@ -426,6 +426,7 @@ fr:
     instructeurs:
       procedure_menu: "Dossiers de la démarche numero %{id}"
       procedures_menu: "Démarches"
+      customise_order: "Personnaliser l’ordre"
       dossiers:
         dossier_menu: "Dossier numéro %{id}"
         tab_steps:

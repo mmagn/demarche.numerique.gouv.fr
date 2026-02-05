@@ -1,5 +1,10 @@
 fr:
   instructeurs:
+    procedures:
+      index:
+        title: "Démarches"
+      notifications_button:
+        notifications_details: Détails des notifications
     procedure:
       archive_pending_html: Archive en cours de création<br>(demandée il y a %{created_period})
       archive_ready_html: Télécharger l’archive<br>(demandée il y a %{generated_period})

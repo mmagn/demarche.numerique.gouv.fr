@@ -1,7 +1,7 @@
 en:
   activerecord:
     models:
-      avis: 'Opinion'
+      avis: 'Opinions'
       batch_operation: 'Batch Operation'
     attributes:
       avis:

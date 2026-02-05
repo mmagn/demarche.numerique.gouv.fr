@@ -1,21 +1,29 @@
 en:
   experts:
     avis:
+      index:
+        title: "Opinions"
+        to_give:
+          zero: "opinion to give"
+          one: "opinion to give"
+          other: "opinions to give"
+        given:
+          zero: "opinion given"
+          one: "opinion given"
+          other: "opinions given"
       procedure:
         management: Notification management of the procedure
-        to_give: "notices to give"
-        given:
-          one: "notice given"
-          other: "notices given"
-        tabs_aria_label: "Notices"
+        tabs_aria_label: "Opinions"
+        to_give: "Opinions to give"
+        given: "Opinions given"
         th:
           dossier_number: "File number"
           applicant: "Applicant"
           procedure: "Procedure"
-        empty: "No notice"
+        empty: "No opinion"
         title:
-          to_give: "Notices to give"
-          given: "Notices given"
+          to_give: "Opinions to give"
+          given: "Opinions given"
       notification_settings:
         utils:
           positive: Yes
