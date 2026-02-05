@@ -2,6 +2,7 @@
   %td
     = email
     - if highlight?
-      %span.notifications{ 'aria-label': 'notifications' }
+      %span.notifications
+        %span.fr-sr-only= "notification"
   %td= created_at
   %td= see_button
