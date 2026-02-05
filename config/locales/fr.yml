@@ -517,8 +517,8 @@ fr:
             download_without_number: "dossier-DS.pdf"
           status_overview:
             status_draft: brouillon
-            status_in_progress: en construction
-            en_construction_html: "Votre dossier est en construction. Cela signifie que <strong>vous pouvez encore le modifier</strong>. Vous ne pourrez plus modifier votre dossier lorsque l’administration le passera « en instruction »."
+            status_in_progress: déposé
+            en_construction_html: "Votre dossier est déposé. Cela signifie que <strong>vous pouvez encore le modifier</strong>. Vous ne pourrez plus modifier votre dossier lorsque l’administration le passera « en instruction »."
             status_review: en instruction
             admin_review: Votre dossier est en cours d’instruction par l’administration. Vous ne pouvez plus le modifier.
             delay_title:

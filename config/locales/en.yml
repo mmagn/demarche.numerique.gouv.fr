@@ -513,8 +513,8 @@ en:
             download_without_number: "DS-file.pdf"
           status_overview:
             status_draft: draft
-            status_in_progress: in progress
-            en_construction_html: Your file is in progress. It means that <strong>you can still edit it</strong>. You will no longer be able to edit the file when the administration will switch it to "processing".
+            status_in_progress: submitted
+            en_construction_html: Your file is submitted. It means that <strong>you can still edit it</strong>. You will no longer be able to edit the file when the administration will switch it to "processing".
             status_review: undergoing review
             admin_review: The administration is reviewing your file. You are no longer able to edit it.
             delay_title:
