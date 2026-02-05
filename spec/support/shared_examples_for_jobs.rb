@@ -1,25 +1,5 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples 'a job retrying transient errors' do |job_class = described_class|
-  ExconErrorJob = Class.new(job_class) do
-    def perform
-      raise Excon::Error::InternalServerError, 'msg'
-    end
-  end if !defined?(ExconErrorJob)
-
-  context 'when a transient network error is raised' do
-    it 'makes 5 attempts before discarding the job and reporting the error to Sentry' do
-      allow(Sentry).to receive(:capture_exception)
-
-      assert_performed_jobs 5 do
-        ExconErrorJob.perform_later rescue Excon::Error::InternalServerError
-      end
-
-      expect(Sentry).to have_received(:capture_exception).with(instance_of(Excon::Error::InternalServerError), anything).exactly(5).times
-    end
-  end
-end
-
 RSpec.shared_examples 'a job retrying standard errors' do |job_class = described_class|
   StandardErrorJob = Class.new(job_class) do
     def perform

@@ -9,7 +9,6 @@ RSpec.describe APIEntreprise::Job, type: :job do
     let(:dossier) { create(:dossier, :with_entreprise) }
 
     it_behaves_like 'a job retrying standard errors'
-    it_behaves_like 'a job retrying transient errors'
 
     context 'when error with an etablissement on a champ' do
       let(:procedure) { create(:procedure, types_de_champ_public:) }

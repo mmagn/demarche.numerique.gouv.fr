@@ -24,18 +24,6 @@ class APIEntreprise::Job < ApplicationJob
   # (it can happen through EtablissementUpdateJob for instance), ignore the job
   discard_on ActiveRecord::RecordNotFound
 
-  rescue_from(APIEntreprise::API::Error::ResourceNotFound) do |exception|
-    error(self, exception)
-  end
-
-  rescue_from(APIEntreprise::API::Error::BadFormatRequest) do |exception|
-    error(self, exception)
-  end
-
-  def error(job, exception)
-    # override ApplicationJob#error to avoid reporting to sentry
-  end
-
   def log_job_exception(exception)
     if etablissement.present?
       if etablissement.dossier.present?
