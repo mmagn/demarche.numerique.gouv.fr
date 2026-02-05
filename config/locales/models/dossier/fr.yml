@@ -17,6 +17,7 @@ fr:
       dossier/state: &state
         brouillon: "Brouillon"
         en_construction: "En construction"
+        depose: "Déposé"
         en_instruction: "En instruction"
         accepte: "Accepté"
         refuse: "Refusé"
