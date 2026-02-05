@@ -174,7 +174,7 @@ module Users
       elsif identity_locked?(@dossier)
         # keep only birthdate for legacy procedures
         sanitized_params[:individual_attributes] = sanitized_params[:individual_attributes]&.except(:nom, :prenom, :gender)
-        sanitized_params.delete(:individual_attributes) if sanitized_params[:individual_attributes].empty? # évite {} qui réinitialise l'individual
+        sanitized_params.delete(:individual_attributes) if sanitized_params[:individual_attributes].blank? # évite {} qui réinitialise l'individual
       end
 
       if @dossier.update(sanitized_params) && @dossier.individual.valid?
