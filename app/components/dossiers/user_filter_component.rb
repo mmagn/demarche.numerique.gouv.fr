@@ -21,6 +21,15 @@ class Dossiers::UserFilterComponent < ApplicationComponent
       (Dossier.states.values - Dossier::TERMINE) << Dossier::A_CORRIGER
     when 'traites'
       Dossier::TERMINE
-    end.map { |state| [t("activerecord.attributes.dossier/state.#{state}"), state] }
+    end
+      .map { |state| [user_translation(state), state] }
+  end
+
+  private
+
+  def user_translation(state)
+    # hack to use depose term for users
+    key = (state == 'en_construction') ? 'depose' : state
+    t("activerecord.attributes.dossier/state.#{key}")
   end
 end
