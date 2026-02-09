@@ -37,7 +37,7 @@ describe EditableChamp::DropDownListComponent, type: :component do
       end
 
       context 'and the champ has an error' do
-        before { champ.errors.add(:value, 'error') }
+        before { dossier.errors.import(champ.errors.add(:value, 'error')) }
 
         it do
           render
@@ -95,7 +95,7 @@ describe EditableChamp::DropDownListComponent, type: :component do
       end
 
       context 'and the champ has an error' do
-        before { champ.errors.add(:value, 'error') }
+        before { champ.dossier.errors.import(champ.errors.add(:value, 'error')) }
 
         it do
           render
@@ -123,7 +123,7 @@ describe EditableChamp::DropDownListComponent, type: :component do
         it { is_expected.to eq([champ.describedby_id]) }
 
         context 'and the champ has an error' do
-          before { champ.errors.add(:value, 'error') }
+          before { champ.dossier.errors.import(champ.errors.add(:value, 'error')) }
 
           it { is_expected.to eq([champ.describedby_id, champ.error_id(:value)]) }
         end
@@ -135,7 +135,7 @@ describe EditableChamp::DropDownListComponent, type: :component do
         it { is_expected.to be_nil }
 
         context 'and the champ has an error' do
-          before { champ.errors.add(:value, 'error') }
+          before { champ.dossier.errors.import(champ.errors.add(:value, 'error')) }
 
           it { is_expected.to eq([champ.error_id(:value)]) }
         end
@@ -161,7 +161,7 @@ describe EditableChamp::DropDownListComponent, type: :component do
         it { is_expected.to eq([champ.describedby_id]) }
 
         context 'and the champ has an error' do
-          before { champ.errors.add(:value, 'error') }
+          before { champ.dossier.errors.import(champ.errors.add(:value, 'error')) }
 
           it { is_expected.to eq([champ.describedby_id, champ.error_id(:value)]) }
         end
@@ -173,7 +173,7 @@ describe EditableChamp::DropDownListComponent, type: :component do
         it { is_expected.to be_nil }
 
         context 'and the champ has an error' do
-          before { champ.errors.add(:value, 'error') }
+          before { champ.dossier.errors.import(champ.errors.add(:value, 'error')) }
 
           it { is_expected.to eq([champ.error_id(:value)]) }
         end

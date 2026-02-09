@@ -31,8 +31,8 @@ module Dsfr
       def errors_on_attribute?
         # When the object is a Champ, errors can be stored as nested errors on the dossier
         # or directly on the champ object
-        if object.is_a?(Champ) && object.dossier.present?
-          dossier_errors_for_champ.any? || errors.has_key?(attribute_or_rich_body)
+        if object.is_a?(Champ)
+          dossier_errors_for_champ.any?
         else
           errors.has_key?(attribute_or_rich_body)
         end
@@ -43,8 +43,8 @@ module Dsfr
         # When the object is a Champ, errors can be stored as nested errors on the dossier
         # because validation adds errors to champ instances that may differ from the form object
         # or directly on the champ object
-        if object.is_a?(Champ) && object.dossier.present?
-          (dossier_errors_for_champ + errors.full_messages_for(attribute_or_rich_body)).uniq
+        if object.is_a?(Champ)
+          (dossier_errors_for_champ + errors.full_messages).uniq
         else
           errors.full_messages_for(attribute_or_rich_body)
         end
@@ -80,8 +80,7 @@ module Dsfr
             # Match nested errors where the champ public_id matches this champ's public_id
             error.is_a?(ActiveModel::NestedError) &&
             error.inner_error.base.respond_to?(:public_id) &&
-            error.inner_error.base.public_id == object.public_id &&
-            error.inner_error.attribute == attribute_or_rich_body
+            error.inner_error.base.public_id == object.public_id
           end.map(&:message)
       end
 
