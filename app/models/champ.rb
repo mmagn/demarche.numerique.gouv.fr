@@ -58,6 +58,7 @@ class Champ < ApplicationRecord
     :mandatory?,
     :prefillable?,
     :refresh_after_update?,
+    :formatted_simple?,
     :formatted_advanced?,
     :positive_number,
     :positive_number?,

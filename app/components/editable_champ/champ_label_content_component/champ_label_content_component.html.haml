@@ -2,6 +2,7 @@
   %strong
     = "[#{@row_number}]"
 = @champ.libelle
+
 - if @champ.mandatory?
   = render EditableChamp::AsteriskMandatoryComponent.new
 
@@ -16,42 +17,6 @@
   %span.updated-at.highlighted
     = t('.check_content_rebased')
 
-- if hint_renderable?
-  %span.fr-hint-text{ data: { controller: 'date-input-hint' } }= hint
-
-- if @champ.textarea? && @champ.character_limit_base&.positive?
-  %span.fr-hint-text= t('.recommended_size', size: @champ.character_limit_base)
-
-- if @champ.integer_number? || @champ.decimal_number?
-  - if @champ.positive_number?
-    %span.fr-hint-text= t('activerecord.attributes.champs/decimal_number_champ.hints.positive_number')
-
-  - if @champ.range_number?
-    - min = @champ.min_number.presence
-    - max = @champ.max_number.presence
-
-    - if min && max
-      %span.fr-hint-text= t('activerecord.attributes.champs/decimal_number_champ.hints.range.both', min: min, max: max)
-    - elsif min
-      %span.fr-hint-text= t('activerecord.attributes.champs/decimal_number_champ.hints.range.min_only',min: min)
-    - elsif max
-      %span.fr-hint-text= t('activerecord.attributes.champs/decimal_number_champ.hints.range.max_only', max: max)
-
-- if @champ.date? || @champ.datetime?
-  - if @champ.date_in_past?
-    %span.fr-hint-text= t('activerecord.attributes.champs/date_champ.hints.date_in_past')
-
-  - if @champ.range_date?
-    - start_date = @champ.start_date.presence
-    - end_date = @champ.end_date.presence
-
-    - if start_date && end_date
-      - formatted_start = I18n.l(Time.zone.parse(start_date), format: :short)
-      - formatted_end = I18n.l(Time.zone.parse(end_date), format: :short)
-      %span.fr-hint-text= t('activerecord.attributes.champs/date_champ.hints.range.both', start_date: formatted_start, end_date: formatted_end)
-    - elsif start_date
-      - formatted_start = I18n.l(Time.zone.parse(start_date), format: :short)
-      %span.fr-hint-text= t('activerecord.attributes.champs/date_champ.hints.range.start_date_only', start_date: formatted_start)
-    - elsif end_date
-      - formatted_end = I18n.l(Time.zone.parse(end_date), format: :short)
-      %span.fr-hint-text= t('activerecord.attributes.champs/date_champ.hints.range.end_date_only', end_date: formatted_end)
+- hints_for_champ.each do |hint|
+  %span.fr-hint-text
+    = hint
