@@ -18,7 +18,7 @@ class GroupeGestionnaire::GroupeGestionnaireGestionnaires::GestionnaireComponent
   end
 
   def created_at
-    try_format_datetime(@gestionnaire.created_at, format: :short)
+    I18n.l(@gestionnaire.created_at.to_date, format: :short)
   end
 
   def registration_state

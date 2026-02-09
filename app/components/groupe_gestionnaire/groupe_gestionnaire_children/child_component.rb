@@ -13,6 +13,6 @@ class GroupeGestionnaire::GroupeGestionnaireChildren::ChildComponent < Applicati
   end
 
   def created_at
-    try_format_datetime(@child.created_at, format: :short)
+    I18n.l(@child.created_at.to_date, format: :short)
   end
 end
