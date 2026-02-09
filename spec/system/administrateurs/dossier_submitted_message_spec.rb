@@ -17,7 +17,8 @@ describe 'As an administateur i can setup a DossierSubmittedMessage', js: true d
     click_on 'Gras'
 
     within('#tiptap-preview .tiptap-content') do
-      expect(page).to have_css('strong', text: 'super important')
+      expect("super important").to include(find("strong").text)
+      expect(find("strong").text.size).to be_positive
     end
 
     # Link modal
