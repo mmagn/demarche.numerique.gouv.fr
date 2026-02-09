@@ -33,9 +33,15 @@ class EditableChamp::AddressComponent < EditableChamp::EditableChampBaseComponen
   end
 
   def commune_react_props
+    error_on_commune_name = @champ.errors.where(:commune_name).present?
+
     {
       id: @champ.focusable_input_id(:commune_name),
-      class: 'fr-mt-1w fr-mb-0',
+      class: class_names(
+        'fr-mt-1w': true,
+        'fr-mb-0': true,
+         "#{dsfr_input_classname}--error": error_on_commune_name
+      ),
       name: @form.field_name(:commune_code),
       placeholder: t('views.components.remote_combobox'),
       selected_key: @champ.commune_selected_key,
