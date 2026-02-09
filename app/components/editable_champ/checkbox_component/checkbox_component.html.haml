@@ -1,6 +1,6 @@
 .fr-checkbox-group.fr-mb-2w
   = @form.check_box :value,
-    { required: @champ.required?, id: @champ.focusable_input_id, checked: @champ.true?, aria: { **labelledby_id_attr, describedby: "#{@champ.describedby_id} #{@champ.error_id}" } },
+    { required: @champ.required?, id: @champ.focusable_input_id, checked: @champ.true?, aria: { **labelledby_id_attr, describedby: "#{@champ.describedby_id} #{@champ.error_id(:value)}" } },
     'true',
     'false'
   %label.fr-label{ for: @champ.focusable_input_id, id: input_label_id(@champ) }

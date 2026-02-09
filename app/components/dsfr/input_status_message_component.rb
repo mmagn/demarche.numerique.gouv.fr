@@ -5,10 +5,11 @@ module Dsfr
     include EtablissementHelper
     delegate :type_de_champ, to: :@champ
     delegate :prefilled?, to: :@champ
-    def initialize(errors_on_attribute:, error_full_messages:, champ:, row_number: nil)
-      @errors_on_attribute = errors_on_attribute
-      @error_full_messages = error_full_messages
-      @error_id = champ.error_id
+
+    def initialize(champ_component:, champ:, row_number: nil)
+      @errors_on_attribute = champ_component.errors_on_attribute?
+      @error_full_messages = champ_component.error_full_messages
+      @error_id = champ.error_id(champ_component.attribute)
       @champ = champ
       @row_number = row_number
     end

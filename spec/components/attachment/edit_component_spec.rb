@@ -82,7 +82,7 @@ RSpec.describe Attachment::EditComponent, type: :component do
 
         it 'targets error_id' do
           subject
-          expect(describedby_attribute).to eq([champ.describedby_id, parent_hint_id, champ.error_id])
+          expect(describedby_attribute).to eq([champ.describedby_id, parent_hint_id, champ.error_id(:value)])
         end
       end
 

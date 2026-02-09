@@ -29,7 +29,7 @@ class EditableChamp::DropDownListComponent < EditableChamp::EditableChampBaseCom
   def select_aria_describedby
     describedby = []
     describedby << @champ.describedby_id if @champ.description.present?
-    describedby << @champ.error_id if errors_on_attribute?
+    describedby << @champ.error_id(:value) if errors_on_attribute?
     describedby.present? ? describedby.join(' ') : nil
   end
 

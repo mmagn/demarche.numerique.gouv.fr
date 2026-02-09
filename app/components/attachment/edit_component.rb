@@ -97,7 +97,7 @@ class Attachment::EditComponent < ApplicationComponent
     describedby = []
     describedby << champ.describedby_id if champ&.description.present?
     describedby << @parent_hint_id if @parent_hint_id.present?
-    describedby << champ.error_id if champ&.errors&.has_key?(:value)
+    describedby << champ.error_id(:value) if champ&.errors&.has_key?(:value)
 
     options[:aria] = { describedby: describedby.join(' '), labelledby: @aria_labelledby }
 

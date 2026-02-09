@@ -26,7 +26,7 @@ describe EditableChamp::CommunesComponent, type: :component do
       context 'and the champ has an error' do
         before { champ.errors.add(:value, 'error') }
 
-        it { is_expected.to eq([champ.describedby_id, champ.error_id]) }
+        it { is_expected.to eq([champ.describedby_id, champ.error_id(:value)]) }
       end
     end
 
@@ -38,7 +38,7 @@ describe EditableChamp::CommunesComponent, type: :component do
       context 'and the champ has an error' do
         before { champ.errors.add(:value, 'error') }
 
-        it { is_expected.to eq([champ.error_id]) }
+        it { is_expected.to eq([champ.error_id(:value)]) }
       end
     end
   end

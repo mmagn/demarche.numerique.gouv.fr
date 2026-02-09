@@ -42,7 +42,7 @@ describe EditableChamp::DropDownListComponent, type: :component do
         it do
           render
 
-          expect(aria_labelledby(fieldset)).to eq([input_label_id(champ), champ.describedby_id, champ.error_id])
+          expect(aria_labelledby(fieldset)).to eq([input_label_id(champ), champ.describedby_id, champ.error_id(:value)])
           expect(no_aria_on_radio?).to be true
         end
       end
@@ -100,7 +100,7 @@ describe EditableChamp::DropDownListComponent, type: :component do
         it do
           render
 
-          expect(aria_labelledby(fieldset)).to eq([input_label_id(champ), champ.error_id])
+          expect(aria_labelledby(fieldset)).to eq([input_label_id(champ), champ.error_id(:value)])
           expect(no_aria_on_radio?).to be true
         end
       end
@@ -125,7 +125,7 @@ describe EditableChamp::DropDownListComponent, type: :component do
         context 'and the champ has an error' do
           before { champ.errors.add(:value, 'error') }
 
-          it { is_expected.to eq([champ.describedby_id, champ.error_id]) }
+          it { is_expected.to eq([champ.describedby_id, champ.error_id(:value)]) }
         end
       end
 
@@ -137,7 +137,7 @@ describe EditableChamp::DropDownListComponent, type: :component do
         context 'and the champ has an error' do
           before { champ.errors.add(:value, 'error') }
 
-          it { is_expected.to eq([champ.error_id]) }
+          it { is_expected.to eq([champ.error_id(:value)]) }
         end
       end
     end
@@ -163,7 +163,7 @@ describe EditableChamp::DropDownListComponent, type: :component do
         context 'and the champ has an error' do
           before { champ.errors.add(:value, 'error') }
 
-          it { is_expected.to eq([champ.describedby_id, champ.error_id]) }
+          it { is_expected.to eq([champ.describedby_id, champ.error_id(:value)]) }
         end
       end
 
@@ -175,7 +175,7 @@ describe EditableChamp::DropDownListComponent, type: :component do
         context 'and the champ has an error' do
           before { champ.errors.add(:value, 'error') }
 
-          it { is_expected.to eq([champ.error_id]) }
+          it { is_expected.to eq([champ.error_id(:value)]) }
         end
       end
     end

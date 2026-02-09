@@ -47,7 +47,7 @@ describe Champs::RNAController, type: :controller do
 
         it 'keep assertive div with error id' do
           subject
-          expect(response.body).to include(champ.error_id)
+          expect(response.body).to include(champ.error_id(:value))
         end
 
         it 'updates dossier.last_champs_updated_at' do

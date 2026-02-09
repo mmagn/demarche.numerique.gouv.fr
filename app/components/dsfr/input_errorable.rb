@@ -54,7 +54,7 @@ module Dsfr
         if dsfr_champ_container == :fieldset && errors_on_attribute?
           labelledby = [input_label_id(@champ)]
           labelledby << describedby_id if @champ.description.present?
-          labelledby << @champ.error_id
+          labelledby << @champ.error_id(@attribute)
 
           {
             aria: { labelledby: labelledby.join(' ') },
@@ -127,7 +127,7 @@ module Dsfr
           aria_describedby << hint_id
         end
 
-        aria_describedby << object.error_id if errors_on_attribute? && object.respond_to?(:error_id)
+        aria_describedby << object.error_id(attribute) if errors_on_attribute? && object.respond_to?(:error_id)
 
         @opts.deep_merge!('aria-describedby': aria_describedby.join(' ')) if aria_describedby.present?
 
