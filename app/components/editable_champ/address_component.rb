@@ -48,7 +48,8 @@ class EditableChamp::AddressComponent < EditableChamp::EditableChampBaseComponen
       },
       ariaLabelledbyPrefix: "#{aria_labelledby_prefix} #{champ_fieldset_legend_id(@champ)}",
       labelId: input_label_id(@champ, :commune_name),
-    }
+      "aria-describedby" => error_on_commune_name ? @champ.error_id(:commune_name) : nil,
+    }.compact
   end
 
   def pays_options

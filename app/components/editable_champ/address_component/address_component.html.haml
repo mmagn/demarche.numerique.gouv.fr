@@ -52,4 +52,4 @@
                 = render ReactComponent.new "ComboBox/RemoteComboBox", **commune_react_props
 
               - if @champ.errors.include?(:commune_name)
-                %p.fr-error-text{ id: @champ.focusable_input_id(:commune_name) }= @champ.errors.full_messages_for(:commune_name).first
+                %p.fr-error-text{ id: @champ.error_id(:commune_name) }= @champ.errors.full_messages_for(:commune_name).first
