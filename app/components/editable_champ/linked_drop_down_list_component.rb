@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class EditableChamp::LinkedDropDownListComponent < EditableChamp::EditableChampBaseComponent
-  delegate :primary_value, to: :@champ
+  delegate :primary_value, :secondary_value, to: :@champ
   # small trick here.
   # linked dropdown champ is a compound input. one input for primary, one for secondary.
   # focusable error does not point to the same input depending of the stage of the input.
