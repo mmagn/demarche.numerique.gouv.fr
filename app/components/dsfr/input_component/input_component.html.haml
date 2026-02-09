@@ -18,9 +18,9 @@
 
   - if errors_on_attribute?
     - if error_messages.size == 1
-      %p.fr-error-text{ id: describedby_id }= error_messages.first
+      %p.fr-error-text{ id: error_id }= error_messages.first
     - else
-      .fr-error-text{ id: describedby_id }
+      .fr-error-text{ id: error_id }
         %ul.list-style-type-none.fr-pl-0
           - error_messages.map do |error_message|
             %li= error_message
