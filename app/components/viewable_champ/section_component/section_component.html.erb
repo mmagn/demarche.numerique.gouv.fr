@@ -31,7 +31,7 @@
 
   <div id="<%= section_id %>" data-expand-target="content">
     <% if !champs.empty? %>
-      <%= render Dossiers::ChampsRowsShowComponent.new(champs:, seen_at: @demande_seen_at, profile: @profile) %>
+      <%= render Dossiers::ChampsRowsShowComponent.new(champs:, seen_at: @demande_seen_at, profile: @profile, repetition_heading_level: repetition_heading_level) %>
     <% end %>
 
     <% sections.each do |section| %>
