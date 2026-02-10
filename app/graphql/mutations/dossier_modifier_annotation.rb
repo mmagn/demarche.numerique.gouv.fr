@@ -70,6 +70,8 @@ module Mutations
         TypeDeChamp.type_champs.fetch(:decimal_number)
       when :drop_down_list
         TypeDeChamp.type_champs.fetch(:drop_down_list)
+      when :dossier_link
+        TypeDeChamp.type_champs.fetch(:dossier_link)
       end
     end
   end
