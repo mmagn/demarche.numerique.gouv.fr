@@ -32,11 +32,17 @@ if (enabled) {
   firstScript.parentNode?.insertBefore(script, firstScript);
 
   window.$crisp.push([
-    'set',
-    'user:email',
-    [user.email, user.emailSignature].filter(Boolean)
+    'on',
+    'chat:initiated',
+    () => {
+      window.$crisp.push([
+        'set',
+        'user:email',
+        [user.email, user.emailSignature].filter(Boolean)
+      ]);
+      window.$crisp.push(['set', 'session:segments', [user.segments]]);
+    }
   ]);
-  window.$crisp.push(['set', 'session:segments', [user.segments]]);
 
   // Prevent Crisp to log warnings about Sentry overriding document.addEventListener
   window.$crisp.push(['safe', true]);

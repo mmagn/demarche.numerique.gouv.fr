@@ -33,7 +33,7 @@ RSpec.describe Crisp::APIService do
         result = service.update_people_data(email:, body:)
 
         expect(api_client).to have_received(:call).with(
-          url: URI("https://api.crisp.chat/v1/website/#{website_id}/people/data/#{email}"),
+          url: URI("https://api.crisp.chat/v1/website/#{website_id}/people/data/user%40example.com"),
           json: body,
           method: :patch,
           headers: { 'X-Crisp-Tier' => 'plugin' },

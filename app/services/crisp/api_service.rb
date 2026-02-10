@@ -21,7 +21,7 @@ module Crisp
     }.freeze
 
     def update_people_data(email:, body:)
-      endpoint = format(ENDPOINTS['people_data'], website_id:, email:)
+      endpoint = format(ENDPOINTS['people_data'], website_id:, email: URI.encode_uri_component(email))
       url = build_url(endpoint)
 
       result = call(url:, json: body, method: :patch)
