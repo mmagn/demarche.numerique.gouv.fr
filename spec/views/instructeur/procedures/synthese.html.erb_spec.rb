@@ -8,6 +8,8 @@ describe 'instructeurs/procedures/synthese', type: :view do
       dossiers_a_suivre_count_per_procedure: {},
       dossiers_termines_count_per_procedure: {},
       dossiers_expirant_count_per_procedure: {},
+      dossiers_archives_count_per_procedure: {},
+      dossiers_supprimes_count_per_procedure: {},
       followed_dossiers_count_per_procedure: {},
       groupes_instructeurs_ids: [12]
     )

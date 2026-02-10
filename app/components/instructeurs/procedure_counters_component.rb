@@ -34,6 +34,14 @@ class Instructeurs::ProcedureCountersComponent < ApplicationComponent
     formatted_count(:dossiers_expirant_count_per_procedure)
   end
 
+  def archives_count
+    formatted_count(:dossiers_archives_count_per_procedure)
+  end
+
+  def supprimes_count
+    formatted_count(:dossiers_supprimes_count_per_procedure)
+  end
+
   def notifications?
     current_instructeur.feature_enabled?(:notification) &&
       @notifications_counts_per_procedure[procedure.id]&.any?

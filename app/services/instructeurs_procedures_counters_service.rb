@@ -7,6 +7,8 @@ class InstructeursProceduresCountersService
     :dossiers_a_suivre_count_per_procedure,
     :dossiers_termines_count_per_procedure,
     :dossiers_expirant_count_per_procedure,
+    :dossiers_archives_count_per_procedure,
+    :dossiers_supprimes_count_per_procedure,
     :followed_dossiers_count_per_procedure,
     :all_dossiers_counts
   )
@@ -34,6 +36,8 @@ class InstructeursProceduresCountersService
     dossiers_a_suivre_count_per_procedure = dossiers.by_statut('a-suivre').count
     dossiers_termines_count_per_procedure = dossiers.by_statut('traites').count
     dossiers_expirant_count_per_procedure = dossiers.by_statut('expirant').count
+    dossiers_archives_count_per_procedure = dossiers.by_statut('archives').count
+    dossiers_supprimes_count_per_procedure = dossiers.by_statut('supprimes').count
 
     followed_dossiers_count_per_procedure = instructeur.followed_dossiers
       .joins(:groupe_instructeur)
@@ -58,6 +62,8 @@ class InstructeursProceduresCountersService
       dossiers_a_suivre_count_per_procedure:,
       dossiers_termines_count_per_procedure:,
       dossiers_expirant_count_per_procedure:,
+      dossiers_archives_count_per_procedure:,
+      dossiers_supprimes_count_per_procedure:,
       followed_dossiers_count_per_procedure:,
       all_dossiers_counts:
     )
