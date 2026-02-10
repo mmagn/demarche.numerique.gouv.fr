@@ -281,3 +281,8 @@ input[type='radio'] {
 .fr-modal__body {
   scroll-padding-bottom: 130px; /* hauteur des boutons sticky + marge */
 }
+
+// fix https://github.com/demarche-numerique/demarche.numerique.gouv.fr/issues/12648
+.dossier-edit .fr-fieldset {
+  align-items: flex-end;
+}
