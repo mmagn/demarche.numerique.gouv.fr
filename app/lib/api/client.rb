@@ -25,6 +25,12 @@ class API::Client
         body: json.nil? ? body : json.to_json,
         timeout:,
         **typhoeus_options)
+    when :delete
+      Typhoeus.delete(url,
+        headers: headers_with_authorization(headers, json, authorization_token:),
+        body: json.nil? ? body : json.to_json,
+        timeout:,
+        **typhoeus_options)
     end
     handle_response(response, schema:)
   rescue StandardError => reason
