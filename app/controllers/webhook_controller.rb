@@ -4,16 +4,6 @@ class WebhookController < ActionController::Base
   before_action :verify_crisp_signature!, only: [:crisp]
   skip_before_action :verify_authenticity_token
 
-  def sendinblue
-    webhook_url = ENV["SEND_IN_BLUE_OUTAGE_WEBHOOK_URL"]
-    if webhook_url.present?
-      send_mattermost_notification(
-        webhook_url,
-        message_to_mattermost_send_in_blue_channel
-      )
-    end
-  end
-
   def crisp
     # Note: always respond with 200 or webhooks will be suspended.
     Crisp::WebhookProcessor.new(params).process
@@ -28,13 +18,6 @@ class WebhookController < ActionController::Base
       { "text": text }.to_json,
      "Content-Type" => "application/json"
     )
-  end
-
-  def message_to_mattermost_send_in_blue_channel
-    %Q{Incident sur SIB : #{params['title']}.
-Etat de SIB: #{params['current_status']}
-L'Incident a commencé à #{params['datetime_start']} et est p-e terminé a #{params['datetime_resolve']}
-les composant suivants sont affectés : #{params["components"].map { _1['name'] }.join(", ")}}
   end
 
   def link_to_manager(model, url)

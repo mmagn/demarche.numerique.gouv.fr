@@ -1,18 +1,6 @@
 # frozen_string_literal: true
 
 describe WebhookController, type: :controller do
-  describe '#sendinblue' do
-    subject(:response) { post :sendinblue, params: payload }
-    let(:payload) { JSON.parse(Rails.root.join('spec', 'fixtures', 'files', 'sendinblue', 'incident.json').read) }
-
-    it 'sends notification to mattermost' do
-      notification_url = "https://notification_url"
-      stub_const('ENV', ENV.to_hash.merge('SEND_IN_BLUE_OUTAGE_WEBHOOK_URL' => notification_url))
-      expect(controller).to receive(:send_mattermost_notification).with(notification_url, "Incident sur SIB : Database Issues.\nEtat de SIB: Degraded Performance\nL'Incident a commencé à 2015-04-03T18:27:15+00:00 et est p-e terminé a \nles composant suivants sont affectés : Chat Service, Voice Services, Admin Dashboard")
-      subject
-    end
-  end
-
   describe '#crisp' do
     let(:payload) do
       {

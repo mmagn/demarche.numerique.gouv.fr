@@ -247,7 +247,6 @@ Rails.application.routes.draw do
 
   get "carte", to: "carte#show"
 
-  post "webhooks/sendinblue", to: "webhook#sendinblue"
   post "webhooks/crisp", to: "webhook#crisp"
 
   get '/preremplir/:path', to: 'prefill_descriptions#edit', as: :preremplir
