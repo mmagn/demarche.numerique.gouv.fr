@@ -219,4 +219,42 @@ TEXT
       }
     end
   end
+
+  context 'urls with query parameters' do
+    let(:text) do
+      "Visitez https://www.google.com/search?variable=value&q=ecologie pour plus d'infos"
+    end
+
+    context 'with autolink only (instructeur messages)' do
+      let(:allow_autolink) { true }
+      let(:allow_a) { false }
+
+      it "displays URL correctly without double-encoding ampersands" do
+        expect(page).to have_link("https://www.google.com/search?variable=value&q=ecologie", href: "https://www.google.com/search?variable=value&q=ecologie")
+      end
+
+      it "does not contain double-encoded ampersands in HTML" do
+        expect(page.native.inner_html).not_to include("&amp;amp;")
+        expect(page.native.inner_html).to include("&amp;")
+      end
+    end
+
+    context 'with full autolink (allow_a: true)' do
+      let(:allow_a) { true }
+
+      it "displays URL correctly" do
+        expect(page).to have_link("https://www.google.com/search?variable=value&q=ecologie", href: "https://www.google.com/search?variable=value&q=ecologie")
+      end
+    end
+  end
+
+  context 'XSS protection in autolink' do
+    let(:text) { 'Visitez http://example.com<script>alert("xss")</script> pour plus d\'infos' }
+    let(:allow_autolink) { true }
+
+    it "does not render script tags in autolinked URLs" do
+      expect(page.native.inner_html).not_to include('<script>')
+      expect(page).to have_text('http://example.comalert(&quot;xss&quot;)')
+    end
+  end
 end
