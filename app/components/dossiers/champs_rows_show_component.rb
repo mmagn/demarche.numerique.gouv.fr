@@ -3,9 +3,15 @@
 class Dossiers::ChampsRowsShowComponent < ApplicationComponent
   attr_reader :profile
   attr_reader :seen_at
+  attr_reader :repetition_heading_level
 
-  def initialize(champs:, profile:, seen_at:)
+  def initialize(champs:, profile:, seen_at:, repetition_heading_level: 3)
     @champs, @profile, @seen_at = champs, profile, seen_at
+    @repetition_heading_level = repetition_heading_level.to_i.clamp(3, 6)
+  end
+
+  def repetition_heading_tag
+    "h#{@repetition_heading_level}"
   end
 
   private

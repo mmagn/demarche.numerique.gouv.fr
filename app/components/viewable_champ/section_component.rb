@@ -48,6 +48,12 @@ class ViewableChamp::SectionComponent < ApplicationComponent
     header_section.level == 1
   end
 
+  def repetition_heading_level
+    relative_level = header_section ? header_section.level : 1
+    # there are 2 levels of heading before the repetition heading
+    [relative_level + 2, 6].min
+  end
+
   private
 
   def to_sections(nodes:)
