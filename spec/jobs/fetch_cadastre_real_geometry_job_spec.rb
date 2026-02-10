@@ -46,7 +46,7 @@ describe FetchCadastreRealGeometryJob, type: :job do
       end
 
       it 'marks error after max attempts threshold reached' do
-        expect(job).to receive(:executions).and_return(FetchCadastreRealGeometryJob::MAX_ATTEMPT).at_least(1)
+        expect(job).to receive(:executions).and_return(FetchCadastreRealGeometryJob::MAX_ATTEMPTS_JOBS).at_least(1)
         expect { subject }.to change { geo_area.reload.cadastre_state }
         expect(geo_area.cadastre_error).to eq('api_error')
       end

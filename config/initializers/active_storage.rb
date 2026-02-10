@@ -31,7 +31,6 @@ end
 Rails.application.reloader.to_prepare do
   class ActiveStorage::BaseJob
     include ActiveJob::RetryOnStandardError
-    include ActiveJob::RetryOnTransientErrors
   end
 
   class ActiveStorage::BaseController

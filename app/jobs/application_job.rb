@@ -2,7 +2,6 @@
 
 class ApplicationJob < ActiveJob::Base
   include ActiveJob::RetryOnStandardError
-  include ActiveJob::RetryOnTransientErrors
 
   attr_writer :request_id
 
@@ -30,10 +29,6 @@ class ApplicationJob < ActiveJob::Base
       block.call
     end
     Rails.logger.info("#{job.class.name} ended at #{Time.zone.now}")
-  end
-
-  def error(job, exception)
-    Sentry.capture_exception(exception)
   end
 
   def max_attempts

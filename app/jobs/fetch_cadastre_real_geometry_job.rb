@@ -1,11 +1,8 @@
 # frozen_string_literal: true
 
 class FetchCadastreRealGeometryJob < ApplicationJob
-  MAX_ATTEMPT = 10
   discard_on ActiveRecord::RecordNotFound
   discard_on ActiveJob::DeserializationError
-
-  retry_on StandardError, attempts: MAX_ATTEMPT, wait: :polynomially_longer
 
   def perform(geo_area)
     parcelle_data = APIIgn::API.fetch_parcelle(id: geo_area.parcelle_id)
@@ -21,7 +18,7 @@ class FetchCadastreRealGeometryJob < ApplicationJob
       )
     end
   rescue ArgumentError
-    if executions == MAX_ATTEMPT
+    if executions == MAX_ATTEMPTS_JOBS
       geo_area.update_columns(
         cadastre_state: :cadastre_error,
         cadastre_error: :api_error
