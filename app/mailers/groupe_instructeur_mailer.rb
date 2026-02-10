@@ -66,7 +66,7 @@ class GroupeInstructeurMailer < ApplicationMailer
     mail(to: instructeur.email, subject: subject)
   end
 
-  def notify_added_instructeur_from_groupes_import(instructeur, groups, current_instructeur_email)
+  def notify_added_instructeur_in_many_groupes(instructeur, groups, current_instructeur_email)
     @instructeur = instructeur
     @groups = groups
     @procedure = groups.first.procedure
@@ -74,9 +74,9 @@ class GroupeInstructeurMailer < ApplicationMailer
 
     group_labels = groups.map(&:label).join(', ')
     subject = if groups.count == 1
-      "Vous avez été affecté(e) au groupe instructeur « #{group_labels} » de la démarche « #{@procedure.libelle} »"
+      "Vous avez été ajouté(e) au groupe instructeur « #{group_labels} » de la démarche « #{@procedure.libelle} »"
     else
-      "Vous avez été affecté(e) à #{groups.count} groupes instructeurs de la démarche « #{@procedure.libelle} »"
+      "Vous avez été ajouté(e) à #{groups.count} groupes instructeurs de la démarche « #{@procedure.libelle} »"
     end
 
     mail(to: instructeur.email, subject: subject)
@@ -86,7 +86,7 @@ class GroupeInstructeurMailer < ApplicationMailer
     false
   end
 
-  def confirm_and_notify_added_instructeur_from_groupes_import(instructeur, groups, current_instructeur_email)
+  def confirm_and_notify_added_instructeur_in_many_groupes(instructeur, groups, current_instructeur_email)
     @instructeur = instructeur
     @groups = groups
     @procedure = groups.first.procedure
@@ -95,9 +95,9 @@ class GroupeInstructeurMailer < ApplicationMailer
 
     group_labels = groups.map(&:label).join(', ')
     subject = if groups.count == 1
-      "Vous avez été affecté(e) au groupe \"#{group_labels}\" de la démarche \"#{@procedure.libelle}\""
+      "Vous avez été ajouté(e) au groupe \"#{group_labels}\" de la démarche \"#{@procedure.libelle}\""
     else
-      "Vous avez été affecté(e) à #{groups.count} groupes de la démarche \"#{@procedure.libelle}\""
+      "Vous avez été ajouté(e) à #{groups.count} groupes de la démarche \"#{@procedure.libelle}\""
     end
 
     bypass_unverified_mail_protection!

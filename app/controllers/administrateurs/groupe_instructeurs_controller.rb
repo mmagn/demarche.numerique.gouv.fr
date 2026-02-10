@@ -305,7 +305,7 @@ module Administrateurs
       end
 
       instructeur_groupes.each do |instructeur, groupes|
-        notify_instructeur_after_groupes_import(instructeur, groupes)
+        notify_instructeur_added_in_many_groupes(instructeur, groupes)
       end
 
       if all_invalid_emails.any?
@@ -430,7 +430,7 @@ module Administrateurs
           groupes_by_instructeur, invalid_emails = InstructeursImportService.import_groupes(procedure, groupes_emails)
 
           groupes_by_instructeur.each do |instructeur, groupes|
-            notify_instructeur_after_groupes_import(instructeur, groupes)
+            notify_instructeur_added_in_many_groupes(instructeur, groupes)
           end
 
           flash_message_for_import(invalid_emails)

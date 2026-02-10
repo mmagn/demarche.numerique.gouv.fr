@@ -1,6 +1,6 @@
-fr:
+en:
   groupe_instructeur_mailer:
-    notify_added_instructeur_from_groupes_import:
+    notify_added_instructeur_in_many_groupes:
       email_body:
         html:
           one: "You have been assigned to the group« %{groupe} » of the procedure « <a href=\"%{procedure_url}\">%{procedure}</a> » by %{email}."
