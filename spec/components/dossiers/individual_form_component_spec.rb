@@ -17,6 +17,7 @@ RSpec.describe Dossiers::IndividualFormComponent, type: :component do
         expect(page).to have_field("Prénom", disabled: true)
         expect(page).to have_field("Nom", disabled: true)
         expect(page).to have_css("input[name='dossier[individual_attributes][gender]'][disabled]")
+        expect(page).to have_text("par FranceConnect et ne peuvent pas être modifiées")
       end
     end
 
@@ -37,6 +38,8 @@ RSpec.describe Dossiers::IndividualFormComponent, type: :component do
           expect(page).to have_field("Prénom", disabled: false)
           expect(page).to have_field("Nom", disabled: false)
         end
+
+        expect(page).to have_text("par FranceConnect et ne peuvent pas être modifiées")
       end
     end
   end
@@ -48,6 +51,7 @@ RSpec.describe Dossiers::IndividualFormComponent, type: :component do
       subject
       expect(page).to have_field("Prénom", disabled: false)
       expect(page).to have_field("Nom", disabled: false)
+      expect(page).not_to have_text("par FranceConnect et ne peuvent pas être modifiées")
     end
   end
 end

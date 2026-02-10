@@ -14,6 +14,12 @@
         %h2.fr-h4
           = t('.for_self.self_title')
 
+      - if @dossier.france_connected_with_one_identity?
+        .fr-px-1w
+          = render Dsfr::AlertComponent.new(state: :info, title: nil, size: :sm, heading_level: :p, extra_class_names: 'fr-mb-2w') do |c|
+            - c.with_body do
+              %p= t('.identity_locked_by_france_connect')
+
       .fr-fieldset__element.fr-fieldset__element--short-text
         = render Dsfr::InputComponent.new(form: f, attribute: :mandataire_first_name, opts: { autocomplete: 'given-name', disabled: mandataire_identity_locked? })
 
@@ -33,6 +39,12 @@
             = t('.for_tiers.beneficiaire_title')
           - else
             = t('.for_self.self_title')
+
+      - if @dossier.france_connected_with_one_identity? && !for_tiers?
+        .fr-px-1w
+          = render Dsfr::AlertComponent.new(state: :info, title: nil, size: :sm, heading_level: :p, extra_class_names: 'fr-mb-2w') do |c|
+            - c.with_body do
+              %p= t('.for_self.identity_locked_by_france_connect')
 
       - unless @dossier.procedure.no_gender?
         .fr-fieldset__element.fr-mb-0
