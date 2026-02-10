@@ -1166,6 +1166,47 @@ describe Administrateurs::GroupeInstructeursController, type: :controller do
     end
   end
 
+  describe '#remove_instructeur_from_all_groupes' do
+    let!(:instructeur_to_remove) { create(:instructeur) }
+    let!(:other_instructeur) { create(:instructeur) }
+
+    before do
+      allow(GroupeInstructeurMailer).to receive(:notify_removed_instructeur_from_all_groupes)
+        .and_return(double(deliver_later: true))
+      procedure.groupe_instructeurs.active.each do |gi|
+        gi.add_instructeurs(emails: [instructeur_to_remove.email, other_instructeur.email])
+      end
+    end
+
+    subject do
+      delete :remove_instructeur_from_all_groupes,
+        params: { procedure_id: procedure.id, emails: [instructeur_to_remove.email] }
+    end
+
+    it 'removes the instructeur from all groups' do
+      subject
+      procedure.groupe_instructeurs.active.each do |gi|
+        expect(gi.reload.instructeurs).not_to include(instructeur_to_remove)
+      end
+      expect(flash[:notice]).to be_present
+      expect(response).to redirect_to(admin_procedure_groupe_instructeurs_path(procedure))
+    end
+
+    context 'when the instructeur is the only one in a group' do
+      before do
+        gi_1_2.instructeurs.where.not(id: instructeur_to_remove.id).each { gi_1_2.remove(_1) }
+      end
+
+      it 'skips the group where the instructeur is the last one and removes from others' do
+        subject
+        expect(gi_1_2.reload.instructeurs).to include(instructeur_to_remove)
+        expect(gi_1_1.reload.instructeurs).not_to include(instructeur_to_remove)
+        expect(flash[:alert]).to include(instructeur_to_remove.email)
+        expect(flash[:notice]).to be_nil
+      end
+    end
+  end
+
   describe '#bulk_route' do
     let!(:procedure) do
       create(:procedure,

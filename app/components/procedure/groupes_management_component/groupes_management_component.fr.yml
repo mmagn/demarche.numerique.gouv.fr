@@ -14,3 +14,7 @@ fr:
     add_submit: Ajouter dans tous les groupes
     typo_confirm_title: Avant dʼajouter lʼadresse électronique dans tous les groupes, veuillez confirmer
     confirm_add_message: Tous les instructeurs ajoutés à la démarche vont être notifiés par email. Voulez-vous continuer ?
+    tab_remove: Retrait
+    remove_title: Retirer un instructeur de tous les groupes
+    remove_submit: Retirer de tous les groupes
+    confirm_remove_message: Tous les instructeurs retirés de la démarche vont être notifiés par email. Voulez-vous continuer ?

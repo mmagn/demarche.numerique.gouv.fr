@@ -9,7 +9,7 @@ module Administrateurs
     include CsvParsingConcern
     include InstructeurEmailNotificationConcern
 
-    before_action :ensure_not_super_admin!, only: [:add_instructeurs]
+    before_action :ensure_not_super_admin!, only: [:add_instructeurs, :add_instructeur_to_all_groupes]
 
     ITEMS_PER_PAGE = 25
 
@@ -320,6 +320,56 @@ module Administrateurs
 
       flash[:alert] = errors.join(". ") if errors.any?
       redirect_to admin_procedure_groupe_instructeurs_path(procedure), flash: { maybe_typos: }
+    end
+
+    def remove_instructeur_from_all_groupes
+      emails = params['emails'].presence || []
+      emails = emails.map { EmailSanitizer.sanitize(_1) }
+
+      fully_removed_instructeurs = []
+      partially_removed_instructeurs = []
+
+      emails.each do |email|
+        instructeur = Instructeur.by_email(email)
+        next if instructeur.nil?
+
+        removed_from_groupes = []
+        procedure.groupe_instructeurs.active.each do |gi|
+          next if !gi.instructeurs.include?(instructeur)
+          next if gi.instructeurs.one?
+
+          gi.remove(instructeur)
+          removed_from_groupes << gi
+        end
+
+        next if removed_from_groupes.empty?
+
+        still_assigned = instructeur.groupe_instructeurs.where(procedure:).any?
+
+        GroupeInstructeurMailer
+          .notify_removed_instructeur_from_all_groupes(procedure, removed_from_groupes, instructeur, current_administrateur.email, still_assigned)
+          .deliver_later
+
+        if still_assigned
+          partially_removed_instructeurs << instructeur
+        else
+          fully_removed_instructeurs << instructeur
+        end
+      end
+
+      if fully_removed_instructeurs.any?
+        flash[:notice] = t('.remove_all_groupes_assignment',
+          count: fully_removed_instructeurs.size,
+          emails: fully_removed_instructeurs.map(&:email).join(', '))
+      end
+
+      if partially_removed_instructeurs.any?
+        flash[:alert] = t('.remove_all_groupes_partial',
+          count: partially_removed_instructeurs.size,
+          emails: partially_removed_instructeurs.map(&:email).join(', '))
+      end
+
+      redirect_to admin_procedure_groupe_instructeurs_path(procedure)
     end
 
     def remove_instructeur

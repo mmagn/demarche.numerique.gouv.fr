@@ -105,6 +105,29 @@
           disabled: true,
           data: { 'enable-submit-if-filled-target': 'submit', confirm: t('.bulk_assignment.confirm_add_message') }
 
+  #panel-bulk-remove.fr-tabs__panel{ role: 'tabpanel', 'aria-labelledby': 'tab-bulk-remove' }
+    %h3.fr-h5= t('.bulk_assignment.remove_title')
+    = form_tag remove_instructeur_from_all_groupes_admin_procedure_groupe_instructeurs_path(@procedure),
+      method: :delete,
+      class: 'form',
+      data: { controller: 'enable-submit-if-filled' } do
+      .instructeur-wrapper{ data: { action: 'change->enable-submit-if-filled#fillCombobox' } }
+        %p.fr-mb-1w= t('views.shared.groupe_instructeurs.instructeur_emails')
+        %p.fr-hint-text= t('views.shared.groupe_instructeurs.copy_paste_hint')
+        %react-fragment
+          = render ReactComponent.new 'ComboBox/MultiComboBox',
+            items: @procedure.instructeurs.map(&:email).sort,
+            id: 'bulk_remove_instructeur_emails',
+            name: 'emails[]',
+            allows_custom_value: true,
+            'aria-label': 'Emails',
+            data: { 'enable-submit-if-filled-target': 'input' }
+        = button_tag t('.bulk_assignment.remove_submit'),
+          type: :submit,
+          class: 'fr-btn fr-btn--primary fr-icon-subtract-line fr-btn--icon-left',
+          disabled: true,
+          data: { 'enable-submit-if-filled-target': 'submit', confirm: t('.bulk_assignment.confirm_remove_message') }
+
 - if flash[:routing_mode] == 'custom'
   = render partial: 'custom_routing_modal'
 - elsif flash[:routing_mode] == 'simple'

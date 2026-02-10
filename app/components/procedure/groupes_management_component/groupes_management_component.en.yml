@@ -13,3 +13,7 @@ en:
     add_title: Add an instructor to all groups
     add_submit: Add to all groups
     confirm_add_message: All instructors added to the procedure will be notified by email. Do you want to continue?
+    tab_remove: Remove
+    remove_title: Remove an instructor from all groups
+    remove_submit: Remove from all groups
+    confirm_remove_message: All instructors removed from the procedure will be notified by email. Do you want to continue?

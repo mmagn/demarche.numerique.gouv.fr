@@ -27,6 +27,13 @@ en:
         add_all_groupes_assignment:
           one: "The instructor %{emails} was assigned to all groups."
           other: "The instructors %{emails} were assigned to all groups."
+      remove_instructeur_from_all_groupes:
+        remove_all_groupes_assignment:
+          one: "The instructor %{emails} was removed from all groups."
+          other: "The instructors %{emails} were removed from all groups."
+        remove_all_groupes_partial:
+          one: "The instructor %{emails} was not removed from all groups because they are the only instructor in some groups."
+          other: "The instructors %{emails} were not removed from all groups because they are the only instructors in some groups."
       reaffectation:
         title: "Reassign files from group « %{label} »"
         hint:

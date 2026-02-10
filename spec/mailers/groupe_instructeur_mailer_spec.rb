@@ -41,6 +41,54 @@ RSpec.describe GroupeInstructeurMailer, type: :mailer do
     end
   end
 
+  describe '#notify_removed_instructeur_from_all_groupes' do
+    let(:procedure) { create(:procedure) }
+    let(:groupe_instructeur_1) { create(:groupe_instructeur, procedure: procedure, label: 'Groupe 1') }
+    let(:groupe_instructeur_2) { create(:groupe_instructeur, procedure: procedure, label: 'Groupe 2') }
+    let(:instructeur_to_remove) { create(:instructeur, email: 'removed@test.fr') }
+    let(:current_instructeur_email) { 'admin@test.fr' }
+
+    subject { described_class.notify_removed_instructeur_from_all_groupes(procedure, removed_from_groupes, instructeur_to_remove, current_instructeur_email, still_assigned) }
+
+    context 'when instructeur is fully removed from procedure' do
+      let(:removed_from_groupes) { [groupe_instructeur_1, groupe_instructeur_2] }
+      let(:still_assigned) { false }
+
+      it 'sends email indicating unassignment from procedure' do
+        expect(subject.to).to eq(['removed@test.fr'])
+        expect(subject.subject).to include('Vous avez été désaffecté(e) de la démarche')
+        expect(subject.body).to include('Vous avez été désaffecté(e) de la démarche')
+        expect(subject.body).to include(procedure.libelle)
+        expect(subject.body).to include('admin@test.fr')
+      end
+    end
+
+    context 'when instructeur is removed from one group but still assigned' do
+      let(:removed_from_groupes) { [groupe_instructeur_1] }
+      let(:still_assigned) { true }
+
+      it 'sends email indicating the single group from which instructeur was removed' do
+        expect(subject.to).to eq(['removed@test.fr'])
+        expect(subject.subject).to include('Vous avez été retiré(e) du groupe "Groupe 1"')
+        expect(subject.body).to include('Vous avez été retiré(e) du groupe « Groupe 1 »')
+        expect(subject.body).to include('admin@test.fr')
+      end
+    end
+
+    context 'when instructeur is removed from multiple groups but still assigned' do
+      let(:removed_from_groupes) { [groupe_instructeur_1, groupe_instructeur_2] }
+      let(:still_assigned) { true }
+
+      it 'sends email listing all groups from which instructeur was removed' do
+        expect(subject.to).to eq(['removed@test.fr'])
+        expect(subject.subject).to include('Vous avez été retiré(e) de 2 groupes')
+        expect(subject.body).to include('Vous avez été retiré(e) des groupes suivants')
+        expect(subject.body).to include('Groupe 1')
+        expect(subject.body).to include('Groupe 2')
+      end
+    end
+  end
+
   describe '#notify_added_instructeurs' do
     let(:procedure) { create(:procedure) }
 
