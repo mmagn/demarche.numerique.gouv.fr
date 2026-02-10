@@ -18,6 +18,10 @@ module Crisp
       "get_conversation_meta" => '/v1/website/%{website_id}/conversation/%{session_id}/meta',
       # https://docs.crisp.chat/references/rest-api/v1/#update-conversation-metas
       "update_conversation_meta" => '/v1/website/%{website_id}/conversation/%{session_id}/meta',
+      # https://docs.crisp.chat/references/rest-api/v1/#list-people-profiles
+      "list_people_profiles" => '/v1/website/%{website_id}/people/profiles/%{page_number}',
+      # https://docs.crisp.chat/references/rest-api/v1/#remove-profile-data
+      "delete_person" => '/v1/website/%{website_id}/people/profile/%{people_id}',
     }.freeze
 
     def update_people_data(email:, body:)
@@ -68,16 +72,33 @@ module Crisp
       handle_result(result)
     end
 
+    def list_people_profiles(page_number, params)
+      endpoint = format(ENDPOINTS['list_people_profiles'], website_id:, page_number:)
+      url = build_url(endpoint)
+
+      result = call(url:, params:, method: :get)
+      handle_result(result)
+    end
+
+    def delete_person(people_id:)
+      endpoint = format(ENDPOINTS['delete_person'], website_id:, people_id:)
+      url = build_url(endpoint)
+
+      result = call(url:, method: :delete)
+      handle_result(result)
+    end
+
     private
 
     def website_id = ENV.fetch("CRISP_WEBSITE_ID")
     def client_identifier = ENV.fetch("CRISP_CLIENT_IDENTIFIER")
     def client_key = ENV.fetch("CRISP_CLIENT_KEY")
 
-    def call(url:, json: nil, method: :get)
+    def call(url:, json: nil, params: nil, method: :get)
       API::Client.new.call(
         url:,
         json:,
+        params:,
         method:,
         headers:,
         userpwd: "#{client_identifier}:#{client_key}"

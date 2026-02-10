@@ -35,6 +35,7 @@ RSpec.describe Crisp::APIService do
         expect(api_client).to have_received(:call).with(
           url: URI("https://api.crisp.chat/v1/website/#{website_id}/people/data/user%40example.com"),
           json: body,
+          params: nil,
           method: :patch,
           headers: { 'X-Crisp-Tier' => 'plugin' },
           userpwd: 'client-id:client-key'
@@ -169,6 +170,62 @@ RSpec.describe Crisp::APIService do
           expect(result.success.dig(:data, :topic)).to eq("Attestation issue")
           expect(result.success.dig(:data, :last_message)).to eq("J’ai un pb avec l’attestation")
           expect(result.success.dig(:data, :meta, :segments)).to eq(["attestation"])
+        end
+      end
+    end
+
+    describe '#list_people_profiles' do
+      let(:page_number) { 2 }
+      let(:api_params) { { sort_field: 'active', sort_order: 'descending', filter_date_end: '2025-01-01' } }
+
+      context 'when API call succeeds' do
+        before do
+          stub_request(:get, "https://api.crisp.chat/v1/website/#{website_id}/people/profiles/#{page_number}")
+            .with(query: api_params)
+            .and_return(
+              body: { "error" => false, "reason" => "listed", "data" => [{ "people_id" => "abc" }] }.to_json
+            )
+        end
+
+        it 'calls API with correct page number and parameters' do
+          result = service.list_people_profiles(page_number, api_params)
+
+          expect(result).to be_success
+          expect(result.success.dig(:data).first[:people_id]).to eq("abc")
+        end
+      end
+    end
+
+    describe '#delete_person' do
+      let(:people_id) { "abc123" }
+
+      context 'when API call succeeds' do
+        before do
+          stub_request(:delete, "https://api.crisp.chat/v1/website/#{website_id}/people/profile/#{people_id}")
+            .to_return(
+              status: 200,
+              body: { "error" => false, "reason" => "removed", "data" => {} }.to_json
+            )
+        end
+
+        it 'calls DELETE endpoint and returns success' do
+          result = service.delete_person(people_id:)
+
+          expect(result).to be_success
+          expect(a_request(:delete, "https://api.crisp.chat/v1/website/#{website_id}/people/profile/#{people_id}")).to have_been_made.once
+        end
+      end
+
+      context 'when API call fails' do
+        before do
+          stub_request(:delete, "https://api.crisp.chat/v1/website/#{website_id}/people/profile/#{people_id}")
+            .to_return(status: 500, body: { "error" => true, "reason" => "server error" }.to_json)
+        end
+
+        it 'returns failure' do
+          result = service.delete_person(people_id:)
+
+          expect(result).to be_failure
         end
       end
     end
