@@ -5,7 +5,7 @@ describe Instructeurs::DossiersController, type: :controller do
   let(:user) { instructeur.user }
   before { sign_in(user) }
 
-  context 'with a demarche with 100 conditional champs' do
+  context 'with a demarche with 100 conditional champs', caching: true do
     include Logic
 
     let(:nb_champ) { 100 }
