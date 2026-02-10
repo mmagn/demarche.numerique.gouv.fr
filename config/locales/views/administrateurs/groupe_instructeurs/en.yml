@@ -20,6 +20,13 @@ en:
         routing_alert_with_invalid_rules_html: "<strong>%{count} files</strong> have been deposited and are waiting to be processed on this procedure. These files have <strong>not yet been routed</strong>. Once you have configured your routing rules, you will need to launch the routing to distribute them to the different groups."
         bulk_route: Launch routing
         bulk_routing_confirm: "Are you sure you want to launch the routing for the deposited files waiting to be processed ?"
+      add_instructeur_to_all_groupes:
+        wrong_address:
+          one: "%{emails} is not a valid email address"
+          other: "%{emails} are not valid email addresses"
+        add_all_groupes_assignment:
+          one: "The instructor %{emails} was assigned to all groups."
+          other: "The instructors %{emails} were assigned to all groups."
       reaffectation:
         title: "Reassign files from group « %{label} »"
         hint:

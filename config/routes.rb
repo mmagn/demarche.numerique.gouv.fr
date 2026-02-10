@@ -770,6 +770,7 @@ Rails.application.routes.draw do
           post 'import'
           get 'export_groupe_instructeurs'
           post 'bulk_route'
+          post 'add_instructeur_to_all_groupes'
         end
       end
 

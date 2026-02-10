@@ -16,6 +16,25 @@ class GroupeInstructeurMailer < ApplicationMailer
     mail(to: removed_instructeur.email, subject: subject)
   end
 
+  def notify_removed_instructeur_from_all_groupes(procedure, removed_from_groupes, removed_instructeur, current_instructeur_email, still_assigned)
+    @procedure = procedure
+    @removed_from_groupes = removed_from_groupes
+    @current_instructeur_email = current_instructeur_email
+    @still_assigned_to_procedure = still_assigned
+
+    subject = if @still_assigned_to_procedure
+      if removed_from_groupes.one?
+        "Vous avez été retiré(e) du groupe \"#{removed_from_groupes.first.label}\" de la démarche \"#{procedure.libelle}\""
+      else
+        "Vous avez été retiré(e) de #{removed_from_groupes.count} groupes de la démarche \"#{procedure.libelle}\""
+      end
+    else
+      "Vous avez été désaffecté(e) de la démarche \"#{procedure.libelle}\""
+    end
+
+    mail(to: removed_instructeur.email, subject: subject)
+  end
+
   def notify_added_instructeurs(group, added_instructeurs, current_instructeur_email)
     added_instructeur_emails = added_instructeurs.map(&:email)
     @group = group

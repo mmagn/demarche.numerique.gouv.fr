@@ -68,6 +68,43 @@
     options_for_select(@procedure.groupe_instructeurs.pluck(:label, :id), selected: @procedure.defaut_groupe_instructeur.id),
     class: 'fr-select'
 
+%h2.fr-h3.fr-mt-6w= t('.bulk_assignment.title')
+
+.fr-alert.fr-icon-mail-line.fr-mb-3w= t('.bulk_assignment.notification_alert_html')
+
+.fr-tabs
+  %ul.fr-tabs__list.fr-ml-2w{ role: 'tablist' }
+    %li{ role: 'presentation' }
+      %button#tab-bulk-add.fr-tabs__tab.fr-icon-add-line.fr-tabs__tab--icon-left{ role: 'tab', 'aria-selected': 'true', 'aria-controls': 'panel-bulk-add', tabindex: '0' }
+        = t('.bulk_assignment.tab_add')
+    %li{ role: 'presentation' }
+      %button#tab-bulk-remove.fr-tabs__tab.fr-icon-subtract-line.fr-tabs__tab--icon-left{ role: 'tab', 'aria-selected': 'false', 'aria-controls': 'panel-bulk-remove', tabindex: '-1' }
+        = t('.bulk_assignment.tab_remove')
+
+  #panel-bulk-add.fr-tabs__panel.fr-tabs__panel--selected{ role: 'tabpanel', 'aria-labelledby': 'tab-bulk-add' }
+    %h3.fr-h5= t('.bulk_assignment.add_title')
+    = render Procedure::InvitationWithTypoComponent.new(maybe_typos: @maybe_typos, url: add_instructeur_to_all_groupes_admin_procedure_groupe_instructeurs_path(@procedure), title: t('.bulk_assignment.typo_confirm_title'))
+    = form_tag add_instructeur_to_all_groupes_admin_procedure_groupe_instructeurs_path(@procedure),
+      method: :post,
+      class: 'form',
+      data: { controller: 'enable-submit-if-filled' } do
+      .instructeur-wrapper{ data: { action: 'change->enable-submit-if-filled#fillCombobox' } }
+        %p.fr-mb-1w= t('views.shared.groupe_instructeurs.instructeur_emails')
+        %p.fr-hint-text= t('views.shared.groupe_instructeurs.copy_paste_hint')
+        %react-fragment
+          = render ReactComponent.new 'ComboBox/MultiComboBox',
+            items: @available_instructeur_emails,
+            id: 'bulk_add_instructeur_emails',
+            name: 'emails[]',
+            allows_custom_value: true,
+            'aria-label': 'Emails',
+            data: { 'enable-submit-if-filled-target': 'input' }
+        = button_tag t('.bulk_assignment.add_submit'),
+          type: :submit,
+          class: 'fr-btn fr-btn--primary fr-icon-add-line fr-btn--icon-left',
+          disabled: true,
+          data: { 'enable-submit-if-filled-target': 'submit', confirm: t('.bulk_assignment.confirm_add_message') }
+
 - if flash[:routing_mode] == 'custom'
   = render partial: 'custom_routing_modal'
 - elsif flash[:routing_mode] == 'simple'

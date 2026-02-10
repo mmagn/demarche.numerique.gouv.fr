@@ -289,6 +289,39 @@ module Administrateurs
       end
     end
 
+    def add_instructeur_to_all_groupes
+      emails_with_typos = JSON.parse(params[:emails_with_typos]) if params[:emails_with_typos]
+      emails = params['emails'].presence || []
+      emails.push(emails_with_typos).flatten! if emails_with_typos
+      emails, maybe_typos = check_if_typo(emails)
+      errors = Array.wrap(generate_emails_suggestions_message(maybe_typos))
+
+      instructeur_groupes = Hash.new { |h, k| h[k] = [] }
+      all_invalid_emails = Set.new
+      procedure.groupe_instructeurs.active.each do |gi|
+        added_instructeurs, invalid_emails = gi.add_instructeurs(emails:)
+        added_instructeurs&.each { |instructeur| instructeur_groupes[instructeur] << gi }
+        all_invalid_emails.merge(invalid_emails) if invalid_emails.present?
+      end
+
+      instructeur_groupes.each do |instructeur, groupes|
+        notify_instructeur_after_groupes_import(instructeur, groupes)
+      end
+
+      if all_invalid_emails.any?
+        errors += [t('.wrong_address', count: all_invalid_emails.size, emails: all_invalid_emails.to_a.join(', '))]
+      end
+
+      if instructeur_groupes.any?
+        flash[:notice] = t('.add_all_groupes_assignment',
+          count: instructeur_groupes.size,
+          emails: instructeur_groupes.keys.map(&:email).join(', '))
+      end
+
+      flash[:alert] = errors.join(". ") if errors.any?
+      redirect_to admin_procedure_groupe_instructeurs_path(procedure), flash: { maybe_typos: }
+    end
+
     def remove_instructeur
       if groupe_instructeur.instructeurs.one?
         flash[:alert] = "Suppression impossible : il doit y avoir au moins un instructeur dans le groupe"

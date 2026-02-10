@@ -18,4 +18,6 @@
     = render Procedure::GroupesManagementComponent.new(procedure: @procedure,
       groupe_instructeurs: @groupes_instructeurs,
       query: params[:q],
-      to_configure_filter: params[:filter].present?)
+      to_configure_filter: params[:filter].present?,
+      available_instructeur_emails: @available_instructeur_emails,
+      maybe_typos: @maybe_typos)

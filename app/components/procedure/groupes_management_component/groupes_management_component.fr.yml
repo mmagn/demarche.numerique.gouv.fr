@@ -4,5 +4,13 @@ fr:
     one: "%{count} groupe"
     other: "%{count} groupes"
   found:
-    one: "trouvé"
-    other: "trouvés"
+    one: trouvé
+    other: trouvés
+  bulk_assignment:
+    title: Affectation en masse des instructeurs (tous les groupes)
+    notification_alert_html: Tous les instructeurs que vous ajouterez / retirerez de la démarche <strong>seront notifiés par email</strong>.
+    tab_add: Ajout
+    add_title: Ajouter un instructeur dans tous les groupes
+    add_submit: Ajouter dans tous les groupes
+    typo_confirm_title: Avant dʼajouter lʼadresse électronique dans tous les groupes, veuillez confirmer
+    confirm_add_message: Tous les instructeurs ajoutés à la démarche vont être notifiés par email. Voulez-vous continuer ?

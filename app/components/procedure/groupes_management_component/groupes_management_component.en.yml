@@ -1,0 +1,15 @@
+---
+en:
+  groupe:
+    one: "%{count} group"
+    other: "%{count} groups"
+  found:
+    one: found
+    other: found
+  bulk_assignment:
+    title: Bulk instructor assignment (all groups)
+    notification_alert_html: All instructors you add / remove from the procedure <strong>will be notified by email</strong>.
+    tab_add: Add
+    add_title: Add an instructor to all groups
+    add_submit: Add to all groups
+    confirm_add_message: All instructors added to the procedure will be notified by email. Do you want to continue?

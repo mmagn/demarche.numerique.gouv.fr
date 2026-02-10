@@ -1130,6 +1130,42 @@ describe Administrateurs::GroupeInstructeursController, type: :controller do
     end
   end
 
+  describe '#add_instructeur_to_all_groupes' do
+    let(:new_instructeur_email) { 'bulk_new@gouv.fr' }
+
+    before do
+      allow(GroupeInstructeurMailer).to receive(:notify_added_instructeur_from_groupes_import)
+        .and_return(double(deliver_later: true))
+      allow(GroupeInstructeurMailer).to receive(:confirm_and_notify_added_instructeur_from_groupes_import)
+        .and_return(double(deliver_later: true))
+    end
+
+    subject do
+      post :add_instructeur_to_all_groupes,
+        params: { procedure_id: procedure.id, emails: [new_instructeur_email] }
+    end
+
+    it 'adds the instructeur to all active groups' do
+      subject
+      instructeur = Instructeur.by_email(new_instructeur_email)
+      expect(instructeur).to be_present
+      procedure.groupe_instructeurs.active.each do |gi|
+        expect(gi.instructeurs).to include(instructeur)
+      end
+      expect(flash[:notice]).to be_present
+      expect(response).to redirect_to(admin_procedure_groupe_instructeurs_path(procedure))
+    end
+
+    context 'with an invalid email' do
+      let(:new_instructeur_email) { 'not-an-email' }
+
+      it 'displays an error' do
+        subject
+        expect(flash[:alert]).to be_present
+      end
+    end
+  end
+
   describe '#bulk_route' do
     let!(:procedure) do
       create(:procedure,
