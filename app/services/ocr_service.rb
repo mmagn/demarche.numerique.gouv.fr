@@ -10,7 +10,7 @@ class OCRService
     json = { "url": blob_url, "hint": { "type": "rib" } }
     headers = { 'X-Remote-File': blob_url } # needed for logging
 
-    handle_api_result(API::Client.new.call(url:, method: :post, headers:, json:))
+    handle_api_result(API::Client.new.call(url:, method: :post, headers:, json:, timeout: 31))
   end
 
   private
