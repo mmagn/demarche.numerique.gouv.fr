@@ -185,13 +185,14 @@
       <li class="fr-btn fr-btn--tertiary-no-outline flex justify-center fr-enlarge-link fr-my-1w">
         <%= link_to(instructeur_procedure_path(p, statut: 'expirant')) do %>
           <div class="center fr-text--bold">
-            <span id="procedure-<%= p.id %>-expirant-count">
-              <%= placeholder_span %>
-            </span>
+            <span class="fr-icon-timer-line fr-icon--sm"></span>
           </div>
 
           <div class="center fr-text--sm">
             <%= t('instructeurs.dossiers.labels.close_to_expiration') %>
+            <span id="procedure-<%= p.id %>-expirant-count">
+              <%= placeholder_span %>
+            </span>
           </div>
         <% end %>
       </li>
@@ -205,6 +206,9 @@
 
         <div class="center fr-text--sm">
           <%= t('instructeurs.dossiers.labels.to_archive') %>
+          <span id="procedure-<%= p.id %>-archives-count">
+            <%= placeholder_span %>
+          </span>
         </div>
       <% end %>
     </li>
@@ -217,6 +221,9 @@
 
         <div class="center fr-text--sm">
           <%= t('instructeurs.dossiers.labels.trash') %>
+          <span id="procedure-<%= p.id %>-supprimes-count">
+            <%= placeholder_span %>
+          </span>
         </div>
       <% end %>
     </li>

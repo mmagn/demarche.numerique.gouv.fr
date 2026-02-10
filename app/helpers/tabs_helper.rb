@@ -22,13 +22,14 @@ module TabsHelper
     end
   end
 
-  def tab_item(label, url, active: false, badge: nil, notification: false, html_class: nil)
+  def tab_item(label, url, active: false, badge: nil, notification: false, small_counter: nil, html_class: nil)
     render partial: 'shared/tab_item', locals: {
       label: label,
       url: url,
       active: active,
       badge: badge,
       notification: notification,
+      small_counter: small_counter,
       html_class: html_class,
     }
   end

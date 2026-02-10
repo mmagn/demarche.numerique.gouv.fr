@@ -55,11 +55,15 @@ describe InstructeursProceduresCountersService do
           expect(subject.followed_dossiers_count_per_procedure[procedure.id]).to eq(nil)
           expect(subject.dossiers_termines_count_per_procedure[procedure.id]).to eq(2)
           expect(subject.dossiers_expirant_count_per_procedure[procedure.id]).to eq(2)
+          expect(subject.dossiers_archives_count_per_procedure[procedure.id]).to eq(1)
+          expect(subject.dossiers_supprimes_count_per_procedure[procedure.id]).to eq(2)
 
           expect(subject.dossiers_count_per_procedure[procedure2.id]).to eq(3)
           expect(subject.dossiers_a_suivre_count_per_procedure[procedure2.id]).to eq(nil)
           expect(subject.followed_dossiers_count_per_procedure[procedure2.id]).to eq(1)
           expect(subject.dossiers_termines_count_per_procedure[procedure2.id]).to eq(1)
+          expect(subject.dossiers_archives_count_per_procedure[procedure2.id]).to eq(nil)
+          expect(subject.dossiers_supprimes_count_per_procedure[procedure2.id]).to eq(nil)
 
           expect(subject.dossiers_count_per_procedure[procedure3.id]).to eq(2)
 
@@ -68,6 +72,8 @@ describe InstructeursProceduresCountersService do
           expect(subject.all_dossiers_counts['traites']).to eq(2 + 1 + 1 + 1)
           expect(subject.all_dossiers_counts['tous']).to eq(5 + 3 + 2 + 1)
           expect(subject.all_dossiers_counts['expirant']).to eq(2 + 0)
+          expect(subject.all_dossiers_counts['archives']).to eq(nil)
+          expect(subject.all_dossiers_counts['supprimes']).to eq(nil)
         end
       end
 

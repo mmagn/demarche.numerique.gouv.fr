@@ -27,14 +27,17 @@
       = tab_item(i18n_tab_from_status('expirant'),
         instructeur_procedure_path(procedure, statut: 'expirant'),
         active: statut == 'expirant',
-        badge: number_with_html_delimiter(expirant_count))
+        small_counter: number_with_html_delimiter(expirant_count),
+        html_class: 'fr-icon-timer-line fr-tabs__tab--icon-left')
 
     = tab_item(i18n_tab_from_status('archives'),
       instructeur_procedure_path(procedure, statut: 'archives'),
       active: statut == 'archives',
+      small_counter: number_with_html_delimiter(archives_count),
       html_class: 'fr-icon-folder-2-line fr-tabs__tab--icon-left')
 
     = tab_item(i18n_tab_from_status('supprimes'),
       instructeur_procedure_path(procedure, statut: 'supprimes'),
       active: statut == 'supprimes',
+      small_counter: number_with_html_delimiter(supprimes_count),
       html_class: 'fr-icon-delete-line fr-tabs__tab--icon-left')
