@@ -41,7 +41,7 @@
               - c.with_label { t('.postal_code_label') }
         - else
           .fr-fieldset__element
-            .fr-input-group{ class: class_names("fr-input-group--error": @champ.errors.include?(:commune_name)) }
+            .fr-input-group{ class: class_names("fr-select-group--error": @champ.errors.include?(:commune_name)) }
               = @form.label :commune_name, for: @champ.focusable_input_id(:commune_name), class: 'fr-label', id: input_label_id(@champ, :commune_name) do
                 - capture do
                   = t('.commune_label')
@@ -52,4 +52,4 @@
                 = render ReactComponent.new "ComboBox/RemoteComboBox", **commune_react_props
 
               - if @champ.errors.include?(:commune_name)
-                %p.fr-error-text{ id: @champ.focusable_input_id(:commune_name) }= @champ.errors.full_messages_for(:commune_name).first
+                %p.fr-error-text{ id: @champ.error_id(:commune_name) }= @champ.errors.full_messages_for(:commune_name).first

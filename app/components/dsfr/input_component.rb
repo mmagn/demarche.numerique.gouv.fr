@@ -74,6 +74,15 @@ class Dsfr::InputComponent < ApplicationComponent
     dom_id(object, "#{@attribute}-messages")
   end
 
+  def error_id
+    case object
+    when Champ
+      object.error_id(@attribute)
+    else
+      describedby_id
+    end
+  end
+
   def dsfr_input_classname
     'fr-input'
   end

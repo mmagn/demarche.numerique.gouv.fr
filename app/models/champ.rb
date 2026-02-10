@@ -216,8 +216,8 @@ class Champ < ApplicationRecord
     "#{html_id}-describedby_id"
   end
 
-  def error_id
-    "#{html_id}-error_id"
+  def error_id(attribute)
+    [html_id, 'error_id', attribute].compact.join('-')
   end
 
   def prefillable_champs

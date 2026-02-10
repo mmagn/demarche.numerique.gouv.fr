@@ -6,7 +6,8 @@ RSpec.describe Dsfr::InputStatusMessageComponent, type: :component do
   let(:procedure) { create(:procedure, types_de_champ_public:) }
   let(:dossier) { create(:dossier, :with_populated_champs, procedure:) }
   let(:champ) { dossier.champs.first }
-  let(:component) { described_class.new(errors_on_attribute:, error_full_messages:, champ:) }
+  let(:champ_component) { instance_double("ChampComponent", errors_on_attribute?: errors_on_attribute, error_full_messages:, attribute: :value) }
+  let(:component) { described_class.new(champ_component:, champ:) }
 
   subject { render_inline(component) }
 
@@ -19,7 +20,7 @@ RSpec.describe Dsfr::InputStatusMessageComponent, type: :component do
     end
 
     context "when row_number is provided" do
-      let(:component) { described_class.new(errors_on_attribute:, error_full_messages:, champ:, row_number: 2) }
+      let(:component) { described_class.new(champ_component:, champ:, row_number: 2) }
       it "renders the error message with row number" do
         expect(subject).to have_css(".fr-message--error", text: "« [2] #{champ.libelle} »")
       end

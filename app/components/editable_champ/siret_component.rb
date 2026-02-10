@@ -5,7 +5,6 @@ class EditableChamp::SiretComponent < EditableChamp::EditableChampBaseComponent
 
   def initialize(form:, champ:, seen_at: nil, opts: {}, aria_labelledby_prefix: nil, row_number: nil)
     super
-    @attribute = :external_id
   end
 
   def dsfr_input_classname

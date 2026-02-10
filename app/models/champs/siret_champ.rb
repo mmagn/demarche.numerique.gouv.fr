@@ -9,6 +9,14 @@ class Champs::SiretChamp < Champ
     true
   end
 
+  def focusable_input_id(attribute = :value)
+    [input_id, :value].compact.join('-')
+  end
+
+  def error_id(attribute = :value)
+    [html_id, 'error_id', :value].compact.join('-')
+  end
+
   # TODO: remove after T20251029backfillChampSiretExternalStateTask
   def external_id
     idle? && etablissement_id.present? ? value : super
