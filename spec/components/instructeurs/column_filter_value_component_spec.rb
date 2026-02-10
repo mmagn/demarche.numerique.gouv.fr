@@ -117,11 +117,16 @@ describe Instructeurs::ColumnFilterValueComponent, type: :component do
       )
     end
 
-    it 'truncates the label, adds a title attribute and aria-label' do
-      expect(page).to have_text(long_label.truncate(50))
-      expect(page).to have_selector('[title]', visible: true)
-      expect(page.find('[title]')[:title]).to eq(long_label)
-      expect(page.find('[aria-label]')[:'aria-label']).to eq(long_label)
+    it 'renders a truncated visible label and a sr-only full label' do
+      expect(page).to have_selector(
+        'span[aria-hidden="true"][title]',
+        text: long_label.truncate(50)
+      )
+      expect(page.find('span[aria-hidden="true"]')[:title]).to eq(long_label)
+      expect(page).to have_selector(
+        'span.fr-sr-only',
+        text: long_label
+      )
     end
   end
 
@@ -137,10 +142,12 @@ describe Instructeurs::ColumnFilterValueComponent, type: :component do
       )
     end
 
-    it 'does not add a title or aria-label attribute' do
-      expect(page).to have_selector('label.fr-label', text: 'label court')
-      expect(page).not_to have_selector('label.fr-label[title]')
-      expect(page).not_to have_selector('label.fr-label[aria-label]')
+    it 'renders only one visible span without sr-only or title' do
+      expect(page).to have_selector('span', text: 'label court')
+
+      expect(page).not_to have_selector('span.fr-sr-only')
+      expect(page).not_to have_selector('span[aria-hidden]')
+      expect(page).not_to have_selector('span[title]')
     end
   end
 end

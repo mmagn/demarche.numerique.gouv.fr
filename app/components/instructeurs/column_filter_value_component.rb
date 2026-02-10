@@ -29,12 +29,12 @@ class Instructeurs::ColumnFilterValueComponent < ApplicationComponent
   end
 
   def render_label
-    content_tag(
-      :span,
-      label_text,
-      title: label_title,
-      aria: label_title ? { label: label } : {}
-    )
+    return content_tag(:span, label) if !truncated_label?
+
+    safe_join([
+      content_tag(:span, label_text, title: label, aria: { hidden: true }),
+      content_tag(:span, label, class: 'fr-sr-only'),
+    ])
   end
 
   def value
@@ -135,7 +135,7 @@ class Instructeurs::ColumnFilterValueComponent < ApplicationComponent
     label.truncate(MAX_LABEL_LENGTH)
   end
 
-  def label_title
-    label if label.length > MAX_LABEL_LENGTH
+  def truncated_label?
+    label.length > MAX_LABEL_LENGTH
   end
 end
