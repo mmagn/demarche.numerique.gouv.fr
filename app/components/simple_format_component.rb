@@ -70,7 +70,11 @@ class SimpleFormatComponent < ApplicationComponent
     return text if @allow_a # already autolinked
 
     text.gsub(SIMPLE_URL_REGEX) do |url|
-      helpers.link_to(ERB::Util.html_escape(url), ERB::Util.html_escape(url), title: helpers.new_tab_suffix(nil), **helpers.external_link_attributes)
+      # The URL matched in the HTML is already escaped (& becomes &amp;)
+      # We need to unescape it before passing to link_to, which will escape it again correctly
+      # This prevents double-encoding: &amp; -> &amp;amp;
+      unescaped_url = CGI.unescapeHTML(url)
+      helpers.link_to(unescaped_url, unescaped_url, title: helpers.new_tab_suffix(nil), **helpers.external_link_attributes)
     end
   end
 
