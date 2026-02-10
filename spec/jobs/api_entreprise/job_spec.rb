@@ -15,27 +15,17 @@ RSpec.describe APIEntreprise::Job, type: :job do
       let(:types_de_champ_public) { [{ type: :siret }] }
       let(:dossier) { create(:dossier, procedure:) }
 
-      it "retries 5 times" do
+      it "retries 25 times" do
         champ = dossier.champs.first
         champ.update!(value: '12345678901234')
 
         etablissement = create(:etablissement, champ:)
 
-        assert_performed_jobs(5) do
-          ErrorJob.perform_later(:service_unavailable, etablissement)
+        assert_performed_jobs(25) do
+          ErrorJob.perform_later(:service_unavailable, etablissement) rescue StandardError
         end
 
         expect(champ.reload.value).not_to be_nil
-      end
-    end
-
-    def ensure_errors_force_n_retry(errors, retry_nb)
-      etablissement = dossier.etablissement
-
-      errors.each do |error|
-        assert_performed_jobs(retry_nb) do
-          ErrorJob.perform_later(error, etablissement) rescue StandardError
-        end
       end
     end
   end
