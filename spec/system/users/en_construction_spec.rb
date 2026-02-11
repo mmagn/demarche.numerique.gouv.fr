@@ -29,7 +29,7 @@ describe "Dossier en_construction", js: true do
     scenario 'remplace a mandatory piece justificative' do
       visit_dossier(dossier)
 
-      click_on "Supprimer le fichier toto.txt"
+      find("button", text: "Supprimer le fichier toto.txt").click
       live_region_selector = "##{champ.focusable_input_id}-aria-live"
       expect(page).to have_css(live_region_selector, text: "La pièce jointe (toto.txt) a bien été supprimée.", visible: :all)
 
@@ -48,7 +48,7 @@ describe "Dossier en_construction", js: true do
     scenario 'remplace a mandatory titre identite' do
       visit_dossier(dossier)
 
-      click_on "Supprimer le fichier toto.png"
+      find("button", text: "Supprimer le fichier toto.png").click
       live_region_selector = "##{champ.focusable_input_id}-aria-live"
       expect(page).to have_css(live_region_selector, text: "La pièce jointe (toto.png) a bien été supprimée.", visible: :all)
 
