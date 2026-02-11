@@ -48,7 +48,7 @@ class ImageProcessorJob < ApplicationJob
 
     add_ocr_data(blob)
     auto_rotate(blob) if ["image/jpeg", "image/jpg"].include?(blob.content_type)
-    uninterlace(blob) if blob.content_type == "image/png"
+    uninterlace(blob) if blob.content_type == "image/png" && attestation_image?(blob)
     create_representations(blob) if blob.representation_required? && mime_type_authorized_by_policy?(blob)
     add_watermark(blob) if blob.watermark_pending?
   rescue MiniMagick::Error => e
@@ -84,6 +84,13 @@ class ImageProcessorJob < ApplicationJob
 
       blob.upload(processed)
       blob.save!
+    end
+  end
+
+  def embeddable_in_pdf?(blob)
+    blob.attachments.any? do |attachment|
+      attachment.name.in?(%w[logo signature]) &&
+        attachment.record_type.in?(%w[AttestationTemplate GroupeInstructeur])
     end
   end
 

@@ -151,13 +151,26 @@ describe ImageProcessorJob, type: :job do
       allow(UninterlaceService).to receive(:new).and_return(uninterlace_service)
     end
 
-    context "when file is interlaced" do
+    context "when file is a PNG attached to an attestation logo" do
+      let(:attestation_template) { create(:attestation_template, procedure: procedure) }
+      let(:blob) do
+        attestation_template.logo.attach(file)
+        attestation_template.logo.blob
+      end
+
       let(:uninterlaced_file) {
         fixture_file_upload('spec/fixtures/files/uninterlaced-black.png', 'image/png')
       }
 
-      it "it process uninterlace" do
+      it "processes uninterlace" do
         expect(uninterlace_service).to receive(:process).and_return(uninterlaced_file)
+        described_class.perform_now(blob)
+      end
+    end
+
+    context "when file is a PNG but not an attestation image" do
+      it "does not process uninterlace" do
+        expect(uninterlace_service).not_to receive(:process)
         described_class.perform_now(blob)
       end
     end
