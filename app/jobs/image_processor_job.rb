@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "vips"
+
 class ImageProcessorJob < ApplicationJob
   queue_as do
     blob = self.arguments.first
@@ -25,7 +27,7 @@ class ImageProcessorJob < ApplicationJob
   discard_on ActiveStorage::FileNotFoundError
   discard_on ActiveRecord::InvalidForeignKey
 
-  # If imagemagick can't process the image due to policy.xml or the file itself, ignore the error
+  # Known MiniMagick errors to swallow (watermark still uses ImageMagick)
   KNOWN_ERRORS = [
     'improper image header',
     'width or height exceeds limit',
@@ -36,6 +38,7 @@ class ImageProcessorJob < ApplicationJob
   # Usually invalid image or ImageMagick decoder blocked for this format
   retry_on MiniMagick::Invalid, attempts: 3
   retry_on MiniMagick::Error, attempts: 3
+  retry_on Vips::Error, attempts: 3
 
   rescue_from ActiveStorage::PreviewError do |exception|
     retry_or_discard(exception)
@@ -57,6 +60,8 @@ class ImageProcessorJob < ApplicationJob
     else
       raise e
     end
+  rescue Vips::Error => e
+    Rails.logger.info "ImageProcessorJob raising vips error: #{e.message}"
   end
 
   private

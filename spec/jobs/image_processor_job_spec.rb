@@ -288,5 +288,18 @@ describe ImageProcessorJob, type: :job do
         }.to have_enqueued_job(described_class)
       end
     end
+
+    context 'when Vips raises an error during variant creation' do
+      before do
+        allow_any_instance_of(described_class).to receive(:create_representations)
+          .and_raise(Vips::Error.new("unable to load source"))
+      end
+
+      it 'completes successfully without raising an error' do
+        expect {
+          described_class.perform_now(blob)
+        }.not_to raise_error
+      end
+    end
   end
 end
