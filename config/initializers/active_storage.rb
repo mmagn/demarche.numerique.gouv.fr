@@ -2,7 +2,7 @@
 
 Rails.application.config.active_storage.service_urls_expire_in = 1.hour
 
-Rails.application.config.active_storage.variant_processor = :mini_magick
+Rails.application.config.active_storage.variant_processor = :vips
 
 # Disable automatic blob analysis - we don't use the extracted metadata
 # (dimensions, duration, etc.) and it generates unnecessary AnalyzeJob executions
