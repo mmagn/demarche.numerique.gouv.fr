@@ -961,7 +961,7 @@ describe Users::DossiersController, type: :controller do
         let(:types_de_champ_public) { [{ type: :rnf }] }
         let(:champs_public_attributes) do
           {
-            first_champ.public_id => { external_id: 'external_id' },
+            first_champ.public_id => { external_id: '075-FDD-00003-01' },
           }
         end
 

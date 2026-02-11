@@ -61,6 +61,63 @@ describe Champs::RNFChamp, type: :model do
     end
   end
 
+  describe 'ready_for_external_call?' do
+    subject { champ.ready_for_external_call? }
+
+    context 'when external_id is a partial input' do
+      let(:external_id) { '075' }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when external_id is a valid RNF format' do
+      let(:external_id) { '075-FDD-00003-01' }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when external_id is blank' do
+      let(:external_id) { nil }
+
+      it { is_expected.to be_falsey }
+    end
+  end
+
+  describe 'format validation' do
+    let(:procedure) { create(:procedure, types_de_champ_public: [{ type: :rnf }]) }
+    let(:dossier) { create(:dossier, procedure:) }
+    let(:champ) { dossier.champs.find(&:rnf?) }
+
+    before { champ.update_columns(external_id:) }
+
+    context 'when value is too short' do
+      let(:external_id) { 'abc' }
+
+      it 'is invalid' do
+        champ.validate(:champs_public_value)
+        expect(champ.errors.full_messages.join).to include("pas un numéro RNF valide")
+      end
+    end
+
+    context 'when value is a valid RNF' do
+      let(:external_id) { '075-FDD-00003-01' }
+
+      it 'has no format error' do
+        champ.validate(:champs_public_value)
+        expect(champ.errors.full_messages.join).not_to include("pas un numéro RNF valide")
+      end
+    end
+
+    context 'when value is blank' do
+      let(:external_id) { nil }
+
+      it 'has no format error' do
+        champ.validate(:champs_public_value)
+        expect(champ.errors.full_messages.join).not_to include("pas un numéro RNF valide")
+      end
+    end
+  end
+
   describe 'fetch_external_data' do
     let(:url) { RNFService.new.send(:url) }
     let(:status) { 200 }
