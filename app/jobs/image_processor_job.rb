@@ -51,8 +51,8 @@ class ImageProcessorJob < ApplicationJob
 
     add_ocr_data(blob)
     auto_rotate(blob) if ["image/jpeg", "image/jpg"].include?(blob.content_type)
-    uninterlace(blob) if blob.content_type == "image/png" && attestation_image?(blob)
-    create_representations(blob) if blob.representation_required? && mime_type_authorized_by_policy?(blob)
+    uninterlace(blob) if blob.content_type == "image/png" && embeddable_in_pdf?(blob)
+    create_representations(blob) if blob.representation_required?
     add_watermark(blob) if blob.watermark_pending?
   rescue MiniMagick::Error => e
     if KNOWN_ERRORS.any? { e.message.match?(it) }
@@ -65,10 +65,6 @@ class ImageProcessorJob < ApplicationJob
   end
 
   private
-
-  def mime_type_authorized_by_policy?(blob)
-    blob.content_type.in?(AUTHORIZED_CONTENT_TYPES_IN_POLICY_XML)
-  end
 
   def auto_rotate(blob)
     blob.open do |file|
