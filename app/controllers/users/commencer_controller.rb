@@ -141,6 +141,10 @@ module Users
     # The prefilled dossier is not owned yet, and the user is signed in: they become the new owner
     def set_prefilled_dossier_ownership
       @prefilled_dossier.update!(user: current_user)
+      if @prefilled_dossier.procedure.for_individual? && @prefilled_dossier.france_connected_with_one_identity?
+        @prefilled_dossier.prefill_individual_from_france_connect
+        @prefilled_dossier.individual.save!
+      end
       DossierMailer.with(dossier: @prefilled_dossier).notify_new_draft.deliver_later
     end
 

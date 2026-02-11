@@ -44,7 +44,7 @@
         .fr-px-1w
           = render Dsfr::AlertComponent.new(state: :info, title: nil, size: :sm, heading_level: :p, extra_class_names: 'fr-mb-2w') do |c|
             - c.with_body do
-              %p= t('.for_self.identity_locked_by_france_connect')
+              %p= t('.identity_locked_by_france_connect')
 
       - unless @dossier.procedure.no_gender?
         .fr-fieldset__element.fr-mb-0

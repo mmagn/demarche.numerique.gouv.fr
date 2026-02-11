@@ -16,6 +16,15 @@ module DossierFranceConnectPrefillConcern
     end
   end
 
+  def prefill_individual_from_france_connect
+    fc_info = user.france_connect_informations.first
+    individual.assign_attributes(
+      nom: fc_info.family_name,
+      prenom: fc_info.given_name,
+      gender: fc_info.gender == 'female' ? Individual::GENDER_FEMALE : Individual::GENDER_MALE
+    )
+  end
+
   private
 
   def prefill_mandataire_from_france_connect
@@ -30,15 +39,6 @@ module DossierFranceConnectPrefillConcern
       prenom: nil,
       gender: nil,
       birthdate: nil
-    )
-  end
-
-  def prefill_individual_from_france_connect
-    fc_info = user.france_connect_informations.first
-    individual.assign_attributes(
-      nom: fc_info.family_name,
-      prenom: fc_info.given_name,
-      gender: fc_info.gender == 'female' ? Individual::GENDER_FEMALE : Individual::GENDER_MALE
     )
   end
 end
