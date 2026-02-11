@@ -134,7 +134,7 @@ jobs:
         uses: ./.github/actions/ci-setup-assets
 
       - name: Install build dependancies
-        # - fonts pickable by ImageMagick
+        # - fonts pickable by ImageMagick (still needed for watermark)
         # - rust for YJIT support
         # - poppler-utils for pdf previews
         run: sudo apt-get update && sudo apt-get install -y gsfonts rustc poppler-utils
