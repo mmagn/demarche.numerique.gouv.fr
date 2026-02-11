@@ -43,6 +43,14 @@ class Champs::PieceJustificativeChamp < Champ
     OCRService.analyze(blob)
   end
 
+  def log_content_type_rejection(content_type, allowed_types, attachment)
+    Rails.logger.info(
+      "[PJ content_type rejected] champ_id=#{id} dossier_id=#{dossier_id} " \
+      "content_type=#{content_type} filename=#{attachment.filename} " \
+      "allowed_types=[#{allowed_types.join(', ')}]"
+    )
+  end
+
   def validate_dynamic_piece_justificative_rules
     allowed_types = nil
     max_size = nil
@@ -60,7 +68,8 @@ class Champs::PieceJustificativeChamp < Champ
 
     piece_justificative_file.attachments.each do |attachment|
       if allowed_types.present? && !allowed_types.include?(attachment.content_type)
-        errors.add(:piece_justificative_file, :content_type_invalid)
+        log_content_type_rejection(attachment.content_type, allowed_types, attachment)
+        errors.add(:piece_justificative_file, :content_type_invalid, content_type: attachment.content_type)
       end
 
       if max_size.present? && attachment.byte_size > max_size
