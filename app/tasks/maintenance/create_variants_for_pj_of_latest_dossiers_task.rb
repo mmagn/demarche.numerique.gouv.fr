@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "vips"
+
 module Maintenance
   class CreateVariantsForPjOfLatestDossiersTask < MaintenanceTasks::Task
     # Génère les vignettes de fichiers (images et/ou PDF) pour les dossiers déposés entre 2 dates (facultatif).
@@ -45,7 +47,7 @@ module Maintenance
         elsif attachment.previewable?
           attachment.representation(resize_to_limit: [400, 400]).processed
         end
-      rescue MiniMagick::Error, ActiveStorage::Error
+      rescue Vips::Error, ActiveStorage::Error
       end
     end
 

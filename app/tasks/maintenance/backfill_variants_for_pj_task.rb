@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "vips"
+
 module Maintenance
   class BackfillVariantsForPjTask < MaintenanceTasks::Task
     # Enqueues jobs to generate thumbnails for files (images and/or PDFs)

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "vips"
+
 module Maintenance
   class CreatePreviewsForPjOfLatestDossiersTask < MaintenanceTasks::Task
     # Génère les vignettes de PJ existantes pour les dossiers déposés entre 2 dates (facultatif)
@@ -32,7 +34,7 @@ module Maintenance
       attachments.each do |attachment|
         next if !(attachment.previewable? && attachment.representation_required?)
         attachment.preview(resize_to_limit: [400, 400]).processed unless attachment.preview(resize_to_limit: [400, 400]).image.attached?
-      rescue MiniMagick::Error, ActiveStorage::Error
+      rescue Vips::Error, ActiveStorage::Error
       end
     end
   end

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "vips"
+
 module Maintenance
   class CreatePreviewsForPjsFromMessagerieTask < MaintenanceTasks::Task
     attribute :start_text, :string
@@ -28,7 +30,7 @@ module Maintenance
       attachments.each do |attachment|
         next if !(attachment.previewable? && attachment.representation_required?)
         attachment.preview(resize_to_limit: [400, 400]).processed unless attachment.preview(resize_to_limit: [400, 400]).image.attached?
-      rescue MiniMagick::Error, ActiveStorage::Error
+      rescue Vips::Error, ActiveStorage::Error
       end
     end
   end
