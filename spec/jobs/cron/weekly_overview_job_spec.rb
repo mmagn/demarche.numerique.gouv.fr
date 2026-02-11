@@ -3,7 +3,8 @@
 RSpec.describe Cron::WeeklyOverviewJob, type: :job do
   describe 'perform' do
     let!(:instructeur) { create(:instructeur) }
-    let(:overview) { double('overview') }
+    let!(:procedure) { create(:procedure, :published) }
+    let!(:instructeurs_procedure) { create(:instructeurs_procedure, instructeur:, procedure:, weekly_email_summary: true) }
 
     context 'if the feature is enabled' do
       before do
@@ -43,12 +44,14 @@ RSpec.describe Cron::WeeklyOverviewJob, type: :job do
     end
 
     context 'if the feature is disabled' do
+      let(:mailer_double) { double('mailer', deliver_later: true) }
+
       before do
-        allow(Instructeur).to receive(:find_each)
+        allow(InstructeurMailer).to receive(:last_week_overview).and_return(mailer_double)
         Cron::WeeklyOverviewJob.new.perform
       end
 
-      it { expect(Instructeur).not_to receive(:find_each) }
+      it { expect(InstructeurMailer).not_to have_received(:last_week_overview) }
     end
   end
 end
