@@ -744,7 +744,7 @@ class TypeDeChamp < ApplicationRecord
   end
 
   def allowed_content_types
-    if titre_identite_nature?
+    if titre_identite_nature? || titre_identite?
       families_to_content_types(%w[image_scan])
     elsif RIB?
       families_to_content_types(%w[document_texte image_scan])

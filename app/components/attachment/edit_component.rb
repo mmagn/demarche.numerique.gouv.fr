@@ -230,14 +230,14 @@ class Attachment::EditComponent < ApplicationComponent
   def accept_from_type_de_champ
     return nil if !champ&.respond_to?(:type_de_champ)
 
-    if champ.titre_identite_nature?
-      return ['.jpg', '.jpeg', '.png'].join(', ')
+    if champ.titre_identite_nature? || champ.titre_identite?
+      return FORMAT_FAMILIES[:image_scan].join(', ')
     end
 
-    extensions = champ.type_de_champ.send(:allowed_extensions)
-    return nil if extensions.blank?
+    content_types = champ.type_de_champ.send(:allowed_content_types)
+    return nil if content_types.blank?
 
-    extensions.join(', ')
+    content_types.join(', ')
   end
 
   def accept_from_attached_type_de_champ
@@ -250,8 +250,8 @@ class Attachment::EditComponent < ApplicationComponent
       record.type_de_champ
     end
 
-    extensions = tdc&.send(:allowed_extensions).presence
-    extensions&.join(', ')
+    content_types = tdc&.send(:allowed_content_types).presence
+    content_types&.join(', ')
   end
 
   def allowed_formats
@@ -286,35 +286,6 @@ class Attachment::EditComponent < ApplicationComponent
 
       sorted_extensions = extensions.sort_by { |e| EXTENSIONS_ORDER.index(e) || 999 }
       sorted_extensions.size > 5 ? (sorted_extensions.first(5) + ['…']) : sorted_extensions
-    end
-  end
-
-  def allowed_families_with_examples
-    tdc = if champ.present?
-      champ.type_de_champ
-    else
-      record = @attached_file.record
-      record.is_a?(TypeDeChamp) ? record : (record.respond_to?(:type_de_champ) ? record.type_de_champ : nil)
-    end
-    return nil unless tdc
-
-    families =
-      if tdc.titre_identite_nature?
-        [:image_scan]
-      elsif tdc.RIB?
-        [:document_texte, :image_scan]
-      elsif tdc.piece_justificative? && tdc.pj_limit_formats? && tdc.pj_format_families.present?
-        Array.wrap(tdc.pj_format_families).map(&:to_sym)
-      else
-        nil
-      end
-
-    return nil if families.blank?
-
-    families.map do |family|
-      label = I18n.t("activerecord.attributes.type_de_champ.format_families.#{family}", default: family.to_s.humanize)
-      examples = FORMAT_FAMILY_EXAMPLES[family]
-      examples.present? ? "#{label} (#{examples})" : label
     end
   end
 
