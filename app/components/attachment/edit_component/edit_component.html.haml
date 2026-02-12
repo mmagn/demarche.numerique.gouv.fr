@@ -13,7 +13,7 @@
             - else
               %span.attachment-filename= link_to_if(viewable?(attachment), attachment.filename.to_s, helpers.url_for(attachment.blob), title: t(".open_file", filename: attachment.filename), **helpers.external_link_attributes)
 
-              = render Attachment::ProgressComponent.new(attachment: attachment, ignore_antivirus: true)
+              = render Attachment::ProgressComponent.new(attachment: attachment, ignore_antivirus: true, ignore_watermark: true)
 
             - if error?(attachment)
               %p.fr-error-text= error_message(attachment)
@@ -26,7 +26,7 @@
           - else
             %span.attachment-filename= link_to_if(viewable?(attachment), attachment.filename.to_s, helpers.url_for(attachment.blob), title: t(".open_file", filename: attachment.filename), **helpers.external_link_attributes)
 
-            = render Attachment::ProgressComponent.new(attachment: attachment, ignore_antivirus: true)
+            = render Attachment::ProgressComponent.new(attachment: attachment, ignore_antivirus: true, ignore_watermark: true)
 
           - if user_can_destroy?
             = render NestedForms::OwnedButtonComponent.new(formaction: destroy_attachment_path, http_method: :delete, opt: {class: "fr-btn fr-btn--tertiary fr-btn--sm fr-icon-delete-line order-first", title: t(".delete_file", filename: attachment.filename)}) do
