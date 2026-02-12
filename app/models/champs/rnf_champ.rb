@@ -1,8 +1,13 @@
 # frozen_string_literal: true
 
 class Champs::RNFChamp < Champ
+  RNF_REGEXP = /\A[A-Za-z0-9-]{12,20}\z/i.freeze
+
   store_accessor :data, :title, :email, :phone, :createdAt, :updatedAt, :dissolvedAt, :address
 
+  validates :value, allow_blank: true, format: {
+    with: RNF_REGEXP, message: :invalid_rnf,
+  }, if: :validate_champ_value?
   validates_with ReferentielChampValidator, if: :validate_champ_value?
 
   def rnf_id
@@ -19,6 +24,10 @@ class Champs::RNFChamp < Champ
 
   def uses_external_data?
     true
+  end
+
+  def ready_for_external_call?
+    rnf_id&.match?(RNF_REGEXP)
   end
 
   def code_departement

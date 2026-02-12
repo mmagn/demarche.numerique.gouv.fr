@@ -5,6 +5,7 @@ en:
         champs/rnf_champ:
           attributes:
             value:
+              invalid_rnf: "is not a valid RNF number. Example: 075-FDD-00003-01"
               not_found: "RNF %{rnf} (no foundation found)"
     attributes:
       champs/rnf_champ:
