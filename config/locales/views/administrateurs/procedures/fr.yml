@@ -77,7 +77,7 @@ fr:
           owner: Cette url est identique à celle d’une autre de vos démarches publiées. Si vous publiez cette démarche, le lien ne pointera plus sur l’ancienne démarche.
           not_owner: Cette url est identique à celle d’une autre démarche, vous devez la modifier afin de pouvoir publier votre démarche.
       unpublished_changes_sticky_header:
-        intro_html: Les modifications effectuées ne seront visibles <strong>qu'à la prochaine publication</strong>
+        intro_html: Les modifications effectuées ne seront visibles <strong>qu’à la prochaine publication</strong>
         see_changes: Voir les modifications
         publish_changes: Publier les modifications
       clone:
@@ -153,5 +153,5 @@ fr:
           one: "%{emails} n’est pas une adresse électronique valide"
           other: "%{emails} ne sont pas des adresses électroniques valides"
         not_administrateur:
-          one: "%{emails} n'est pas associé à un compte administrateur"
+          one: "%{emails} n’est pas associé à un compte administrateur"
           other: "%{emails} ne sont pas associés à des comptes administrateurs"

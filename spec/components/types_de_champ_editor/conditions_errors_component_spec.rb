@@ -47,7 +47,7 @@ describe Conditions::ConditionsErrorsComponent, type: :component do
       let(:source_tdcs) { [tdc] }
       let(:conditions) { [greater_than(champ_value(tdc.stable_id), constant('a text'))] }
 
-      it { expect(page).to have_content("« Supérieur à » ne s’applique qu'à des nombres.") }
+      it { expect(page).to have_content("« Supérieur à » ne s’applique qu’à des nombres.") }
     end
 
     context 'when the include operator is applied on a list' do

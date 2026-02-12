@@ -75,7 +75,7 @@ describe Instructeurs::BulkMessageFormComponent, type: :component do
         create(:dossier, :brouillon, procedure:, groupe_instructeur: procedure.groupe_instructeurs.first)
         expect(subject).to have_selector("hr.fr-hr") # groupes having brouillon not part of current instructeur are separated by hr
         expect(subject).not_to have_selector("input#bulk_message_groupe_instructeur_ids_#{procedure.groupe_instructeurs.first.id}[checked=checked]")
-        expect(subject).to have_content("2 usagers (vous n'êtes pas présent dans ce groupe instructeurs)")
+        expect(subject).to have_content("2 usagers (vous n’êtes pas présent dans ce groupe instructeurs)")
       end
     end
 
