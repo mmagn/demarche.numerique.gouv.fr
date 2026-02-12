@@ -44,8 +44,8 @@ RSpec.describe Attachment::EditComponent, type: :component do
     let(:attachment) { nil }
 
     it 'accept includes .pdf but not .zip' do
-      expect(subject).to have_selector("input[accept*='.pdf']")
-      expect(subject).not_to have_selector("input[accept*='.zip']")
+      expect(subject).to have_selector("input[accept*='application/pdf']")
+      expect(subject).not_to have_selector("input[accept*='application/zip']")
     end
   end
 

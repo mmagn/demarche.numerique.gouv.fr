@@ -234,10 +234,10 @@ class Attachment::EditComponent < ApplicationComponent
       return FORMAT_FAMILIES[:image_scan].join(', ')
     end
 
-    extensions = champ.type_de_champ.send(:allowed_extensions)
-    return nil if extensions.blank?
+    content_types = champ.type_de_champ.send(:allowed_content_types)
+    return nil if content_types.blank?
 
-    extensions.join(', ')
+    content_types.join(', ')
   end
 
   def accept_from_attached_type_de_champ
@@ -250,8 +250,8 @@ class Attachment::EditComponent < ApplicationComponent
       record.type_de_champ
     end
 
-    extensions = tdc&.send(:allowed_extensions).presence
-    extensions&.join(', ')
+    content_types = tdc&.send(:allowed_content_types).presence
+    content_types&.join(', ')
   end
 
   def allowed_formats
