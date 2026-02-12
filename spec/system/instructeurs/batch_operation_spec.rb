@@ -232,9 +232,18 @@ describe 'BatchOperation a dossier:', js: true do
 
       # ensure jobs are queued
       perform_enqueued_jobs(only: [BatchOperationEnqueueAllJob])
-      expect { perform_enqueued_jobs(only: [BatchOperationProcessOneJob]) }
-        .to change { dossier_1.reload.avis }
-        .from([]).to(anything)
+
+      expect {
+        perform_enqueued_jobs(only: [BatchOperationProcessOneJob])
+      }.to change { dossier_1.reload.avis.count }.by(1)
+
+      # when in batch we don't send individual emails
+      expect(PriorizedMailDeliveryJob).not_to have_been_enqueued.with(
+        "AvisMailer",
+        "avis_invitation_and_confirm_email",
+        "deliver_now",
+        anything
+      )
 
       scroll_to(find_button("Personnaliser le tableau"))
 

@@ -3,13 +3,14 @@
 class CreateAvisService
   Result = Data.define(:avis, :sent_emails, :failed_avis)
 
-  def self.call(dossier:, instructeur_or_expert:, params:, avis_source: nil)
-    new(dossier, instructeur_or_expert, params, avis_source).call
+  def self.call(dossier:, instructeur_or_expert:, batch:, params:, avis_source: nil)
+    new(dossier, instructeur_or_expert, batch, params, avis_source).call
   end
 
-  def initialize(dossier, instructeur_or_expert, params, avis_source = nil)
+  def initialize(dossier, instructeur_or_expert, batch, params, avis_source = nil)
     @dossier = dossier
     @instructeur_or_expert = instructeur_or_expert
+    @batch = batch
     @params = params
     @avis_source = avis_source
   end
@@ -76,7 +77,7 @@ class CreateAvisService
     persisted.each do |avis|
       avis.dossier.demander_un_avis!(avis)
       if avis.dossier == @dossier
-        if avis.experts_procedure.notify_on_new_avis?
+        if avis.experts_procedure.notify_on_new_avis? && !@batch
           avis.expert.user.invite_expert_and_send_avis!(avis)
         end
         sent_emails << avis.expert.email

@@ -118,6 +118,7 @@ class BatchOperation < ApplicationRecord
       CreateAvisService.call(
         dossier: dossier,
         instructeur_or_expert: instructeur,
+        batch: true,
         params: {
           emails: emails || [],
           introduction: introduction,
