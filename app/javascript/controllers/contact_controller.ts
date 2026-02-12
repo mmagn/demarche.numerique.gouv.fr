@@ -1,6 +1,12 @@
 import { ApplicationController } from './application_controller';
 import { hide, show } from '@utils';
 
+declare global {
+  interface Window {
+    $crisp?: Array<[string, ...unknown[]]>;
+  }
+}
+
 export class ContactController extends ApplicationController {
   static targets = ['inputRadio', 'content'];
 
@@ -12,6 +18,8 @@ export class ContactController extends ApplicationController {
       this.on(inputRadio, 'change', this.onChange.bind(this));
       this.on(inputRadio, 'keydown', this.onChange.bind(this));
     });
+
+    this.openCrispOnDesktop();
   }
 
   private onChange(event: Event) {
@@ -44,5 +52,13 @@ export class ContactController extends ApplicationController {
     if (contentSelector) {
       return document.getElementById(contentSelector);
     }
+  }
+
+  private openCrispOnDesktop() {
+    if (!window.matchMedia('(min-width: 768px)').matches) return;
+
+    requestAnimationFrame(() => {
+      window.$crisp?.push(['do', 'chat:open']);
+    });
   }
 }
