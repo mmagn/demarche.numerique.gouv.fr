@@ -45,7 +45,7 @@ class Champs::PieceJustificativeChamp < Champ
 
   def log_content_type_rejection(content_type, allowed_types, attachment)
     Rails.logger.info(
-      "[PJ content_type rejected] champ_id=#{id} dossier_id=#{dossier_id} " \
+      "[PJ content_type rejected] champ_id=#{id} dossier_id=#{dossier_id} procedure_id=#{procedure.id} " \
       "content_type=#{content_type} filename=#{attachment.filename} " \
       "allowed_types=[#{allowed_types.join(', ')}]"
     )
