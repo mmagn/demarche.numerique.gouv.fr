@@ -28,10 +28,9 @@ RSpec.describe Attachment::EditComponent, type: :component do
     before { champ.piece_justificative_file.purge }
 
     it 'sets accept to jpg/jpeg/png only' do
-      expect(subject).to have_selector("input[accept*='.jpg']")
-      expect(subject).to have_selector("input[accept*='.jpeg']")
-      expect(subject).to have_selector("input[accept*='.png']")
-      expect(subject).not_to have_selector("input[accept*='.pdf']")
+      expect(subject).to have_selector("input[accept*='image/jpeg']")
+      expect(subject).to have_selector("input[accept*='image/png']")
+      expect(subject).not_to have_selector("input[accept*='application/pdf']")
     end
 
     it 'sets max size to 20MB in data attribute' do

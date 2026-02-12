@@ -230,8 +230,8 @@ class Attachment::EditComponent < ApplicationComponent
   def accept_from_type_de_champ
     return nil if !champ&.respond_to?(:type_de_champ)
 
-    if champ.titre_identite_nature?
-      return ['.jpg', '.jpeg', '.png'].join(', ')
+    if champ.titre_identite_nature? || champ.titre_identite?
+      return FORMAT_FAMILIES[:image_scan].join(', ')
     end
 
     extensions = champ.type_de_champ.send(:allowed_extensions)
