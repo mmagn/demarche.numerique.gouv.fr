@@ -11,8 +11,10 @@ describe 'lint:apostrophe' do
   let(:good_apos) { "\u2019" }
 
   before do
-    # Stub Dir.glob to only return our temp file
+    # Stub Dir.glob to only return our temp file for the first pattern, empty for others
     allow(Dir).to receive(:glob).with('config/locales/**/*.fr.yml').and_return([temp_file])
+    allow(Dir).to receive(:glob).with('config/locales/**/fr.yml').and_return([])
+    allow(Dir).to receive(:glob).with('app/components/**/*.fr.yml').and_return([])
   end
 
   after do
@@ -162,6 +164,32 @@ describe 'lint:apostrophe' do
           end
         }.to output(/Found 1 incorrect apostrophe/).to_stdout
       end
+    end
+  end
+
+  describe 'FIX mode' do
+    before do
+      File.write(temp_file, <<~YAML)
+        fr:
+          test:
+            message: "Ce n#{bad_apos}est pas d#{bad_apos}un type accepté"
+      YAML
+    end
+
+    around do |example|
+      ENV['FIX'] = '1'
+      example.run
+      ENV['FIX'] = nil
+    end
+
+    it 'fixes incorrect apostrophes and does not exit with error' do
+      expect { rake_task.invoke }.to output(/Fixed 2 incorrect apostrophe/).to_stdout
+
+      fixed_content = File.read(temp_file)
+      expect(fixed_content).to include("n#{good_apos}est")
+      expect(fixed_content).to include("d#{good_apos}un")
+      expect(fixed_content).not_to include("n#{bad_apos}est")
+      expect(fixed_content).not_to include("d#{bad_apos}un")
     end
   end
 end
