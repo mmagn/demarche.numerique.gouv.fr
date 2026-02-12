@@ -163,7 +163,6 @@ RSpec.describe Attachment::EditComponent, type: :component do
         expect(subject).to have_text(filename)
         expect(subject).to have_button('Supprimer')
         expect(subject).to have_no_link(text: filename) # don't match "Delete" link which also include filename in title attribute
-        expect(subject).to have_text('Traitement en cours')
       end
     end
   end

@@ -1,8 +1,0 @@
----
-fr:
-  reload: Recharger
-  explanation:
-    one: Le traitement de votre pièce jointe prend plus de temps que prévu.
-    other: Le traitement de vos pièces jointes prend plus de temps que prévu.
-
-  dossier_submittable: Cela ne vous empêche pas de déposer votre dossier si vous le souhaitez.
