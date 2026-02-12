@@ -227,7 +227,6 @@ Controllers are organized by user role:
 ## Security Considerations
 
 - All code handles potentially sensitive government data
-- ImageMagick policy must be restricted (see README)
 - **Image Processing**: Uploaded images are processed based on their nature
   - Identity documents (`Champs::TitreIdentiteChamp`) receive watermarks for privacy protection
   - Different attachment types get appropriate representations (previews, thumbnails)

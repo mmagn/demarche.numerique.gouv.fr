@@ -20,7 +20,8 @@ Would you like to make changes or improvements? Read our [contribution guide](CO
 #### All environments
 
 - postgresql (version >= 15)
-- imagemagick and gsfonts to generate watermarks on identity documents or generate image thumbnails.
+- libvips-dev
+- imagemagick and gsfonts to generate watermarks on identity documents
 
 > [!WARNING]
 > Remember to restrict ImageMagick's policy to block exploitation of malicious images.
