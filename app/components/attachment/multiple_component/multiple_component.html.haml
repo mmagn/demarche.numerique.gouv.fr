@@ -16,6 +16,3 @@
 
   %div{ id: empty_component_id, data: { turbo_force: :server } }
     = render Attachment::EditComponent.new(champ:, as_multiple: champ.nil?, attached_file:, attachment: nil, index: attachments_size, user_can_destroy:, form_object_name:, max: @max, aria_labelledby:, parent_hint_id: describedby_hint_id)
-
-  // single poll and refresh message for all attachments
-  = render Attachment::PendingPollComponent.new(attachments: attachments, poll_url:, context: poll_context)

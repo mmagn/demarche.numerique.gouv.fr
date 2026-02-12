@@ -40,13 +40,6 @@ class Attachment::MultipleComponent < ApplicationComponent
   def auto_attach_url
     champ.present? ? helpers.auto_attach_url(champ) : '#'
   end
-  alias poll_url auto_attach_url
-
-  def poll_context
-    return :dossier if champ.present?
-
-    nil
-  end
 
   def show_hint?
     champ.present?

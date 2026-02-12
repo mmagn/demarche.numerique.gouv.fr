@@ -80,19 +80,6 @@ RSpec.describe Attachment::MultipleComponent, type: :component do
     end
   end
 
-  context 'attachment process in progress' do
-    let(:created_at) { 1.second.ago }
-
-    before do
-      attached_file.attachments[0].blob.update(virus_scan_result: ActiveStorage::VirusScanner::PENDING)
-      attached_file.attachments[0].update!(created_at:)
-    end
-
-    it 'setup polling' do
-      expect(subject).to have_selector('[data-controller=turbo-poll]')
-    end
-  end
-
   def attach_to_champ(attached_file, champ)
     attached_file.attach(
       io: StringIO.new("x" * 2),

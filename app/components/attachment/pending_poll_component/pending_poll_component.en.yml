@@ -1,7 +1,0 @@
----
-en:
-  reload: Reload
-  explanation:
-    one: Processing your attachment takes longer than expected.
-    other: Processing your attachments takes longer than expected.
-  dossier_submittable: This does not prevent you from submitting your file if you wish.

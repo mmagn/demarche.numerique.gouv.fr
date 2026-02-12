@@ -38,12 +38,6 @@
   - if !persisted? || champ.present? && champ.titre_identite?
     = file_field(champ, field_name, **file_field_options)
 
-    - attachments.filter(&:persisted?).each do |attachment|
-      - if attachment.persisted?
-        - Attachment::PendingPollComponent.new(attachment: attachment, poll_url: poll_url, context: poll_context).then do |component|
-          .fr-mt-2w
-            = render component
-
   .attachment-upload-error.hidden
     %p.fr-error-text= t('.errors.uploading')
     = button_tag(**retry_button_options) do
