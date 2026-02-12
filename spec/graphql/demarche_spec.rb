@@ -86,7 +86,7 @@ RSpec.describe Types::DemarcheType, type: :graphql do
     it do
       expect(procedure.administrateurs.count).to eq(1)
       expect(procedure.administrateurs[0]).to eq(admin)
-      expect(data[:demarcheAjouterAdministrateur][:warnings]).to eq([{ message: "no-admin@admin.com n'est pas associé à un compte administrateur" }])
+      expect(data[:demarcheAjouterAdministrateur][:warnings]).to eq([{ message: "no-admin@admin.com n’est pas associé à un compte administrateur" }])
       expect(procedure.administrateurs.count).to eq(1)
       expect(procedure.administrateurs[0]).to eq(admin)
     end

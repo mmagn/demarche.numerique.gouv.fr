@@ -47,7 +47,7 @@ RSpec.describe Instructeurs::InstructionMenuComponent, type: :component do
       expect(subject).to have_dropdown_item('Accepter')
       expect(subject).to have_dropdown_item('Classer sans suite')
       expect(subject).to have_dropdown_item('Refuser')
-      expect(subject).to have_selector('#alert-error-annotation', text: "Les annotations privées n’ont pas été correctement renseignées. Elles sont indispensables à l'instruction du dossier.", visible: false)
+      expect(subject).to have_selector('#alert-error-annotation', text: "Les annotations privées n’ont pas été correctement renseignées. Elles sont indispensables à l’instruction du dossier.", visible: false)
     end
   end
 
@@ -60,7 +60,7 @@ RSpec.describe Instructeurs::InstructionMenuComponent, type: :component do
     it 'renders an alert if annotations privees are not valid' do
       expect(subject).to have_selector(
         '#alert-error-annotation:not(.hidden)',
-        text: "Les annotations privées n’ont pas été correctement renseignées. Elles sont indispensables à l'instruction du dossier."
+        text: "Les annotations privées n’ont pas été correctement renseignées. Elles sont indispensables à l’instruction du dossier."
       )
     end
   end
