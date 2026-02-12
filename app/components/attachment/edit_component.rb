@@ -228,7 +228,7 @@ class Attachment::EditComponent < ApplicationComponent
   end
 
   def accept_from_type_de_champ
-    return nil if champ.blank?
+    return nil if !champ&.respond_to?(:type_de_champ)
 
     if champ.titre_identite_nature?
       return ['.jpg', '.jpeg', '.png'].join(', ')

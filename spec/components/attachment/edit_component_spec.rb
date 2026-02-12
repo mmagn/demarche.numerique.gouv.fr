@@ -25,6 +25,8 @@ RSpec.describe Attachment::EditComponent, type: :component do
     let(:types_de_champ_public) { [{ type: :piece_justificative, nature: 'TITRE_IDENTITE' }] }
     let(:attachment) { nil }
 
+    before { champ.piece_justificative_file.purge }
+
     it 'sets accept to jpg/jpeg/png only' do
       expect(subject).to have_selector("input[accept*='.jpg']")
       expect(subject).to have_selector("input[accept*='.jpeg']")
