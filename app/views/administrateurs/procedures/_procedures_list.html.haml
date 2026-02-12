@@ -17,12 +17,12 @@
 
             %p.fr-mt-1w.fr-mb-1w
               = t('administrateurs.procedures.created_at')
-              = l(procedure.created_at, format: :short)
+              = l(procedure.created_at.to_date, format: :short)
 
               - if procedure.published_at.present?
                 %span
                   = t('administrateurs.procedures.published_at')
-                  = l(procedure.published_at, format: :short)
+                  = l(procedure.published_at.to_date, format: :short)
 
               - if procedure.updated_at.today?
                 %span
@@ -36,7 +36,7 @@
               - if procedure.closed_at.present?
                 %span
                   = t('administrateurs.procedures.closed_at')
-                  = l(procedure.closed_at, format: :short)
+                  = l(procedure.closed_at.to_date, format: :short)
               - elsif procedure.auto_archive_on&.future?
                 %span
                   = t('administrateurs.procedures.auto_archive_on')

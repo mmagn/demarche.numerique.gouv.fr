@@ -235,7 +235,7 @@ module DossierHelper
   end
 
   def safe_expiration_date(dossier)
-    l(dossier.expired_at, format: :short)
+    l(dossier.expired_at.to_date, format: :short)
   end
 
   def annuaire_link(siren_or_siret = nil)

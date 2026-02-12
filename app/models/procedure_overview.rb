@@ -59,7 +59,7 @@ class ProcedureOverview
   end
 
   def created_dossier_description
-    formated_date = I18n.l(@start_date, format: :long)
+    formated_date = I18n.l(@start_date.to_date, format: :long)
 
     case @created_dossiers_count
     when 0

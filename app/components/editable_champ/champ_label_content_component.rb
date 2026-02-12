@@ -95,14 +95,14 @@ class EditableChamp::ChampLabelContentComponent < ApplicationComponent
 
       if start_date && end_date
         hints << I18n.t('activerecord.attributes.champs/date_champ.hints.range.both',
-                        start_date: I18n.l(Time.zone.parse(start_date), format: :short),
-                        end_date: I18n.l(Time.zone.parse(end_date), format: :short))
+                        start_date: I18n.l(Time.zone.parse(start_date).to_date, format: :short),
+                        end_date: I18n.l(Time.zone.parse(end_date).to_date, format: :short))
       elsif start_date
         hints << I18n.t('activerecord.attributes.champs/date_champ.hints.range.start_date_only',
-                        start_date: I18n.l(Time.zone.parse(start_date), format: :short))
+                        start_date: I18n.l(Time.zone.parse(start_date).to_date, format: :short))
       elsif end_date
         hints << I18n.t('activerecord.attributes.champs/date_champ.hints.range.end_date_only',
-                        end_date: I18n.l(Time.zone.parse(end_date), format: :short))
+                        end_date: I18n.l(Time.zone.parse(end_date).to_date, format: :short))
       end
     end
 
