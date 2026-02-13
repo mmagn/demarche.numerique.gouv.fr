@@ -199,6 +199,11 @@ input AnnotationValueInput @oneOf {
   decimalNumber: Float
 
   """
+  Modifier la valeur d'un champ lien vers un dossier
+  """
+  dossierLink: String
+
+  """
   Modifier la sélection d’un champ choix simple
   """
   dropDownList: String

@@ -17,6 +17,7 @@ module Mutations
       argument :decimal_number, Float, "Modifier la valeur d’un champ nombre décimal", required: false
       argument :drop_down_list, String, "Modifier la sélection d’un champ choix simple", required: false
       argument :multiple_drop_down_list, [String], "Modifier la sélection d’un champ choix multiple", required: false
+      argument :dossier_link, String, "Modifier la valeur d'un champ lien vers un dossier", required: false
       argument :repetition, Int, "Ajouter des repetitions à un champ répétable", required: false
     end
 
@@ -105,6 +106,7 @@ module Mutations
         TypeDeChamp.type_champs.fetch(:decimal_number),
         TypeDeChamp.type_champs.fetch(:drop_down_list),
         TypeDeChamp.type_champs.fetch(:multiple_drop_down_list),
+        TypeDeChamp.type_champs.fetch(:dossier_link),
         TypeDeChamp.type_champs.fetch(:repetition),
       ]
     end

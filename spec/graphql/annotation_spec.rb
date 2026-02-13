@@ -273,6 +273,34 @@ RSpec.describe Mutations::DossierModifierAnnotations, type: :graphql do
       end
     end
 
+    context 'with dossier_link annotation and invalid dossier id' do
+      let(:types_de_champ_private) { [{ type: :dossier_link }] }
+      let(:dossier_link_annotation) { champs_private.find(&:dossier_link?) }
+      let(:annotations) { [{ id: dossier_link_annotation.to_typed_id, value: { dossierLink: '999999' } }] }
+
+      it 'returns error' do
+        expect(data).to eq(dossierModifierAnnotations: {
+          annotations: [],
+          errors: [{ message: "Le dossier n’existe pas" }],
+        })
+      end
+    end
+
+    context 'with dossier_link annotation and valid dossier id' do
+      let(:types_de_champ_private) { [{ type: :dossier_link }] }
+      let(:linked_dossier) { create(:dossier, :en_construction, procedure: procedure) }
+      let(:dossier_link_annotation) { champs_private.find(&:dossier_link?) }
+      let(:annotations) { [{ id: dossier_link_annotation.to_typed_id, value: { dossierLink: linked_dossier.id.to_s } }] }
+
+      it 'update annotation' do
+        expect(data).to eq(dossierModifierAnnotations: {
+          annotations: [{ id: dossier_link_annotation.to_typed_id }],
+          errors: nil,
+        })
+        expect(dossier_link_annotation.reload.value).to eq(linked_dossier.id.to_s)
+      end
+    end
+
     context 'with multiple annotations' do
       let(:types_de_champ_private) do
         [
