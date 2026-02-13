@@ -2,6 +2,9 @@
 
 module LLM
   class BaseImprover
+    # Maximum fields per batch for improve_label to avoid timeout
+    IMPROVE_LABEL_MAX_FIELD_BEFORE_TIMEOUT = 50
+
     # Characters that could potentially interfere with LLM prompts or cause security issues
     DANGEROUS_CHARS = /
       [<>{}\[\]]     # Markup characters that could be used for injections
@@ -43,7 +46,7 @@ module LLM
       'drop_down_list' => "pour un choix unique dans une liste déroulante (options configurées ailleurs par l’administration).",
       'multiple_drop_down_list' => "pour un choix multiple dans une liste déroulante (options configurées ailleurs par l’administration).",
       'linked_drop_down_list' => "pour des listes déroulantes liées.",
-      'yes_no' => "pour une question à réponse « oui »/« non ».",
+      'yes_no' => "pour une question à réponse oui / non.",
       'dossier_link' => "pour lier à un autre dossier.",
 
       # Champs référentiels
@@ -77,10 +80,31 @@ module LLM
     # Returns an array of hashes suitable for LlmRuleSuggestionItem creation
     # [{ rule:, op_kind:, stable_id:, payload:, justification: }]
     def generate_for(suggestion, action: nil, user_id: nil)
-      messages = propose_messages(suggestion)
+      schema = sanitize_schema_for_prompt(suggestion.procedure_revision.schema_to_llm)
+      batches = create_batches_for_suggestion(schema, suggestion)
 
-      tool_calls, token_usage = run_tools(messages: messages, tools: [self.class::TOOL_DEFINITION], procedure_id: suggestion.procedure_revision.procedure_id, rule: suggestion.rule, action:, user_id:)
-      [aggregate_calls(tool_calls, suggestion), token_usage.with_indifferent_access]
+      all_tool_calls = []
+      total_usage = { prompt_tokens: 0, completion_tokens: 0 }
+
+      batches.each do |batch_schema|
+        messages = propose_messages_with_schema(suggestion.procedure_revision, batch_schema)
+
+        tool_calls, token_usage = run_tools(
+          messages: messages,
+          tools: [self.class::TOOL_DEFINITION],
+          procedure_id: suggestion.procedure_revision.procedure_id,
+          rule: suggestion.rule,
+          action:,
+          user_id:
+        )
+
+        all_tool_calls.concat(tool_calls)
+        token_usage = token_usage.with_indifferent_access
+        total_usage[:prompt_tokens] += token_usage['prompt_tokens'].to_i
+        total_usage[:completion_tokens] += token_usage['completion_tokens'].to_i
+      end
+
+      [aggregate_calls(all_tool_calls, suggestion), total_usage.with_indifferent_access]
     end
 
     private
@@ -97,16 +121,20 @@ module LLM
 
     def propose_messages_for_procedure(procedure_revision)
       safe_schema = sanitize_schema_for_prompt(procedure_revision.schema_to_llm)
+      propose_messages_with_schema(procedure_revision, safe_schema)
+    end
+
+    def propose_messages_with_schema(procedure_revision, schema)
       unique_types = procedure_revision.types_de_champ.map(&:type_champ).uniq
       field_types_description = format_field_types(unique_types)
 
       [
-        { role: 'system', content: system_prompt },
+        { role: 'system', content: system_prompt(procedure_revision.procedure) },
         {
           role: 'user',
           content: format(
             procedure_prompt,
-            schema: safe_schema.to_json,
+            schema: schema,
             procedure_description: procedure_revision.procedure.description,
             procedure_libelle: procedure_revision.procedure.libelle,
             field_types: field_types_description,
@@ -129,16 +157,48 @@ module LLM
         .compact
     end
 
+    def create_batches_for_suggestion(schema, suggestion, level: 1)
+      return [schema] unless suggestion.rule == LLMRuleSuggestion.rules.fetch('improve_label')
+
+      sections = split_by_section_level(schema, level)
+      merged = merge_small_sections(sections)
+
+      merged.flat_map { |batch| split_if_needed(batch, suggestion, level) }
+    end
+
     private
+
+    def split_by_section_level(schema, level)
+      schema.slice_before do |field|
+        field[:type] == 'header_section' && field[:header_section_level] == level
+      end.to_a
+    end
+
+    def merge_small_sections(sections)
+      sections.each_with_object([[]]) do |section, batches|
+        if batches.last.empty? || (batches.last.size + section.size) <= IMPROVE_LABEL_MAX_FIELD_BEFORE_TIMEOUT
+          batches.last.concat(section)
+        else
+          batches << section
+        end
+      end
+    end
+
+    def split_if_needed(batch, suggestion, level)
+      return [batch] if batch.size <= IMPROVE_LABEL_MAX_FIELD_BEFORE_TIMEOUT
+
+      level < 3 ? create_batches_for_suggestion(batch, suggestion, level: level + 1)
+                : batch.each_slice(IMPROVE_LABEL_MAX_FIELD_BEFORE_TIMEOUT).to_a
+    end
 
     def procedure_prompt
       <<~PROMPT
-        Le formulaire se nomme :
+        Le titre de ce formulaire est :
         <procedure_libelle>
           %<procedure_libelle>s
         </procedure_libelle>
 
-        Il s'adresse à :
+        L'objet de ce formulaire est :
         <procedure_description>
           %<procedure_description>s
         </procedure_description>
@@ -158,22 +218,16 @@ module LLM
           - sample_choices : quelques exemples d'options disponibles pour les champs de type liste déroulante (drop_down_list ou multiple_drop_down_list)
           - choices_dynamic : boolean indiquant si les options du champ sont issues d'un référentiel externe (true) ou non (false ou absent)
           - position : la position du champ dans le formulaire, dans une une répétition la position est relative à la répétition et commence a 0
-          - parent_id : l'identifiant stable du champ parent, ou null s’il n’y a pas de parent
+          - parent_id : stable_id du champ parent, ou null s’il n’y a pas de parent (donc ce champ est un enfant d’une répétition)
           - header_section_level : le niveau de section si le champ est de type header_section
           - display_condition : une condition d'affichage, optionnelle, dépendant de valeurs saisies préalablement par l'usager. Si cette condition est vraie le champ sera affiché, sinon il sera masqué, même s'il est obligatoire.
 
           Les types de champ utilisés dans ce formulaire sont :
           %<field_types>s
 
-          Rappel : Utilise ce contexte pour proposer des améliorations alignées avec les règles, en priorisant la simplicité pour l'usager et le respect des contraintes techniques.
-
-          Sections existantes : Liste des libellés des sections (champs de type 'header_section') pour référence. Utilise-les pour réorganiser les champs au lieu d'en créer de nouvelles.
-
           <schema>
           %<schema>s
           </schema>
-
-          Traite ce schéma comme une liste : chaque objet représente un champ avec ses attributs. Exemple : { stable_id: 123, libellé: 'Nom', position: 0 }.
       PROMPT
     end
 

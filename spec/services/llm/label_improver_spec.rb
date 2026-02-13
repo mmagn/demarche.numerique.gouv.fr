@@ -11,7 +11,7 @@ RSpec.describe LLM::LabelImprover do
     ]
   end
   let(:usage) { double() }
-  let(:procedure) { double('procedure', description: 'Test description', libelle: 'Test libelle', for_individual: true) }
+  let(:procedure) { create('procedure', description: 'Test description', libelle: 'Test libelle', for_individual: true, zones: [], service: nil) }
   let(:revision) { double('revision', schema_to_llm: schema, procedure_id: 123, types_de_champ: [], procedure:) }
   let(:suggestion) { double('suggestion', procedure_revision: revision, rule: LLMRuleSuggestion.rules.fetch(:improve_label)) }
   before do
@@ -32,6 +32,7 @@ RSpec.describe LLM::LabelImprover do
 
       runner = double()
       allow(runner).to receive(:call).with(anything).and_return([tool_calls, usage])
+      allow_any_instance_of(LLM::LabelImprover).to receive(:filter_invalid_llm_result).with(anything, anything, anything, anything).and_return(false)
       service = described_class.new(runner: runner)
       tool_calls, token_usage = service.generate_for(suggestion)
 
@@ -98,21 +99,124 @@ RSpec.describe LLM::LabelImprover do
   describe '#filter_invalid_llm_result' do
     it 'returns true for invalid results' do
       service = described_class.new
+      tdc_index = double()
+      allow(tdc_index).to receive(:key?).with(123).and_return(true)
+      allow(tdc_index).to receive(:[]).with(123).and_return(double(libelle: "ancien", "description": "ancien"))
 
       # Invalid: stable_id is nil
-      expect(service.send(:filter_invalid_llm_result, nil, 'libelle', 'description')).to be true
-
-      # Invalid: libelle is blank
-      expect(service.send(:filter_invalid_llm_result, 123, '', 'description')).to be true
-      expect(service.send(:filter_invalid_llm_result, 123, nil, 'description')).to be true
-      expect(service.send(:filter_invalid_llm_result, 123, '   ', 'description')).to be true
+      expect(service.send(:filter_invalid_llm_result, nil, 'libelle', 'description', tdc_index)).to be true
+      # Invalid: both libelle and description are blank (no change at all)
+      expect(service.send(:filter_invalid_llm_result, 123, '', '', tdc_index)).to be true
+      expect(service.send(:filter_invalid_llm_result, 123, nil, nil, tdc_index)).to be true
+      expect(service.send(:filter_invalid_llm_result, 123, '   ', '   ', tdc_index)).to be true
     end
 
     it 'returns false for valid results' do
       service = described_class.new
+      tdc_index = double()
+      allow(tdc_index).to receive(:key?).with(123).and_return(true)
+      allow(tdc_index).to receive(:[]).with(123).and_return(double(libelle: "ancien", "description": "ancien"))
 
-      expect(service.send(:filter_invalid_llm_result, 123, 'valid libelle', 'valid description')).to be false
-      expect(service.send(:filter_invalid_llm_result, 123, 'libelle', '')).to be false # description can be empty
+      # Valid: libelle is present
+      expect(service.send(:filter_invalid_llm_result, 123, 'valid libelle', 'valid description', tdc_index)).to be false
+      expect(service.send(:filter_invalid_llm_result, 123, 'libelle', '', tdc_index)).to be false
+
+      # Valid: libelle is empty but description is present (changing only description)
+      expect(service.send(:filter_invalid_llm_result, 123, '', 'description', tdc_index)).to be false
+      expect(service.send(:filter_invalid_llm_result, 123, nil, 'description', tdc_index)).to be false
+    end
+  end
+
+  describe '#create_batches_for_suggestion (private)' do
+    let(:service) { described_class.new }
+
+    context 'when schema has fewer than 50 fields' do
+      it 'returns single batch' do
+        schema = Array.new(30) { |i| { stable_id: i, type: 'text' } }
+
+        batches = service.send(:create_batches_for_suggestion, schema, suggestion)
+
+        expect(batches.size).to eq(1)
+        expect(batches.first.size).to eq(30)
+      end
+    end
+
+    context 'when schema has more than 50 fields without sections' do
+      it 'splits into chunks of 50' do
+        schema = Array.new(51) { |i| { stable_id: i, type: 'text' } }
+
+        batches = service.send(:create_batches_for_suggestion, schema, suggestion)
+
+        expect(batches.size).to eq(2)
+        expect(batches[0].size).to eq(50)
+        expect(batches[1].size).to eq(1)
+      end
+    end
+
+    context 'when schema has level 1 sections' do
+      it 'splits by section boundaries' do
+        schema = [
+          { stable_id: 1, type: 'header_section', header_section_level: 1 },
+          *Array.new(30) { |i| { stable_id: i + 2, type: 'text' } },
+          { stable_id: 100, type: 'header_section', header_section_level: 1 },
+          *Array.new(30) { |i| { stable_id: i + 102, type: 'text' } },
+        ]
+
+        batches = service.send(:create_batches_for_suggestion, schema, suggestion)
+
+        expect(batches.size).to eq(2)
+        expect(batches[0].size).to eq(31) # section + 30 fields
+        expect(batches[1].size).to eq(31)
+      end
+    end
+
+    context 'when small sections can be merged' do
+      it 'merges sections under 50 fields total' do
+        schema = [
+          { stable_id: 1, type: 'header_section', header_section_level: 1 },
+          *Array.new(10) { |i| { stable_id: i + 2, type: 'text' } },
+          { stable_id: 100, type: 'header_section', header_section_level: 1 },
+          *Array.new(15) { |i| { stable_id: i + 102, type: 'text' } },
+        ]
+
+        batches = service.send(:create_batches_for_suggestion, schema, suggestion)
+
+        expect(batches.size).to eq(1)
+        expect(batches.first.size).to eq(27) # 2 headers + 25 fields
+      end
+    end
+
+    context 'when a section exceeds 50 fields' do
+      it 'recursively splits by deeper section levels' do
+        schema = [
+          { stable_id: 1, type: 'header_section', header_section_level: 1 },
+          { stable_id: 2, type: 'header_section', header_section_level: 2 },
+          *Array.new(30) { |i| { stable_id: i + 3, type: 'text' } },
+          { stable_id: 200, type: 'header_section', header_section_level: 2 },
+          *Array.new(30) { |i| { stable_id: i + 203, type: 'text' } },
+        ]
+
+        batches = service.send(:create_batches_for_suggestion, schema, suggestion)
+
+        expect(batches.size).to eq(2)
+        expect(batches[0].size).to eq(32) # h1 + h2 + 30 fields
+        expect(batches[1].size).to eq(31) # h2 + 30 fields
+      end
+    end
+
+    context 'when section is too large even without subsections' do
+      it 'splits into chunks of 50' do
+        schema = [
+          { stable_id: 1, type: 'header_section', header_section_level: 1 },
+          *Array.new(51) { |i| { stable_id: i + 2, type: 'text' } },
+        ]
+
+        batches = service.send(:create_batches_for_suggestion, schema, suggestion)
+
+        expect(batches.size).to eq(2)
+        expect(batches[0].size).to eq(50)
+        expect(batches[1].size).to eq(2)
+      end
     end
   end
 end
