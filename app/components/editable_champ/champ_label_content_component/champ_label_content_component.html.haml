@@ -18,5 +18,5 @@
     = t('.check_content_rebased')
 
 - hints_for_champ.each do |hint|
-  %span.fr-hint-text
-    = hint
+  %span.fr-hint-text{ data: hint[:controller] ? { controller: hint[:controller] } : {} }
+    = hint[:text]

@@ -32,15 +32,31 @@ class EditableChamp::ChampLabelContentComponent < ApplicationComponent
   end
 
   def hints_for_champ
-    if @champ.formatted?
-      formatted_champ_hints
-    elsif @champ.date? || @champ.datetime?
-      date_hints
-    elsif @champ.integer_number? || @champ.decimal_number?
-      number_hints
-    else
-      []
+    hints = []
+
+    if hint_renderable?
+      hints << {
+        text: hint,
+        controller: 'date-input-hint',
+      }
     end
+
+    extra_hints =
+      if @champ.formatted?
+        formatted_champ_hints
+      elsif @champ.date? || @champ.datetime?
+        date_hints
+      elsif @champ.integer_number? || @champ.decimal_number?
+        number_hints
+      else
+        []
+      end
+
+    extra_hints.each do |text|
+      hints << { text:, controller: nil }
+    end
+
+    hints
   end
 
   private

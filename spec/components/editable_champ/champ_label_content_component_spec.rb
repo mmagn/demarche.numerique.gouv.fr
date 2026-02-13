@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe EditableChamp::ChampLabelContentComponent, type: :component do
-  let(:form) { double }
+  let(:form) { double(object: champ) }
 
   let(:champ) do
     instance_double(
@@ -39,6 +39,17 @@ RSpec.describe EditableChamp::ChampLabelContentComponent, type: :component do
       end
     end
 
+    context "when champ has renderable hint" do
+      before do
+        allow(component).to receive(:hint_renderable?).and_return(true)
+        allow(component).to receive(:hint).and_return("Un hint test")
+      end
+
+      it 'returns hint with controller' do
+        expect(component.hints_for_champ).to eq([{ text: "Un hint test", controller: "date-input-hint" }])
+      end
+    end
+
     context "when champ is formatted simple" do
       before do
         allow(champ).to receive(:visible?).and_return(true)
@@ -56,10 +67,8 @@ RSpec.describe EditableChamp::ChampLabelContentComponent, type: :component do
       context "with allowed letters" do
         before { allow(champ).to receive(:letters_accepted).and_return(true) }
 
-        it "returns a character hint" do
-          expect(component.hints_for_champ).to eq([
-            "Le champ ne peut contenir que des lettres.",
-          ])
+        it "returns a character hint (without controller)" do
+          expect(component.hints_for_champ).to eq([{ text: "Le champ ne peut contenir que des lettres.", controller: nil }])
         end
       end
 
@@ -69,10 +78,8 @@ RSpec.describe EditableChamp::ChampLabelContentComponent, type: :component do
           allow(champ).to receive(:numbers_accepted).and_return(true)
         end
 
-        it "returns a combined character hint" do
-          expect(component.hints_for_champ).to eq([
-            "Le champ peut contenir des lettres et des chiffres.",
-          ])
+        it "returns a combined character hint (without controller)" do
+          expect(component.hints_for_champ).to eq([{ text: "Le champ peut contenir des lettres et des chiffres.", controller: nil }])
         end
       end
 
@@ -82,10 +89,8 @@ RSpec.describe EditableChamp::ChampLabelContentComponent, type: :component do
           allow(champ).to receive(:max_character_length).and_return(10)
         end
 
-        it "returns a range hint" do
-          expect(component.hints_for_champ).to eq([
-            "Le champ doit faire entre 5 et 10 caractères.",
-          ])
+        it "returns a range hint (without controller)" do
+          expect(component.hints_for_champ).to eq([{ text: "Le champ doit faire entre 5 et 10 caractères.", controller: nil }])
         end
       end
 
@@ -97,8 +102,8 @@ RSpec.describe EditableChamp::ChampLabelContentComponent, type: :component do
 
         it "returns both hints" do
           expect(component.hints_for_champ).to eq([
-            "Le champ ne peut contenir que des lettres.",
-            "Le champ doit faire au moins 5 caractères.",
+            { text: "Le champ ne peut contenir que des lettres.", controller: nil },
+            { text: "Le champ doit faire au moins 5 caractères.", controller: nil },
           ])
         end
       end
