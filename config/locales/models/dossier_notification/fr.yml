@@ -19,3 +19,8 @@ fr:
         # TODO: switch to ’Annotation instructeur’ during global renaming
         annotation_instructeur: Annotation privée
         avis_externe: Avis externe
+        a11y:
+          news:
+            for_summary: dossiers avec au moins une nouveauté
+            for_not_summary: au moins une nouveauté
+          others: dossiers

@@ -18,3 +18,8 @@ en:
         # TODO: switch to ’Annotation instructeur’ during global renaming
         annotation_instructeur: Private annotation
         avis_externe: External opinion
+        a11y:
+          news:
+            for_summary: files with at least one news
+            for_not_summary: at least one news
+          others: filles
