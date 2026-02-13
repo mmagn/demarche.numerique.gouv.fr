@@ -18,6 +18,7 @@ module AttachmentImageProcessorConcern
 
   def process_image
     return if blob.nil?
+    return if record_type == "ActiveStorage::VariantRecord"
     return if blob.attachments.size != 1
     return if blob.attachments.any? { _1.record_type == "Export" }
     return if !blob.content_type.in?(PROCESSABLE_TYPES)
