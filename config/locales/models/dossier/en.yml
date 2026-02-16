@@ -17,6 +17,7 @@ en:
       dossier/state: &state
         brouillon: "Draft"
         en_construction: "In progress"
+        depose: "Submitted"
         en_instruction: "Processing"
         accepte: "Accepted"
         refuse: "Refused"

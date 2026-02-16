@@ -13,7 +13,7 @@ describe 'users/dossiers/show/header', type: :view do
   it 'affiche les informations du dossier' do
     expect(rendered).to have_text(dossier.procedure.libelle)
     expect(rendered).to have_text("Dossier n° #{dossier.id}")
-    expect(rendered).to have_text("en construction")
+    expect(rendered).to have_text("Déposé")
 
     expect(rendered).to have_selector("nav.fr-tabs")
     expect(rendered).to have_link("Suivi de votre dossier", href: dossier_path(dossier))
@@ -26,7 +26,7 @@ describe 'users/dossiers/show/header', type: :view do
 
     it "affiche les informations du dossier" do
       expect(rendered).to have_text("Dossier n° #{dossier.id}")
-      expect(rendered).to have_text("en construction")
+      expect(rendered).to have_text("Déposé")
     end
   end
 

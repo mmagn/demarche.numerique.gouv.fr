@@ -83,19 +83,19 @@ describe 'user access to the list of their dossiers', js: true do
       expect(page).to have_text('7 dossiers')
 
       click_on('Sélectionner un filtre')
-      expect(page).to have_select 'Statut', selected: 'Sélectionner un statut', options: ['Sélectionner un statut', 'Brouillon', 'En construction', 'En instruction', 'À corriger']
+      expect(page).to have_select 'Statut', selected: 'Sélectionner un statut', options: ['Sélectionner un statut', 'Brouillon', 'Déposé', 'En instruction', 'À corriger']
       select('Brouillon', from: 'Statut')
       click_on('Appliquer les filtres')
 
       expect(page).to have_text('1 dossier')
-      expect(page).to have_select 'Statut', selected: 'Brouillon', options: ['Sélectionner un statut', 'Brouillon', 'En construction', 'En instruction', 'À corriger']
+      expect(page).to have_select 'Statut', selected: 'Brouillon', options: ['Sélectionner un statut', 'Brouillon', 'Déposé', 'En instruction', 'À corriger']
 
       click_on('Sélectionner un filtre')
       select('À corriger', from: 'Statut')
       click_on('Appliquer les filtres')
 
       expect(page).to have_text('1 dossier')
-      expect(page).to have_select 'Statut', selected: 'À corriger', options: ['Sélectionner un statut', 'Brouillon', 'En construction', 'En instruction', 'À corriger']
+      expect(page).to have_select 'Statut', selected: 'À corriger', options: ['Sélectionner un statut', 'Brouillon', 'Déposé', 'En instruction', 'À corriger']
     end
 
     scenario 'user filters state on tab "traité"' do
@@ -141,7 +141,7 @@ describe 'user access to the list of their dossiers', js: true do
     scenario 'user uses multiple filters' do
       dossier_en_construction.update!(created_at: Date.yesterday)
 
-      expect(page).to have_select 'Statut', selected: 'Sélectionner un statut', options: ['Sélectionner un statut', 'Brouillon', 'En construction', 'En instruction', 'À corriger']
+      expect(page).to have_select 'Statut', selected: 'Sélectionner un statut', options: ['Sélectionner un statut', 'Brouillon', 'Déposé', 'En instruction', 'À corriger']
 
       expect(page).to have_text('7 dossiers')
       click_on('Sélectionner un filtre')
@@ -151,7 +151,7 @@ describe 'user access to the list of their dossiers', js: true do
       expect(page).to have_text('1 filtre actif')
 
       click_on('Sélectionner un filtre')
-      select('En construction', from: 'Statut')
+      select('Déposé', from: 'Statut')
       click_on('Appliquer les filtres')
       expect(page).to have_text('2 dossiers')
       expect(page).to have_text('2 filtres actifs')

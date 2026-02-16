@@ -12,7 +12,7 @@ describe 'users/dossiers/show', type: :view do
 
   it 'renders a summary of the dossier state' do
     expect(rendered).to have_text("Dossier n° #{dossier.id}")
-    expect(rendered).to have_text('dossier est en construction')
+    expect(rendered).to have_text('dossier est déposé')
   end
 
   context 'with messages' do

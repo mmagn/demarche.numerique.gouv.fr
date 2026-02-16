@@ -39,9 +39,16 @@ module DossierHelper
     dossier.brouillon? && dossier.procedure.close?
   end
 
-  def dossier_display_state(dossier_or_state, lower: false)
+  def dossier_display_state(dossier_or_state, lower: false, profile: nil)
     state = dossier_or_state.is_a?(Dossier) ? dossier_or_state.state : dossier_or_state
-    display_state = Dossier.human_attribute_name("state.#{state}")
+
+    # Use 'depose' translation for users when the state is 'en_construction'
+    if profile == :user && state == 'en_construction'
+      display_state = Dossier.human_attribute_name("state.depose")
+    else
+      display_state = Dossier.human_attribute_name("state.#{state}")
+    end
+
     lower ? display_state.downcase : display_state
   end
 
@@ -83,12 +90,12 @@ module DossierHelper
     if dossier.hide_info_with_accuse_lecture?
       tag.span 'traité', class: "fr-badge fr-badge--sm fr-badge--no-icon #{alignment_class}"
     else
-      status_badge(dossier.state, alignment_class)
+      status_badge(dossier.state, alignment_class, profile: :user)
     end
   end
 
-  def status_badge(state, alignment_class = '')
-    status_text = dossier_display_state(state, lower: true)
+  def status_badge(state, alignment_class = '', profile: nil)
+    status_text = dossier_display_state(state, lower: true, profile:)
     tag.span status_text, class: class_names(
       'fr-badge fr-badge--sm' => true,
       'fr-badge--no-icon' => Dossier.states.fetch(:accepte).exclude?(state),

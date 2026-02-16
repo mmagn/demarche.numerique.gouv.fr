@@ -77,17 +77,6 @@ module ApplicationHelper
     link_to title, contact_url(params), options
   end
 
-  def root_path_for_profile(nav_bar_profile)
-    case nav_bar_profile
-    when :instructeur
-      instructeur_procedures_path
-    when :user
-      dossiers_path
-    else
-      root_path
-    end
-  end
-
   def root_path_info_for_profile(nav_bar_profile)
     case nav_bar_profile
     when :administrateur
