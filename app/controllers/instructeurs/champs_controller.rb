@@ -7,7 +7,9 @@ module Instructeurs
     before_action :set_champ, only: [:edit]
     before_action :set_champ_for_update, only: [:update]
 
-    def edit; end
+    def edit
+      render layout: "empty_layout"
+    end
 
     def update
       rib = RIB.new(rib_params).to_h
