@@ -32,15 +32,31 @@ class EditableChamp::ChampLabelContentComponent < ApplicationComponent
   end
 
   def hints_for_champ
-    if @champ.formatted?
-      formatted_champ_hints
-    elsif @champ.date? || @champ.datetime?
-      date_hints
-    elsif @champ.integer_number? || @champ.decimal_number?
-      number_hints
-    else
-      []
+    hints = []
+
+    if hint_renderable?
+      hints << {
+        text: hint,
+        controller: 'date-input-hint',
+      }
     end
+
+    extra_hints =
+      if @champ.formatted?
+        formatted_champ_hints
+      elsif @champ.date? || @champ.datetime?
+        date_hints
+      elsif @champ.integer_number? || @champ.decimal_number?
+        number_hints
+      else
+        []
+      end
+
+    extra_hints.each do |text|
+      hints << { text:, controller: nil }
+    end
+
+    hints
   end
 
   private
@@ -49,9 +65,9 @@ class EditableChamp::ChampLabelContentComponent < ApplicationComponent
     if @champ.formatted_simple?
       hints = []
 
-      letters_accepted = @champ.letters_accepted
-      numbers_accepted = @champ.numbers_accepted
-      special_characters_accepted = @champ.special_characters_accepted
+      letters_accepted = string_to_bool(@champ.letters_accepted)
+      numbers_accepted = string_to_bool(@champ.numbers_accepted)
+      special_characters_accepted = string_to_bool(@champ.special_characters_accepted)
 
       allowed_parts = []
       allowed_parts << :letters if letters_accepted
@@ -130,5 +146,9 @@ class EditableChamp::ChampLabelContentComponent < ApplicationComponent
     end
 
     hints
+  end
+
+  def string_to_bool(str)
+    ActiveModel::Type::Boolean.new.cast(str)
   end
 end
