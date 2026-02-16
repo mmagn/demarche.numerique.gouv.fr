@@ -90,7 +90,7 @@ RSpec.describe EditableChamp::ChampLabelContentComponent, type: :component do
         end
 
         it "returns a range hint (without controller)" do
-          expect(component.hints_for_champ).to eq([{ text: "Le champ doit faire entre 5 et 10 caractères.", controller: nil }])
+          expect(component.hints_for_champ).to eq([{ text: "Vous devez renseigner entre 5 et 10 caractères.", controller: nil }])
         end
       end
 
@@ -101,7 +101,7 @@ RSpec.describe EditableChamp::ChampLabelContentComponent, type: :component do
         end
 
         it "returns a range hint (without controller)" do
-          expect(component.hints_for_champ).to eq([{ text: "Le champ doit faire exactement caractères.", controller: nil }])
+          expect(component.hints_for_champ).to eq([{ text: "Vous devez renseigner exactement 5 caractères.", controller: nil }])
         end
       end
 
@@ -114,7 +114,7 @@ RSpec.describe EditableChamp::ChampLabelContentComponent, type: :component do
         it "returns both hints" do
           expect(component.hints_for_champ).to eq([
             { text: "Le champ ne peut contenir que des lettres.", controller: nil },
-            { text: "Le champ doit faire au moins 5 caractères.", controller: nil },
+            { text: "Vous devez renseigner au moins 5 caractères.", controller: nil },
           ])
         end
       end
