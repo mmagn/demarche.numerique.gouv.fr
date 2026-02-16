@@ -24,5 +24,6 @@ en:
             letters_and_numbers_and_special_characters: "The field can contain letters, numbers, and special characters."
           range:
             both: "The field must be between %{min} and %{max} characters long."
+            exactly: "The field must be exactly %{count} characters long."
             min_only: "The field must be at least %{min} characters long."
             max_only: "The field must be less than %{max} characters long."

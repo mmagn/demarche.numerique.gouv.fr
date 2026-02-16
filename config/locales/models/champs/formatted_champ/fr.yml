@@ -24,5 +24,6 @@ fr:
             letters_and_numbers_and_special_characters: "Le champ peut contenir des lettres, des chiffres et des caractères spéciaux."
           range:
             both: "Le champ doit faire entre %{min} et %{max} caractères."
+            exactly: "Le champ doit faire exactement %{count} caractères."
             min_only: "Le champ doit faire au moins %{min} caractères."
             max_only: "Le champ doit faire moins de %{max} caractères."

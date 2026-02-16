@@ -94,6 +94,17 @@ RSpec.describe EditableChamp::ChampLabelContentComponent, type: :component do
         end
       end
 
+      context "with the same min and max length" do
+        before do
+          allow(champ).to receive(:min_character_length).and_return(5)
+          allow(champ).to receive(:max_character_length).and_return(5)
+        end
+
+        it "returns a range hint (without controller)" do
+          expect(component.hints_for_champ).to eq([{ text: "Le champ doit faire exactement caractères.", controller: nil }])
+        end
+      end
+
       context "with letters allowed and min length" do
         before do
           allow(champ).to receive(:letters_accepted).and_return(true)
