@@ -83,11 +83,15 @@ class EditableChamp::ChampLabelContentComponent < ApplicationComponent
       max = @champ.max_character_length
 
       if min.present? && max.present?
-        hints << I18n.t('activerecord.attributes.champs/formatted_champ.hints.range.both', min: min, max: max)
+        if min == max
+          hints << I18n.t('activerecord.attributes.champs/formatted_champ.hints.range.exactly', count: min)
+        else
+          hints << I18n.t('activerecord.attributes.champs/formatted_champ.hints.range.both', min:, max:)
+        end
       elsif min.present?
-        hints << I18n.t('activerecord.attributes.champs/formatted_champ.hints.range.min_only', min: min)
+        hints << I18n.t('activerecord.attributes.champs/formatted_champ.hints.range.min_only', min:)
       elsif max.present?
-        hints << I18n.t('activerecord.attributes.champs/formatted_champ.hints.range.max_only', max: max)
+        hints << I18n.t('activerecord.attributes.champs/formatted_champ.hints.range.max_only', max:)
       end
 
       hints
