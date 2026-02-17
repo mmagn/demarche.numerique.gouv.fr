@@ -14,4 +14,5 @@ task :lint do
   sh "bun lint:css"
   sh "bundle exec rake lint:adresse_electronique"
   sh "bundle exec rake lint:apostrophe"
+  sh "bundle exec rake lint:yaml_newline"
 end
