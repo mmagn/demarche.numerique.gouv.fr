@@ -820,7 +820,7 @@ en:
         not_found: "We haven't found an establishment corresponding to this SIRET number."
       france_connect:
         connexion: "Error trying to connect to France Connect."
-        forbidden_html: "Only citizen can use FranceConnect. As an instructor or administrator, you should <a href='%{reset_link}'>reset your password</a>."
+        forbidden_html: "Only citizen can use FranceConnect. As an instructor or administrator, please identify yourself with ProConnect or log in with your %{app_name} account."
         internal_error: "Error trying to connect to France Connect. Please try another way to connect."
       missing_range_rules: The minimum and maximum values ​​must be specified.
       invalid_range_rules: The minimum value must be less than the maximum value.
