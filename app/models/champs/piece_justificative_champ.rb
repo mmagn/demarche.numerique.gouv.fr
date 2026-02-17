@@ -42,7 +42,7 @@ class Champs::PieceJustificativeChamp < Champ
 
   def fetch_external_data
     blob = piece_justificative_file.blobs.first
-    OCRService.analyze(blob)
+    OCRService.analyze(blob, nature: type_de_champ.nature)
   end
 
   def log_content_type_rejection(content_type, allowed_types, attachment)

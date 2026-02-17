@@ -1,0 +1,6 @@
+{
+  "id": "ff09f4c9-042c-4756-b0cb-66520874ca0a",
+ "data":
+  { "error_type": "ConnectError", "failed_step": "DownloadFileStep", "retry_count": 0, "workflow_id": "document-barcode-extraction", "error_message": "All connection attempts failed" },
+ "status": "FAILED"
+}
