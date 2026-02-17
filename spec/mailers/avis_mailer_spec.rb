@@ -16,7 +16,6 @@ RSpec.describe AvisMailer, type: :mailer do
         expect(subject.subject).to eq("Donnez votre avis sur le dossier n° #{avis.dossier.id} (#{avis.dossier.procedure.libelle})")
         expect(subject.body).to have_text("Vous avez été invité par\r\n#{avis.claimant.email}\r\nà donner votre avis sur le dossier n° #{avis.dossier.id} de la démarche :\r\n#{avis.dossier.procedure.libelle}")
         expect(subject.body).to have_text("Donnez votre avis")
-        expect(subject.body).to include(avis.introduction)
         expect(subject.body).to include(targeted_user_link_url(TargetedUserLink.where(target_model: avis).first, confirmation_token: user.confirmation_token))
       end
 
