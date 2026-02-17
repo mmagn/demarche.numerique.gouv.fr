@@ -30,7 +30,15 @@ class Champs::PieceJustificativeChamp < Champ
 
   def has_async_external_data? = ocr_compatible?
 
-  def rib = RIB.new(value_json&.dig('rib'))
+  def ocr_result
+    return nil if !fetched? || value_json.nil?
+
+    if RIB?
+      RIB.new(value_json.dig('rib'))
+    elsif justificatif_domicile?
+      JustificatifDomicile.new(value_json)
+    end
+  end
 
   private
 

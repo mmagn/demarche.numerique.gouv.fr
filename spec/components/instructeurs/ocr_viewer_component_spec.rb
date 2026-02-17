@@ -1,68 +1,110 @@
 # frozen_string_literal: true
 
 RSpec.describe Instructeurs::OCRViewerComponent, type: :component do
-  let(:champ) { double('champ', value_json:, RIB?: rib, fetched?: fetched, dossier_id:, public_id:) }
+  let(:champ) { double('champ', ocr_result: doc, dossier_id:, public_id:) }
   let(:component) { described_class.new(champ:) }
 
-  let(:value_json) { nil }
-  let(:rib) { true }
-  let(:fetched) { true }
   let(:dossier_id) { 1 }
   let(:public_id) { 'public-id-123' }
 
   describe '#render?' do
-    context 'nominal' do
+    context 'when doc is present' do
+      let(:doc) { RIB.new(account_holder: 'John Doe', iban: 'FR76', bic: 'ABCD', bank_name: 'Test Bank') }
+
       it { expect(component.render?).to be true }
     end
 
-    context 'when the champ is not rib' do
-      let(:rib) { false }
-
-      it { expect(component.render?).to be false }
-    end
-
-    context 'when the data is not fetched' do
-      let(:fetched) { false }
+    context 'when doc is not present' do
+      let(:doc) { nil }
 
       it { expect(component.render?).to be false }
     end
   end
 
-  describe '#formated_data' do
+  describe 'rendering with RIB' do
     subject { render_inline(component) }
 
-    let(:full_data) do
-      {
-        'rib' => {
-          'account_holder' => ['John Doe'],
-          'iban' => 'FR7612345678901234567890123',
-          'bic' => 'ABCD1234',
-          'bank_name' => 'Banque de Test',
-        },
-      }
-    end
+    let(:doc) { RIB.new(account_holder:, iban:, bic:, bank_name:) }
+    let(:account_holder) { 'John Doe' }
+    let(:iban) { 'FR7612345678901234567890123' }
+    let(:bic) { 'ABCD1234' }
+    let(:bank_name) { 'Banque de Test' }
 
     context 'when data is complete' do
-      let(:value_json) { full_data }
-
-      it 'returns formatted data' do
+      it 'renders all RIB data' do
         expect(subject).to have_css('.champ-content', text: 'John Doe')
         expect(subject).to have_css('.champ-content', text: 'FR7612345678901234567890123')
         expect(subject).to have_css('.champ-content', text: 'ABCD1234')
         expect(subject).to have_css('.champ-content', text: 'Banque de Test')
       end
+
+      it 'renders header with title and edit button' do
+        expect(subject).to have_css('.fr-text-mention--grey', text: 'Données récupérées')
+        expect(subject).to have_link('Modifier', href: "/instructeurs/dossiers/#{dossier_id}/champs/#{public_id}/edit")
+      end
+    end
+
+    context 'when account_holder has multiple lines' do
+      let(:account_holder) { "John Doe\nCompany Name" }
+
+      it 'formats multiline text with br tags' do
+        expect(subject).to have_css('.champ-content', text: /John Doe.*Company Name/m)
+      end
     end
 
     context 'when data is incomplete' do
-      let(:value_json) do
-        copy = full_data.dup
-        copy['rib']['account_holder'] = nil
-        copy
+      let(:account_holder) { nil }
+
+      it 'shows processing error for missing data' do
+        expect(subject).to have_text("Cette donnée n’a pas pu être récupérée")
+        expect(subject).to have_css('.champ-content', text: 'FR7612345678901234567890123')
+      end
+    end
+  end
+
+  describe 'rendering with JustificatifDomicile' do
+    subject { render_inline(component) }
+
+    let(:doc) do
+      JustificatifDomicile.new(
+        beneficiary: 'Jane Smith',
+        address: '123 Main St',
+        locality: 'Paris',
+        postal_code: '75001',
+        country: 'France',
+        issue_date: Date.new(2026, 1, 2),
+        two_ddoc: true
+      )
+    end
+
+    it 'renders justificatif domicile data' do
+      expect(subject).to have_css('.champ-content', text: 'Jane Smith')
+      expect(subject).to have_css('.champ-content', text: '123 Main St')
+      expect(subject).to have_css('.champ-content', text: 'Paris')
+      expect(subject).to have_css('.champ-content', text: '75001')
+      expect(subject).to have_css('.champ-content', text: 'France')
+      expect(subject).to have_css('.champ-content', text: I18n.l(Date.new(2026, 1, 2), format: :short))
+    end
+
+    it 'shows 2D-Doc source' do
+      expect(subject).to have_css('acronym', text: '2D-Doc')
+    end
+
+    context 'when issue_date is nil' do
+      let(:doc) do
+        JustificatifDomicile.new(
+          beneficiary: 'Jane Smith',
+          address: '123 Main St',
+          locality: 'Paris',
+          postal_code: '75001',
+          country: 'France',
+          two_ddoc: true
+        )
       end
 
-      it 'returns formatted data with processing error' do
-        expect(subject).to have_css('.fr-hint-text', text: 'donnée n’a pas pu être récupérée')
-        expect(subject).to have_css('.champ-content', text: 'FR7612345678901234567890123')
+      it 'does not raise and omits the date' do
+        expect { subject }.not_to raise_error
+        expect(subject).to have_css('.champ-content', text: 'Jane Smith')
       end
     end
   end
