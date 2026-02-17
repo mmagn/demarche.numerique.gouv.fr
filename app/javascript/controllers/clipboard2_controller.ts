@@ -42,6 +42,12 @@ export class Clipboard2Controller extends Controller {
         });
 
         wrapper.addEventListener('click', (e) => {
+          // if one click on a link, we do not copy and follow the link instead
+          const target = e.target as HTMLElement;
+          if (target.tagName === 'A' || target.closest('a')) {
+            return;
+          }
+
           e.preventDefault();
           e.stopPropagation();
           this.copyContent(wrapper);
