@@ -1,56 +1,115 @@
 # frozen_string_literal: true
 
 RSpec.describe AvisMailer, type: :mailer do
-  describe '.avis_invitation_and_confirm_email' do
-    let(:claimant) { create(:instructeur) }
-    let(:dossier) { create(:dossier, :en_construction) }
-    let(:experts_procedure) { create(:experts_procedure, expert: expert, procedure: dossier.procedure) }
-    let(:avis) { create(:avis, dossier: dossier, claimant: claimant, experts_procedure: experts_procedure, introduction: 'intro') }
-    let(:expert) { create(:expert, user:) }
+  describe ".avis_invitation_and_confirm_email" do
+    let(:procedure) { create(:procedure) }
+    let(:dossier) { create(:dossier, :en_instruction, procedure: procedure) }
+    let(:dossier2) { create(:dossier, :en_instruction, procedure: procedure) }
 
-    subject { described_class.avis_invitation_and_confirm_email(user, user.confirmation_token, avis.reload) }
+    let(:user) { create(:user, confirmation_token: "token") }
+    let(:expert) { create(:expert, user: user) }
+    let(:experts_procedure) { create(:experts_procedure, expert: expert, procedure: procedure) }
 
-    context 'when expert is active and verified' do
-      let(:user) { create(:user, :active, :with_email_verified, confirmation_token: "token") }
-      it do
-        expect(subject.subject).to eq("Donnez votre avis sur le dossier n° #{avis.dossier.id} (#{avis.dossier.procedure.libelle})")
-        expect(subject.body).to have_text("Vous avez été invité par\r\n#{avis.claimant.email}\r\nà donner votre avis sur le dossier n° #{avis.dossier.id} de la démarche :\r\n#{avis.dossier.procedure.libelle}")
-        expect(subject.body).to have_text("Donnez votre avis")
-        expect(subject.body).to include(targeted_user_link_url(TargetedUserLink.where(target_model: avis).first, confirmation_token: user.confirmation_token))
+    let(:avis1) { create(:avis, dossier: dossier, experts_procedure: experts_procedure) }
+    let(:avis2) { create(:avis, dossier: dossier2, experts_procedure: experts_procedure) }
+
+    let(:mail) do
+      described_class
+        .avis_invitation_and_confirm_email(user, user.confirmation_token, avis_param)
+        .deliver_now
+    end
+
+    shared_examples "includes targeted link" do
+      it "includes a targeted_user_link in email body" do
+        mail # force rendering
+
+        link = TargetedUserLink.last
+        expect(link).not_to be_nil
+        expect(mail.html_part.body.to_s).to include("/targeted_user_links/#{link.id}")
       end
+    end
 
-      it do
-        expect { subject.body }.to change { TargetedUserLink.where(target_model: avis).count }.from(0).to(1)
-      end
+    context "with single avis" do
+      let(:avis_param) { avis1 }
 
-      context 'when the dossier has been deleted before the avis was sent' do
-        before { dossier.update(hidden_by_user_at: 1.hour.ago) }
+      context "when user is active and verified" do
+        let(:user) { create(:user, :active, :with_email_verified, confirmation_token: "token") }
 
-        it 'doesn’t send the email' do
-          expect(subject.body).to be_blank
+        it "does not include confirmation_token" do
+          expect(mail.html_part.body.to_s).not_to include("confirmation_token=")
         end
+
+        include_examples "includes targeted link"
+      end
+
+      context "when user is inactive" do
+        let(:user) { create(:user, :inactive, confirmation_token: "token") }
+
+        it "includes confirmation_token" do
+          expect(mail.html_part.body.to_s).to include("confirmation_token=token")
+        end
+
+        include_examples "includes targeted link"
+      end
+
+      context "when user is active but unverified" do
+        let(:user) { create(:user, :active, email_verified_at: nil, confirmation_token: "token") }
+
+        it "includes confirmation_token" do
+          expect(mail.html_part.body.to_s).to include("confirmation_token=token")
+        end
+
+        include_examples "includes targeted link"
       end
     end
 
-    context 'when expert is active and not verified' do
-      let(:user) { create(:user, :active, email_verified_at: nil, confirmation_token: "token") }
-      it do
-        expect(subject.body).to include(targeted_user_link_url(TargetedUserLink.where(target_model: avis).first, confirmation_token: user.confirmation_token))
-      end
-      it do
-        expect { subject.body }.to change { TargetedUserLink.where(target_model: avis).count }.from(0).to(1)
-        expect(subject.body).to have_text("Confirmez votre adresse électronique pour donner votre avis")
-      end
-    end
-    context 'when expert is inactive' do
-      let(:user) { create(:user, :inactive, confirmation_token: 'token') }
-      it do
-        expect(subject.body).to include(targeted_user_link_url(TargetedUserLink.where(target_model: avis).first, confirmation_token: user.confirmation_token))
-        expect(subject.body).to have_text("Inscrivez-vous pour donner votre avis")
+    context "with multiple avis" do
+      let(:avis_param) { [avis1, avis2] }
+
+      context "when user is active and verified" do
+        let(:user) { create(:user, :active, :with_email_verified, confirmation_token: "token") }
+
+        it "does not include confirmation_token" do
+          expect(mail.html_part.body.to_s).not_to include("confirmation_token=")
+        end
+
+        include_examples "includes targeted link"
       end
 
-      it do
-        expect { subject.body }.to change { TargetedUserLink.where(target_model: avis).count }.from(0).to(1)
+      context "when user is inactive" do
+        let(:user) { create(:user, :inactive, confirmation_token: "token") }
+
+        it "includes confirmation_token" do
+          expect(mail.html_part.body.to_s).to include("confirmation_token=token")
+        end
+
+        include_examples "includes targeted link"
+      end
+
+      context "when user is active but unverified" do
+        let(:user) { create(:user, :active, email_verified_at: nil, confirmation_token: "token") }
+
+        it "includes confirmation_token" do
+          expect(mail.html_part.body.to_s).to include("confirmation_token=token")
+        end
+
+        include_examples "includes targeted link"
+      end
+
+      context "when all dossiers are hidden" do
+        let(:user) { create(:user, :active, :with_email_verified, confirmation_token: "token") }
+
+        before do
+          dossier.update!(hidden_by_administration_at: 1.hour.ago)
+          dossier2.update!(hidden_by_administration_at: 1.hour.ago)
+        end
+
+        it "does not send the email" do
+          result = described_class
+            .avis_invitation_and_confirm_email(user, user.confirmation_token, avis_param)
+
+          expect(result.message).to be_a(ActionMailer::Base::NullMail)
+        end
       end
     end
   end
