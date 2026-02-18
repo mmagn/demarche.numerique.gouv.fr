@@ -50,12 +50,18 @@ RSpec.describe GalleryHelper, type: :helper do
   describe ".preview_url_for" do
     subject { preview_url_for(attachment) }
 
-    context "when pdf attachment has a preview" do
+    context "when pdf attachment has a preview with variant" do
       let(:file) { fixture_file_upload('spec/fixtures/files/RIB.pdf', 'application/pdf') }
 
-      it "returns the preview URL when processed", :external_deps do
+      it "returns the variant URL of the preview (not the full-size preview)", :external_deps do
         attachment.preview(resize_to_limit: [400, 400]).processed
-        expect(subject).not_to eq("pdf-placeholder.png")
+        preview_image = attachment.blob.preview_image
+        variant = preview_image.variant(resize_to_limit: [400, 400]).processed
+
+        freeze_time do
+          expect(subject).to eq(variant.url)
+          expect(subject).not_to eq(preview_image.url)
+        end
       end
     end
 

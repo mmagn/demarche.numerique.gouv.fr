@@ -35,7 +35,11 @@ module GalleryHelper
   end
 
   def preview_url_for(attachment)
-    attachment.blob.preview_image.url.presence
+    preview_image = attachment.blob.preview_image
+    return unless preview_image.attached?
+
+    variant = preview_image.variant(resize_to_limit: [400, 400])
+    variant.key.present? ? variant.processed.url : nil
   rescue StandardError
   end
 
