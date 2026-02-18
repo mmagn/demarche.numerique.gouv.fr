@@ -288,7 +288,9 @@ describe 'fetch API Particulier Data', js: true do
         fill_in 'Le code postal', with: code_postal
         wait_until { cnaf_champ.reload.external_id.present? }
 
-        perform_enqueued_jobs
+        perform_enqueued_jobs do
+          wait_until { cnaf_champ.reload.fetched? }
+        end
         click_on 'Déposer le dossier'
 
         expect(page).to have_current_path(merci_dossier_path(Dossier.last))
@@ -478,7 +480,9 @@ describe 'fetch API Particulier Data', js: true do
         fill_in "La référence d’avis d’imposition", with: reference_avis
         wait_until { dgfip_champ.reload.external_id.present? }
 
-        perform_enqueued_jobs
+        perform_enqueued_jobs do
+          wait_until { dgfip_champ.reload.fetched? }
+        end
         click_on 'Déposer le dossier'
 
         expect(page).to have_current_path(merci_dossier_path(Dossier.last))

@@ -40,6 +40,33 @@ describe Champs::SiretChamp do
 
       it { is_expected.to be_valid }
     end
+
+    context 'when external fetch is pending' do
+      let(:external_id) { "12345678901245" }
+
+      before { champ.update_columns(external_state: 'waiting_for_job') }
+
+      it 'adds a pending error on value' do
+        expect(subject.errors[:value]).to include(I18n.t('activerecord.errors.messages.api_response_pending'))
+      end
+    end
+
+    context 'when external fetch failed' do
+      let(:external_id) { "12345678901245" }
+      let(:exception) { ExternalDataException.new(reason: 'Not retryable', code: 404) }
+
+      before do
+        champ.update_columns(
+          external_state: 'external_error',
+          fetch_external_data_exceptions: [exception]
+        )
+      end
+
+      it 'adds the external error on value only' do
+        expect(subject.errors[:value]).to include(I18n.t('activerecord.errors.messages.code_404'))
+        expect(subject.errors[:external_id]).to be_empty
+      end
+    end
   end
 
   describe '.fetch_external_data' do

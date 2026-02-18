@@ -8,8 +8,6 @@ class Champs::RNFChamp < Champ
   validates :value, allow_blank: true, format: {
     with: RNF_REGEXP, message: :invalid_rnf,
   }, if: :validate_champ_value?
-  validates_with ReferentielChampValidator, if: :validate_champ_value?
-
   def rnf_id
     external_id&.gsub(/[[:space:]]/, '')
   end

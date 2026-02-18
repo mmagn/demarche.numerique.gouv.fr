@@ -10,8 +10,6 @@ class Champs::ReferentielChamp < Champ
 
   before_save :clear_previous_result, if: -> { external_id_changed? }
 
-  validates_with ReferentielChampValidator, if: :validate_champ_value?
-
   def fetch_external_data
     ReferentielService.new(referentiel:).call(external_id).fmap do |data|
       {

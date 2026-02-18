@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
-class ReferentielChampValidator < ActiveModel::Validator
-  # case required, delegated to check_mandatory_and_visible_champs_public
+class ExternalDataChampValidator < ActiveModel::Validator
+  # Required checks are delegated to check_mandatory_and_visible_champs_public.
   def validate(record)
-    if record.pending? # user filled the field, but background job is still running / pending
+    if record.pending?
+      # User filled the field, but background job is still running.
       record.errors.add(:value, :api_response_pending)
-    elsif record.external_error? # user filled the field, but background job failed
+    elsif record.external_error?
+      # User filled the field, but background job failed.
       record.errors.add(:value, error_key_for_api_response_code(record))
     end
   end
