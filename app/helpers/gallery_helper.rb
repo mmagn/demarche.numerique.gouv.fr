@@ -28,13 +28,13 @@ module GalleryHelper
     blob.variable? && blob.content_type.in?(AUTHORIZED_IMAGE_TYPES)
   end
 
-  def representation_url_for(attachment)
-    return variant_url_for(attachment) if displayable_image?(attachment.blob)
+  def variant_url_for(attachment)
+    return image_variant_url_for(attachment) if displayable_image?(attachment.blob)
 
-    preview_url_for(attachment) if displayable_pdf?(attachment.blob)
+    pdf_preview_variant_url_for(attachment) if displayable_pdf?(attachment.blob)
   end
 
-  def preview_url_for(attachment)
+  def pdf_preview_variant_url_for(attachment)
     preview_image = attachment.blob.preview_image
     return unless preview_image.attached?
 
@@ -43,7 +43,7 @@ module GalleryHelper
   rescue StandardError
   end
 
-  def variant_url_for(attachment)
+  def image_variant_url_for(attachment)
     variant = attachment.variant(resize_to_limit: [400, 400])
     variant.key.present? ? variant.processed.url : nil
   rescue StandardError

@@ -16,8 +16,8 @@ RSpec.describe GalleryHelper, type: :helper do
     champ_pj.piece_justificative_file.attachments.first
   end
 
-  describe ".variant_url_for" do
-    subject { variant_url_for(attachment) }
+  describe ".image_variant_url_for" do
+    subject { image_variant_url_for(attachment) }
 
     context "when image attachment has a variant" do
       let(:file) { fixture_file_upload('spec/fixtures/files/logo_test_procedure.png', 'image/png') }
@@ -47,8 +47,8 @@ RSpec.describe GalleryHelper, type: :helper do
     end
   end
 
-  describe ".preview_url_for" do
-    subject { preview_url_for(attachment) }
+  describe ".pdf_preview_variant_url_for" do
+    subject { pdf_preview_variant_url_for(attachment) }
 
     context "when pdf attachment has a preview with variant" do
       let(:file) { fixture_file_upload('spec/fixtures/files/RIB.pdf', 'application/pdf') }
@@ -84,8 +84,8 @@ RSpec.describe GalleryHelper, type: :helper do
     end
   end
 
-  describe ".representation_url_for" do
-    subject { representation_url_for(attachment) }
+  describe ".variant_url_for" do
+    subject { variant_url_for(attachment) }
 
     context "when attachment is an image with no variant" do
       let(:file) { fixture_file_upload('spec/fixtures/files/logo_test_procedure.png', 'image/png') }
