@@ -184,6 +184,27 @@ class BatchOperation < ApplicationRecord
     dossiers.empty? ? super : nil
   end
 
+  def after_all_processed
+    return unless create_avis?
+
+    dossiers = Dossier.joins(:dossier_batch_operations)
+      .where(dossier_batch_operations: {
+        batch_operation_id: id,
+        state: :success,
+      })
+
+    avis = Avis
+      .includes(experts_procedure: :expert)
+      .where(dossier: dossiers)
+
+    avis.group_by { |a| a.experts_procedure.expert }
+      .each do |expert, expert_avis|
+      if should_notify?(expert_avis)
+        expert.user.invite_expert_and_send_avis!(expert_avis)
+      end
+    end
+  end
+
   private
 
   def dossier_operation(dossier)
@@ -192,5 +213,10 @@ class BatchOperation < ApplicationRecord
 
   def build_operations
     dossier_operations.build(dossiers.map { { dossier: _1 } })
+  end
+
+  def should_notify?(expert_avis)
+    experts_procedure = expert_avis.first.experts_procedure
+    experts_procedure&.notify_on_new_avis?
   end
 end
