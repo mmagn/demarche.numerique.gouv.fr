@@ -2,7 +2,6 @@
 fr:
   max_file_size: "Taille maximale autorisée : %{max_file_size}."
   allowed_formats: "Formats acceptés : %{formats}"
-  identity_expected: "Pièce attendue : Carte nationale d’identité (uniquement le recto), passeport, titre de séjour ou autre justificatif d’identité."
   retry: Réessayer
   delete: Supprimer
   delete_file: Supprimer le fichier %{filename}
