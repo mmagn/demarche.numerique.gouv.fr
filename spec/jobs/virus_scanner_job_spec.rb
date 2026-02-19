@@ -44,6 +44,35 @@ describe VirusScannerJob, type: :job do
     it { expect(blob.virus_scanner.safe?).to be_truthy }
   end
 
+  describe "enqueuing ImageProcessorJob after safe scan" do
+    before do
+      allow(ClamavService).to receive(:safe_file?).and_return(true)
+    end
+
+    context "with a processable image blob" do
+      let(:procedure) { create(:procedure) }
+      let(:file) { fixture_file_upload('spec/fixtures/files/logo_test_procedure.png', 'image/png') }
+      let(:blob) do
+        procedure.notice.attach(file)
+        procedure.notice.blob
+      end
+
+      it "enqueues ImageProcessorJob" do
+        expect {
+          VirusScannerJob.perform_now(blob)
+        }.to have_enqueued_job(ImageProcessorJob).with(blob)
+      end
+    end
+
+    context "with a non-processable blob" do
+      it "does not enqueue ImageProcessorJob" do
+        expect {
+          VirusScannerJob.perform_now(blob)
+        }.not_to have_enqueued_job(ImageProcessorJob)
+      end
+    end
+  end
+
   context "when a virus is found" do
     before do
       allow(ClamavService).to receive(:safe_file?).and_return(false)

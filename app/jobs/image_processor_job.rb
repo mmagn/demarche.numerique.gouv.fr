@@ -17,6 +17,10 @@ class ImageProcessorJob < ApplicationJob
 
   # If by the time the job runs the blob has been deleted, ignore the error
   discard_on ActiveRecord::RecordNotFound
+
+  # Safety net: if job is enqueued before virus scan completes, retry with short delay
+  # This shouldn't happen normally since VirusScannerJob now enqueues ImageProcessorJob
+  retry_on FileNotScannedYetError, wait: 10.seconds, attempts: 5
   # If the file is deleted during the scan, ignore the error
   discard_on ActiveStorage::FileNotFoundError
   discard_on ActiveRecord::InvalidForeignKey

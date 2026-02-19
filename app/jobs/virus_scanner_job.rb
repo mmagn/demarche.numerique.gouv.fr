@@ -15,5 +15,19 @@ class VirusScannerJob < ApplicationJob
     return if blob.virus_scanner.done?
 
     blob.update_columns(ActiveStorage::VirusScanner.new(blob).attributes)
+
+    enqueue_image_processing(blob) if blob.virus_scanner.safe?
+  end
+
+  private
+
+  def enqueue_image_processing(blob)
+    return if blob.nil?
+    return if blob.attachments.size != 1
+    return if blob.attachments.any? { _1.record_type.in?(["ActiveStorage::VariantRecord", "Export"]) }
+    return if !blob.content_type.in?(PROCESSABLE_TYPES)
+    return if blob.byte_size.zero? # some empty files may be considered as image depending on filename
+
+    ImageProcessorJob.perform_later(blob)
   end
 end
