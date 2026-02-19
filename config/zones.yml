@@ -1,6 +1,7 @@
 ministeres:
   - MAA:
     labels:
+      - '2025-10-29': "Ministère de l’Agriculture, de l’Agro-alimentaire et de la Souveraineté Alimentaire"
       - '2022-05-20': "Ministère de l’Agriculture et de la Souveraineté alimentaire"
       - '2020-07-06': "Ministère de l’Agriculture et de l’Alimentation"
     tchap_hs:
