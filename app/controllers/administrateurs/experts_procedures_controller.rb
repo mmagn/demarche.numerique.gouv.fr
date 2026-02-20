@@ -11,10 +11,7 @@ module Administrateurs
     end
 
     def create
-      emails = params['emails'].presence || []
-
-      emails, @maybe_typos = check_if_typo(emails)
-      errors = Array.wrap(generate_emails_suggestions_message(@maybe_typos))
+      emails, @maybe_typos, errors = parse_emails
 
       valid_users, invalid_users = emails
         .map { |email| User.create_or_promote_to_expert(email, SecureRandom.hex) }

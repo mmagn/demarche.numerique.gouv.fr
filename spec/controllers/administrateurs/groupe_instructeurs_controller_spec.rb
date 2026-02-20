@@ -618,7 +618,7 @@ describe Administrateurs::GroupeInstructeursController, type: :controller do
         before do
           allow(GroupeInstructeurMailer).to receive(:notify_added_instructeurs)
             .and_return(double(deliver_later: true))
-          allow(GroupeInstructeurMailer).to receive(:confirm_and_notify_added_instructeur_from_groupes_import)
+          allow(GroupeInstructeurMailer).to receive(:confirm_and_notify_added_instructeur_in_many_groupes)
             .and_return(double(deliver_later: true))
           subject
         end
@@ -628,7 +628,7 @@ describe Administrateurs::GroupeInstructeursController, type: :controller do
           expect(flash.notice).to be_present
           expect(flash.notice).to eq("La liste des instructeurs a été importée avec succès")
           expect(GroupeInstructeurMailer).not_to have_received(:notify_added_instructeurs)
-          expect(GroupeInstructeurMailer).to have_received(:confirm_and_notify_added_instructeur_from_groupes_import).exactly(4).times
+          expect(GroupeInstructeurMailer).to have_received(:confirm_and_notify_added_instructeur_in_many_groupes).exactly(4).times
         end
       end
 
@@ -638,14 +638,14 @@ describe Administrateurs::GroupeInstructeursController, type: :controller do
         before do
           allow(GroupeInstructeurMailer).to receive(:notify_added_instructeurs)
             .and_return(double(deliver_later: true))
-          allow(GroupeInstructeurMailer).to receive(:confirm_and_notify_added_instructeur_from_groupes_import)
+          allow(GroupeInstructeurMailer).to receive(:confirm_and_notify_added_instructeur_in_many_groupes)
             .and_return(double(deliver_later: true))
           subject
         end
 
         it 'works' do
           expect(GroupeInstructeurMailer).not_to have_received(:notify_added_instructeurs)
-          expect(GroupeInstructeurMailer).to have_received(:confirm_and_notify_added_instructeur_from_groupes_import).exactly(4).times
+          expect(GroupeInstructeurMailer).to have_received(:confirm_and_notify_added_instructeur_in_many_groupes).exactly(4).times
           expect(procedure.groupe_instructeurs.pluck(:label)).to match_array(["Marne", "Loire", "deuxième groupe", "défaut"])
           expect(flash.notice).to be_present
           expect(flash.notice).to eq("La liste des instructeurs a été importée avec succès")
@@ -658,7 +658,7 @@ describe Administrateurs::GroupeInstructeursController, type: :controller do
         before do
           allow(GroupeInstructeurMailer).to receive(:notify_added_instructeurs)
             .and_return(double(deliver_later: true))
-          allow(GroupeInstructeurMailer).to receive(:confirm_and_notify_added_instructeur_from_groupes_import)
+          allow(GroupeInstructeurMailer).to receive(:confirm_and_notify_added_instructeur_in_many_groupes)
             .and_return(double(deliver_later: true))
           subject
         end
@@ -668,7 +668,7 @@ describe Administrateurs::GroupeInstructeursController, type: :controller do
           expect(flash.notice).to eq("La liste des instructeurs a été importée avec succès")
           expect(procedure.groupe_instructeurs.pluck(:label)).to match_array(["Auvergne-Rhône-Alpes", "Vendée", "deuxième groupe", "défaut"])
           expect(GroupeInstructeurMailer).not_to have_received(:notify_added_instructeurs)
-          expect(GroupeInstructeurMailer).to have_received(:confirm_and_notify_added_instructeur_from_groupes_import).exactly(4).times
+          expect(GroupeInstructeurMailer).to have_received(:confirm_and_notify_added_instructeur_in_many_groupes).exactly(4).times
         end
       end
 
@@ -1127,6 +1127,83 @@ describe Administrateurs::GroupeInstructeursController, type: :controller do
     it do
       expect(response).to redirect_to(admin_procedure_groupe_instructeur_path(procedure, gi_1_1))
       expect(gi_1_1.signature).to be_attached
+    end
+  end
+
+  describe '#add_instructeur_to_all_groupes' do
+    let(:new_instructeur_email) { 'bulk_new@gouv.fr' }
+
+    before do
+      allow(GroupeInstructeurMailer).to receive(:notify_added_instructeur_in_many_groupes)
+        .and_return(double(deliver_later: true))
+      allow(GroupeInstructeurMailer).to receive(:confirm_and_notify_added_instructeur_in_many_groupes)
+        .and_return(double(deliver_later: true))
+    end
+
+    subject do
+      post :add_instructeur_to_all_groupes,
+        params: { procedure_id: procedure.id, emails: [new_instructeur_email] }
+    end
+
+    it 'adds the instructeur to all active groups' do
+      subject
+      instructeur = Instructeur.by_email(new_instructeur_email)
+      expect(instructeur).to be_present
+      procedure.groupe_instructeurs.active.each do |gi|
+        expect(gi.instructeurs).to include(instructeur)
+      end
+      expect(flash[:notice]).to be_present
+      expect(response).to redirect_to(admin_procedure_groupe_instructeurs_path(procedure))
+    end
+
+    context 'with an invalid email' do
+      let(:new_instructeur_email) { 'not-an-email' }
+
+      it 'displays an error' do
+        subject
+        expect(flash[:alert]).to be_present
+      end
+    end
+  end
+
+  describe '#remove_instructeur_from_all_groupes' do
+    let!(:instructeur_to_remove) { create(:instructeur) }
+    let!(:other_instructeur) { create(:instructeur) }
+
+    before do
+      allow(GroupeInstructeurMailer).to receive(:notify_removed_instructeur_from_all_groupes)
+        .and_return(double(deliver_later: true))
+      procedure.groupe_instructeurs.active.each do |gi|
+        gi.add_instructeurs(emails: [instructeur_to_remove.email, other_instructeur.email])
+      end
+    end
+
+    subject do
+      delete :remove_instructeur_from_all_groupes,
+        params: { procedure_id: procedure.id, emails: [instructeur_to_remove.email] }
+    end
+
+    it 'removes the instructeur from all groups' do
+      subject
+      procedure.groupe_instructeurs.active.each do |gi|
+        expect(gi.reload.instructeurs).not_to include(instructeur_to_remove)
+      end
+      expect(flash[:notice]).to be_present
+      expect(response).to redirect_to(admin_procedure_groupe_instructeurs_path(procedure))
+    end
+
+    context 'when the instructeur is the only one in a group' do
+      before do
+        gi_1_2.instructeurs.where.not(id: instructeur_to_remove.id).each { gi_1_2.remove(_1) }
+      end
+
+      it 'skips the group where the instructeur is the last one and removes from others' do
+        subject
+        expect(gi_1_2.reload.instructeurs).to include(instructeur_to_remove)
+        expect(gi_1_1.reload.instructeurs).not_to include(instructeur_to_remove)
+        expect(flash[:alert]).to include(instructeur_to_remove.email)
+        expect(flash[:notice]).to be_nil
+      end
     end
   end
 

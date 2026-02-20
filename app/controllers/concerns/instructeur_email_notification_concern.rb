@@ -16,15 +16,15 @@ module InstructeurEmailNotificationConcern
       end
     end
 
-    def notify_instructeur_after_groupes_import(instructeur, groupes)
+    def notify_instructeur_added_in_many_groupes(instructeur, groupes)
       if instructeur.user.email_verified_at
         GroupeInstructeurMailer
-          .notify_added_instructeur_from_groupes_import(instructeur, groupes, current_administrateur.email)
+          .notify_added_instructeur_in_many_groupes(instructeur, groupes, current_administrateur.email)
           .deliver_later
       else
         if instructeur.should_receive_email_activation?
           GroupeInstructeurMailer
-            .confirm_and_notify_added_instructeur_from_groupes_import(instructeur, groupes, current_administrateur.email)
+            .confirm_and_notify_added_instructeur_in_many_groupes(instructeur, groupes, current_administrateur.email)
             .deliver_later
         end
       end
