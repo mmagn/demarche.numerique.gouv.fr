@@ -31,6 +31,15 @@ module EmailSanitizableConcern
     [emails, maybe_typos]
   end
 
+  def parse_emails
+    emails_with_typos = JSON.parse(params[:emails_with_typos]) if params[:emails_with_typos]
+    emails = params['emails'].presence || []
+    emails.push(emails_with_typos).flatten! if emails_with_typos
+    emails, maybe_typos = check_if_typo(emails)
+    errors = Array.wrap(generate_emails_suggestions_message(maybe_typos))
+    [emails, maybe_typos, errors]
+  end
+
   class EmailSanitizer
     def self.sanitize(value)
       value.gsub(/[[:space:]]/, ' ').strip.downcase
