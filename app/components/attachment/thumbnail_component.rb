@@ -8,7 +8,7 @@ class Attachment::ThumbnailComponent < ApplicationComponent
 
   def initialize(attachment:, small: false, top_classes: '')
     @attachment, @small, @top_classes = attachment, small, top_classes
-    @thumbnail_url = representation_url_for(attachment)
+    @thumbnail_url = variant_url_for(attachment)
   end
 
   def size_class = small ? 'thumbnail-100' : 'thumbnail-200'
