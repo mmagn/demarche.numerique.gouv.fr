@@ -19,6 +19,7 @@ module AttachmentVirusScannerConcern
   def scan_for_virus_later
     return if blob.nil?
     return if record_type == "ActiveStorage::VariantRecord"
+    return if name == "preview_image" # PDF previews generated server-side
 
     # do not scan if the blob is already marked as safe
     # usually because of metadata[:virus_scan_result] = ActiveStorage::VirusScanner::SAFE
