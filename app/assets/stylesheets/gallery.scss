@@ -20,6 +20,7 @@
 .lg-has-iframe {
   width: 80% !important;
   margin-top: 50px;
+  height: calc(100% - 50px) !important;
 }
 
 .lg-icon {
