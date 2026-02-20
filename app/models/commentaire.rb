@@ -30,7 +30,7 @@ class Commentaire < ApplicationRecord
   scope :to_notify, -> (instructeur_id) {
     where.not(email: SYSTEM_EMAILS)
       .where(discarded_at: nil)
-      .where("instructeur_id IS NULL OR instructeur_id != ?", instructeur_id)
+      .where("commentaires.instructeur_id IS NULL OR commentaires.instructeur_id != ?", instructeur_id)
   }
 
   after_create :notify
