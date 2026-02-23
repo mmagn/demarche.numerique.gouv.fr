@@ -15,23 +15,7 @@ describe RechercheController, type: :controller do
 
   let(:user) { instructeur.user }
 
-  before do
-    instructeur.assign_to_procedure(dossier.procedure)
-
-    dossier.project_champs_public[0].value = "Name of district A"
-    dossier.project_champs_public[1].value = "75000"
-    dossier.project_champs_private[0].value = "Dossier A is complete"
-    dossier.project_champs_private[1].value = "Dossier A is valid"
-    dossier.save!
-
-    dossier_with_expert.project_champs_public[0].value = "Name of district B"
-    dossier_with_expert.project_champs_public[1].value = "93100"
-    dossier_with_expert.project_champs_private[0].value = "Dossier B is incomplete"
-    dossier_with_expert.project_champs_private[1].value = "Dossier B is invalid"
-    dossier_with_expert.save!
-
-    perform_enqueued_jobs(only: DossierIndexSearchTermsJob)
-  end
+  before { instructeur.assign_to_procedure(dossier.procedure) }
 
   describe 'GET #index' do
     before { sign_in(user) }
@@ -154,6 +138,17 @@ describe RechercheController, type: :controller do
     end
 
     describe 'by champs' do
+      before do
+        dossier.project_champs_public[0].value = "Name of district A"
+        dossier.project_champs_public[1].value = "75000"
+        dossier.save!
+
+        dossier_with_expert.project_champs_public[0].value = "Name of district B"
+        dossier_with_expert.save!
+
+        perform_enqueued_jobs(only: DossierIndexSearchTermsJob)
+      end
+
       context 'when search is a string' do
         let(:query) { 'district A' }
 
@@ -205,7 +200,14 @@ describe RechercheController, type: :controller do
     describe 'by private annotations' do
       let(:query) { 'invalid' }
 
-      before { subject }
+      before do
+        dossier_with_expert.project_champs_private[1].value = "Dossier B is invalid"
+        dossier_with_expert.save!
+
+        perform_enqueued_jobs(only: DossierIndexSearchTermsJob)
+
+        subject
+      end
 
       it { is_expected.to have_http_status(200) }
 
