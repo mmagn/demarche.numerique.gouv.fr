@@ -232,20 +232,17 @@ describe ImageProcessorJob, type: :job do
   end
 
   describe 'error handling' do
-    let(:attachment) { blob.attachments.first }
-    let(:representation_double) { instance_double("ActiveStorage::Variant") }
-
     before do
+      virus_scanner_mock = instance_double("ActiveStorage::VirusScanner", pending?: false)
+      allow(blob).to receive(:virus_scanner).and_return(virus_scanner_mock)
       allow(blob).to receive(:representation_required?).and_return(true)
-      allow(attachment).to receive(:representable?).and_return(true)
-      allow(attachment).to receive(:representation).and_return(representation_double)
-      allow(representation_double).to receive(:processed).and_raise(
-        MiniMagick::Error.new(error_message)
-      )
     end
 
     context 'when ImageMagick raises a "width or height exceeds limit" error' do
-      let(:error_message) { "width or height exceeds limit" }
+      before do
+        allow_any_instance_of(described_class).to receive(:create_representations)
+          .and_raise(MiniMagick::Error.new("width or height exceeds limit"))
+      end
 
       it 'completes successfully without raising an error' do
         expect {
@@ -267,7 +264,10 @@ describe ImageProcessorJob, type: :job do
     end
 
     context 'when ImageMagick raises an unknown error' do
-      let(:error_message) { "unknown error" }
+      before do
+        allow_any_instance_of(described_class).to receive(:create_representations)
+          .and_raise(MiniMagick::Error.new("unknown error"))
+      end
 
       it 'enqueues a retry job' do
         expect {

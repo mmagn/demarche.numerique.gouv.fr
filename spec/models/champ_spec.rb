@@ -545,7 +545,12 @@ describe Champ do
 
       it 'watermarks the file', :external_deps do
         subject
-        perform_enqueued_jobs
+        blob = champ.piece_justificative_file.first.blob
+
+        perform_enqueued_jobs(only: VirusScannerJob)
+        expect(blob.reload.virus_scanner.safe?).to be_truthy
+
+        perform_enqueued_jobs(only: ImageProcessorJob)
         expect(champ.reload.piece_justificative_file.first.watermark_pending?).to be_falsy
         expect(champ.reload.piece_justificative_file.first.blob.watermark_done?).to be_truthy
       end

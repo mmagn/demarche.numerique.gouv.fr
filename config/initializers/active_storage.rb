@@ -27,7 +27,6 @@ end
 
 ActiveSupport.on_load(:active_storage_attachment) do
   include AttachmentVirusScannerConcern
-  include AttachmentImageProcessorConcern
 end
 
 Rails.application.reloader.to_prepare do
