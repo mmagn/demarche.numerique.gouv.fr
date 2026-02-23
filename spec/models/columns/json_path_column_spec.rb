@@ -57,6 +57,66 @@ describe Columns::JSONPathColumn do
       end
     end
 
+    context 'with date range' do
+      let(:jsonpath) { '$.issue_date' }
+      let(:column) { described_class.new(procedure_id: procedure.id, label: 'label', stable_id:, tdc_type:, jsonpath:, type: :date, displayable: true, mandatory: true) }
+      let(:dossier_in_range)  { create(:dossier, procedure:) }
+      let(:dossier_out_range) { create(:dossier, procedure:) }
+
+      context 'bounded on both sides (this_year)' do
+        before do
+          dossier_in_range.champs.first.update(value_json: { issue_date: Date.current.iso8601 })
+          dossier_out_range.champs.first.update(value_json: { issue_date: 5.years.ago.to_date.iso8601 })
+        end
+
+        subject { column.filtered_ids(Dossier.all, { operator: 'this_year' }) }
+
+        it do
+          is_expected.to include(dossier_in_range.id)
+          is_expected.not_to include(dossier_out_range.id)
+        end
+      end
+
+      context 'bounded only on the right (before operator)' do
+        before do
+          dossier_in_range.champs.first.update(value_json: { issue_date: '2020-06-15' })
+          dossier_out_range.champs.first.update(value_json: { issue_date: '2022-06-15' })
+        end
+
+        subject { column.filtered_ids(Dossier.all, { operator: 'before', value: ['2021-01-01'] }) }
+
+        it do
+          is_expected.to include(dossier_in_range.id)
+          is_expected.not_to include(dossier_out_range.id)
+        end
+      end
+
+      context 'bounded only on the left (after operator)' do
+        before do
+          dossier_in_range.champs.first.update(value_json: { issue_date: '2022-06-15' })
+          dossier_out_range.champs.first.update(value_json: { issue_date: '2020-06-15' })
+        end
+
+        subject { column.filtered_ids(Dossier.all, { operator: 'after', value: ['2021-01-01'] }) }
+
+        it do
+          is_expected.to include(dossier_in_range.id)
+          is_expected.not_to include(dossier_out_range.id)
+        end
+      end
+
+      context 'nil..nil range' do
+        before do
+          dossier_in_range.champs.first.update(value_json: { issue_date: '2022-06-15' })
+          dossier_out_range.champs.first.update(value_json: { issue_date: '2020-06-15' })
+        end
+
+        subject { column.filtered_ids(Dossier.all, { operator: 'after', value: [nil] }) }
+
+        it { is_expected.to include(dossier_in_range.id, dossier_out_range.id) }
+      end
+    end
+
     context 'with blank filter values' do
       let(:jsonpath) { '$.postal_code' }
       let(:dossier1) { create(:dossier, procedure:) }
