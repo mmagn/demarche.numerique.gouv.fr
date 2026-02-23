@@ -42,10 +42,8 @@
   ],
   "quotient_familial": {
     "valeur": 464,
-    "mois": 12,
-    "annee": 2023,
+    "periode_effective": "2023-12-01",
     "fournisseur": "CAF",
-    "mois_calcul": 12,
-    "annee_calcul": 2023
+    "periode_calcul": "2023-12-01"
   }
 }

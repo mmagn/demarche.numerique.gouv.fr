@@ -56,8 +56,7 @@ describe TypesDeChamp::QuotientFamilialTypeDeChamp do
         "qf – [Allocataire 2] Nom de naissance",
         "qf – [Allocataire 2] Prénoms",
         "qf – Valeur du QF",
-        "qf – Mois du QF",
-        "qf – Année du QF",
+        "qf – Période du QF",
       ]
 
       expect(columns.map(&:label)).to match_array(expected_columns)

@@ -44,7 +44,7 @@ class Dossiers::QuotientFamilialComponent < ApplicationComponent
 
   def champ_content
     if fc_data_correct?
-      render QuotientFamilial::QuotientFamilialComponent.new(qf_data: champ.value_json, with_header: false)
+      render QuotientFamilial::QuotientFamilialComponent.new(qf_data: champ.value_json['api_part'], with_header: false)
     else
       render partial: "shared/champs/piece_justificative/show", locals: { champ:, profile: }
     end

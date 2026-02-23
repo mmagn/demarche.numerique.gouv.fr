@@ -25,6 +25,14 @@ class Champs::QuotientFamilialChamp < Champ
     api.quotient_familial(fci)
   end
 
+  def update_external_data!(data)
+    hash = {
+      data: { api_part: data },
+      value_json: { api_part: extract_value_json(data:) },
+    }
+    super(hash)
+  end
+
   def clear_piece_justificative
     if fc_data_correct? && self.piece_justificative_file.attached?
       self.piece_justificative_file.purge_later
@@ -39,5 +47,20 @@ class Champs::QuotientFamilialChamp < Champ
     else
       I18n.t('api_particulier.libelle.quotient_familial.default')
     end
+  end
+
+  private
+
+  def extract_value_json(data:)
+    qf_data = data[:quotient_familial]
+
+    extract_qf_data = {
+      fournisseur: qf_data[:fournisseur],
+      valeur: qf_data[:valeur],
+      periode_effective: Date.new(qf_data[:annee], qf_data[:mois]).iso8601,
+      periode_calcul: Date.new(qf_data[:annee_calcul], qf_data[:mois_calcul]).iso8601,
+    }
+
+    data.merge(quotient_familial: extract_qf_data)
   end
 end

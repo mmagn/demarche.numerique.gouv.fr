@@ -23,7 +23,7 @@ class EditableChamp::QuotientFamilialComponent < EditableChamp::EditableChampBas
         )
       )
     else
-      @champ.value_json
+      @champ.value_json['api_part']
     end
   end
 end

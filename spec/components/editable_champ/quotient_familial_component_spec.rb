@@ -24,20 +24,20 @@ describe EditableChamp::QuotientFamilialComponent, type: :component do
   end
 
   context "when data have been recovered from API Particulier" do
-    let(:data) {
+    let(:value_json) {
       {
-        "quotient_familial": {
-          "valeur": 464,
-          "mois": 12,
-          "annee": 2023,
-          "fournisseur": "CAF",
-          "mois_calcul": 12,
-          "annee_calcul": 2023,
+        api_part: {
+          "quotient_familial": {
+            "valeur": 464,
+            "periode_effective": "2023-12-01",
+            "fournisseur": "CAF",
+            "periode_calcul": "2023-12-01",
+          },
         },
       }
     }
 
-    before { champ.update(value_json: data, external_state: 'fetched') }
+    before { champ.update(value_json:, external_state: 'fetched') }
 
     it 'renders data from API Particulier' do
       expect(subject).to have_text("Quotient familial CAF")

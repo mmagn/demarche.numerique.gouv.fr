@@ -2,13 +2,12 @@
 
 class Columns::QuotientFamilialColumn < Columns::JSONPathColumn
   QUOTIENT_FAMILIAL_COLUMNS = [
-    ['[Allocataire 1] Nom de naissance', '$.allocataires[0].nom_naissance'],
-    ['[Allocataire 1] Prénoms', '$.allocataires[0].prenoms'],
-    ['[Allocataire 2] Nom de naissance', '$.allocataires[1].nom_naissance'],
-    ['[Allocataire 2] Prénoms', '$.allocataires[1].prenoms'],
-    ['Valeur du QF', '$.quotient_familial.valeur'],
-    ['Mois du QF', '$.quotient_familial.mois'],
-    ['Année du QF', '$.quotient_familial.annee'],
+    ['[Allocataire 1] Nom de naissance', '$.api_part.allocataires[0].nom_naissance'],
+    ['[Allocataire 1] Prénoms', '$.api_part.allocataires[0].prenoms'],
+    ['[Allocataire 2] Nom de naissance', '$.api_part.allocataires[1].nom_naissance'],
+    ['[Allocataire 2] Prénoms', '$.api_part.allocataires[1].prenoms'],
+    ['Valeur du QF', '$.api_part.quotient_familial.valeur'],
+    ['Période du QF', '$.api_part.quotient_familial.periode_effective'],
   ]
 
   private

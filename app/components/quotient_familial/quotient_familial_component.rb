@@ -48,7 +48,7 @@ class QuotientFamilial::QuotientFamilialComponent < ApplicationComponent
   def qf_values(qf)
     [
       ["Valeur :", number_with_delimiter(qf["valeur"], delimiter: " ")],
-      ["Période effective :", I18n.l(Date.new(qf["annee"].to_i, qf["mois"].to_i, 1), format: "%m/%Y")],
+      ["Période effective :", I18n.l(Date.parse(qf["periode_effective"]), format: "%m/%Y")],
     ]
   end
 

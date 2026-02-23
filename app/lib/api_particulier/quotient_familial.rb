@@ -65,7 +65,7 @@ class APIParticulier::QuotientFamilial
     if response.success?
       return Failure(retryable: false, reason: StandardError.new("Not retryable: invalid schema"), code: :invalid_schema) if !schema.valid?(body[:data])
 
-      Success({ value_json: body[:data] })
+      Success(body[:data])
     else
       Failure(retryable: false, reason: StandardError.new("Not retryable: #{body.dig(:errors)}"), code: response.code)
     end
