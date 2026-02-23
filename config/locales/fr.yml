@@ -26,6 +26,8 @@ fr:
   clipboard:
     copy: 'Cliquer pour copier'
     copied: 'Copié'
+    copy_procedure_link: 'Cliquer pour copier le lien usager de la démarche'
+    copied_procedure_link: 'Le lien usager est copié'
   help: 'Aide'
   help_dropdown:
     procedure_title: "Une question sur cette démarche ?"

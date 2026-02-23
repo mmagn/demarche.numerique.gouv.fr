@@ -5,16 +5,19 @@
  * 3. Optionally use `data-to-copy` attribute to specify exact text to copy
  * 4. Optionally use `.copy-zone{ 'data-to-copy': 'coucou' }` to copy specific text
  * 5. Optionally use `data-copy-message-placeholder` to control message placement
+ * 6. Optionally use `data-copy-text` / `data-copied-text` on a `.copy-zone` to override the default badge texts
  */
 import { Controller } from '@hotwired/stimulus';
 
 export class Clipboard2Controller extends Controller {
   static values = {
     copyText: String,
-    copiedText: String
+    copiedText: String,
+    copyIconClassName: { type: String, default: 'fr-icon-clipboard-line' }
   };
 
   declare readonly copyTextValue: string;
+  declare readonly copyIconClassNameValue: string;
   declare readonly copiedTextValue: string;
 
   connect(): void {
@@ -28,7 +31,11 @@ export class Clipboard2Controller extends Controller {
   private setupChampHoverListeners(): void {
     [...this.element.querySelectorAll<HTMLElement>('.copy-zone')]
       // cannot use innerText because of possible hidden/folded elements
-      .filter((wrapper) => wrapper.textContent?.trim() !== '')
+      .filter(
+        (wrapper) =>
+          wrapper.textContent?.trim() !== '' ||
+          wrapper.querySelector('.copy-zone-trigger-icon')
+      )
       .forEach((wrapper) => {
         const button = this.createButton();
         this.insertButton(wrapper, button);
@@ -116,13 +123,13 @@ export class Clipboard2Controller extends Controller {
 
   private setCopyState(button: HTMLButtonElement): void {
     button.textContent = this.copyTextValue;
-    button.classList.add('fr-icon-clipboard-line');
+    button.classList.add(this.copyIconClassNameValue);
     button.classList.remove('fr-icon-check-line');
   }
 
   private setCopiedState(button: HTMLButtonElement): void {
     button.textContent = this.copiedTextValue;
-    button.classList.remove('fr-icon-clipboard-line');
+    button.classList.remove(this.copyIconClassNameValue);
     button.classList.add('fr-icon-check-line');
   }
 }

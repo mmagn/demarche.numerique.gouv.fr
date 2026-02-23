@@ -23,8 +23,9 @@ RSpec.describe Instructeurs::ProcedureSummaryComponent, type: :component do
     expect(page).to have_text(procedure.id)
   end
 
-  it 'contains copy link' do
+  it 'contains accessible copy link using clipboard2' do
     render_inline(component)
-    expect(page).to have_selector('.fr-icon-clipboard-line')
+    expect(page).to have_selector('[data-controller~="clipboard2"]')
+    expect(page).to have_selector('.copy-zone[data-to-copy]', count: 2)
   end
 end
