@@ -63,6 +63,7 @@
               <li>
                 <%= link_to t('instructeurs.dossiers.header.banner.history.title'), procedure_history_instructeur_procedure_path(procedure), class: 'fr-nav__link' %>
               </li>
+
               <li>
                 <%= link_to t('instructeurs.dossiers.header.banner.administrators_list'), administrateurs_instructeur_procedure_path(p), class: 'fr-nav__link' %>
               </li>
@@ -117,17 +118,25 @@
                 <%= link_to t('instructeurs.dossiers.header.banner.preview'), apercu_instructeur_procedure_path(p), target: "_blank", rel: "noopener", class: 'fr-nav__link' %>
               </li>
 
-              <li>
-                <span
-                  class="copy-zone"
-                  data-to-copy="<%= commencer_url(p.path) %>"
+              <li
+                data-controller="clipboard-inline"
+                data-clipboard-inline-to-copy-value="<%= commencer_url(p.path) %>"
+                data-clipboard-inline-copied-text-value="<%= t('clipboard.copied_procedure_link') %>"
+              >
+                <button
+                  type="button"
+                  class="fr-nav__link fr-link--icon-left fr-icon-links-line"
+                  data-action="click->clipboard-inline#copy"
+                  data-clipboard-inline-target="label"
                 >
-                  <span class="fr-nav__link">
-                    <%= t('instructeurs.dossiers.header.banner.copy_link_button') %>
-                  </span>
+                  <%= t('instructeurs.dossiers.header.banner.copy_link_button') %>
+                </button>
 
-                  <span data-copy-message-placeholder></span>
-                </span>
+                <span
+                  class="fr-sr-only"
+                  aria-live="polite"
+                  data-clipboard-inline-target="liveRegion"
+                ></span>
               </li>
             </ul>
           </li>
