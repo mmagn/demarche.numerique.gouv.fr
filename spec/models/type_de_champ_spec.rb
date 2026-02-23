@@ -237,15 +237,25 @@ describe TypeDeChamp do
   describe '#drop_down_options' do
     let(:type_de_champ) { create(:type_de_champ_drop_down_list) }
 
-    it "splits input" do
+    it "splits input and normalizes spaces" do
       type_de_champ.drop_down_options_from_text = nil
       expect(type_de_champ.drop_down_options).to eq([])
 
       type_de_champ.drop_down_options_from_text = "\n\r"
       expect(type_de_champ.drop_down_options).to eq([])
 
-      type_de_champ.drop_down_options_from_text = " 1 / 2 \r\n 3"
-      expect(type_de_champ.drop_down_options).to eq(['1 / 2', '3'])
+      type_de_champ.drop_down_options_from_text = " 1  /   2 \r\n 3    4\r\n   "
+      expect(type_de_champ.drop_down_options).to eq(['1 / 2', '3 4'])
+    end
+
+    it "normalizes on direct assignment" do
+      type_de_champ.drop_down_options = ["  foo   bar  ", "", "   ", "baz"]
+      expect(type_de_champ.drop_down_options).to eq(["foo bar", "baz"])
+    end
+
+    it "normalizes on update!" do
+      type_de_champ.update!(drop_down_options: ["  foo   bar  ", "baz   qux", ""])
+      expect(type_de_champ.reload.drop_down_options).to eq(["foo bar", "baz qux"])
     end
   end
 
