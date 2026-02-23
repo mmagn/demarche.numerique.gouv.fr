@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe RechercheController, type: :controller do
-  let(:procedure) {
+  let_it_be(:procedure) {
     create(:procedure, :published,
                        :for_individual,
                        types_de_champ_public: [{ type: :text }, { type: :text }],
