@@ -72,6 +72,15 @@ RSpec.describe Attachment::MultipleComponent, type: :component do
     end
   end
 
+  context 'when champ is a piece_justificative with titre_identite nature' do
+    let(:types_de_champ_public) { [{ type: :piece_justificative, nature: 'TITRE_IDENTITE' }] }
+    let(:dossier) { create(:dossier, procedure:) }
+
+    it 'renders the identity_hint text' do
+      expect(subject).to have_content("Pièce attendue")
+    end
+  end
+
   context 'max attachments' do
     let(:kwargs) { { max: 1 } }
 

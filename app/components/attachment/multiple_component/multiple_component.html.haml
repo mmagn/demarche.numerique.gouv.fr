@@ -3,6 +3,9 @@
 
   - if show_hint?
     %p.fr-hint-text.fr-mb-1w{ id: describedby_hint_id }
+      - if champ&.titre_identite_nature?
+        = t('.identity_hint')
+        %br
       - if max_file_size.present?
         = t('.max_file_size', max_file_size: number_to_human_size(max_file_size))
       - if allowed_formats.present?
