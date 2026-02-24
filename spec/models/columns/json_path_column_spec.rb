@@ -117,6 +117,55 @@ describe Columns::JSONPathColumn do
       end
     end
 
+    context 'with integer' do
+      let(:jsonpath) { '$.issue_integer' }
+      let(:column) { described_class.new(procedure_id: procedure.id, label: 'label', stable_id:, tdc_type:, jsonpath:, type: :integer, displayable: true, mandatory: true) }
+      let(:dossier_match) { create(:dossier, procedure:) }
+      let(:dossier_no_match) { create(:dossier, procedure:) }
+
+      before do
+        dossier_match.champs.first.update(value_json: { issue_integer: 2000 })
+        dossier_no_match.champs.first.update(value_json: { issue_integer: 2012 })
+      end
+
+      subject { column.filtered_ids(Dossier.all, { operator: 'match', value: }) }
+
+      context 'with exact integer match' do
+        let(:value) { ['2000'] }
+
+        it do
+          is_expected.to include(dossier_match.id)
+          is_expected.not_to include(dossier_no_match.id)
+        end
+      end
+
+      context 'with multiple integer values' do
+        let(:value) { ['2000', '1234'] }
+
+        it do
+          is_expected.to include(dossier_match.id)
+          is_expected.not_to include(dossier_no_match.id)
+        end
+      end
+
+      context 'with non integer search term' do
+        let(:value) { ['abc'] }
+
+        it 'returns all dossiers (nothing filterable)' do
+          is_expected.to include(dossier_match.id, dossier_no_match.id)
+        end
+      end
+
+      context 'with mixed valid and invalid terms' do
+        let(:value) { ['abc', '2000'] }
+
+        it do
+          is_expected.to include(dossier_match.id)
+          is_expected.not_to include(dossier_no_match.id)
+        end
+      end
+    end
+
     context 'with blank filter values' do
       let(:jsonpath) { '$.postal_code' }
       let(:dossier1) { create(:dossier, procedure:) }
