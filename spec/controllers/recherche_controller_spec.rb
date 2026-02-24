@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe RechercheController, type: :controller do
-  let(:procedure) {
+  let_it_be(:procedure) {
     create(:procedure, :published,
                        :for_individual,
                        types_de_champ_public: [{ type: :text }, { type: :text }],
@@ -15,23 +15,7 @@ describe RechercheController, type: :controller do
 
   let(:user) { instructeur.user }
 
-  before do
-    instructeur.assign_to_procedure(dossier.procedure)
-
-    dossier.project_champs_public[0].value = "Name of district A"
-    dossier.project_champs_public[1].value = "75000"
-    dossier.project_champs_private[0].value = "Dossier A is complete"
-    dossier.project_champs_private[1].value = "Dossier A is valid"
-    dossier.save!
-
-    dossier_with_expert.project_champs_public[0].value = "Name of district B"
-    dossier_with_expert.project_champs_public[1].value = "93100"
-    dossier_with_expert.project_champs_private[0].value = "Dossier B is incomplete"
-    dossier_with_expert.project_champs_private[1].value = "Dossier B is invalid"
-    dossier_with_expert.save!
-
-    perform_enqueued_jobs(only: DossierIndexSearchTermsJob)
-  end
+  before { instructeur.assign_to_procedure(dossier.procedure) }
 
   describe 'GET #index' do
     before { sign_in(user) }
@@ -42,13 +26,9 @@ describe RechercheController, type: :controller do
       context 'when instructeur own the dossier' do
         let(:query) { dossier.id }
 
-        before { subject }
-
-        it { is_expected.to have_http_status(200) }
-
         it 'returns the expected dossier' do
-          expect(assigns(:projected_dossiers).count).to eq(1)
-          expect(assigns(:projected_dossiers).first).to eq(dossier)
+          is_expected.to have_http_status(200)
+          expect(assigns(:projected_dossiers)).to match_array([dossier])
         end
       end
 
@@ -56,13 +36,9 @@ describe RechercheController, type: :controller do
         let(:user) { avis.experts_procedure.expert.user }
         let(:query) { dossier_with_expert.id }
 
-        before { subject }
-
-        it { is_expected.to have_http_status(200) }
-
         it 'returns the expected dossier' do
-          expect(assigns(:projected_dossiers).count).to eq(1)
-          expect(assigns(:projected_dossiers).first).to eq(dossier_with_expert)
+          is_expected.to have_http_status(200)
+          expect(assigns(:projected_dossiers)).to match_array([dossier_with_expert])
         end
       end
 
@@ -70,11 +46,9 @@ describe RechercheController, type: :controller do
         let(:dossier2) { create(:dossier, :en_construction) }
         let(:query) { dossier2.id }
 
-        it { is_expected.to have_http_status(200) }
-
         it 'does not return the dossier' do
-          subject
-          expect(assigns(:projected_dossiers).count).to eq(0)
+          is_expected.to have_http_status(200)
+          expect(assigns(:projected_dossiers)).to be_empty
           expect(assigns(:dossier_not_in_instructor_group)).to eq(nil)
         end
       end
@@ -84,10 +58,8 @@ describe RechercheController, type: :controller do
         let(:query) { dossier2.id }
         before { dossier2.update(groupe_instructeur_id: nil) }
 
-        it { is_expected.to have_http_status(200) }
-
         it 'does not return the dossier' do
-          subject
+          is_expected.to have_http_status(200)
           expect(assigns(:projected_dossiers)).to eq([])
           expect(assigns(:dossier_not_in_instructor_group)).to eq(nil)
         end
@@ -102,10 +74,8 @@ describe RechercheController, type: :controller do
 
         let(:query) { dossier3.id }
 
-        it { is_expected.to have_http_status(200) }
-
         it 'does not return the dossier but it returns a message' do
-          subject
+          is_expected.to have_http_status(200)
           expect(assigns(:projected_dossiers)).to eq(nil)
           expect(assigns(:dossier_not_in_instructor_group)).to eq(dossier3)
         end
@@ -115,12 +85,8 @@ describe RechercheController, type: :controller do
         let!(:deleted_dossier) { DeletedDossier.create_from_dossier(dossier, DeletedDossier.reasons.fetch(:user_request)) }
         let(:query) { deleted_dossier.dossier_id }
 
-        before { subject }
-
-        it { is_expected.to have_http_status(200) }
-
         it 'does not return the dossier but it returns a message' do
-          subject
+          is_expected.to have_http_status(200)
           expect(assigns(:projected_dossiers)).to eq(nil)
           expect(assigns(:deleted_dossier)).to eq(deleted_dossier)
         end
@@ -130,12 +96,8 @@ describe RechercheController, type: :controller do
         let!(:hidden_dossier) { create(:dossier, :accepte, :hidden_by_administration, :with_individual, procedure: procedure) }
         let(:query) { hidden_dossier.id }
 
-        before { subject }
-
-        it { is_expected.to have_http_status(200) }
-
         it 'does not return the dossier but it returns a message' do
-          subject
+          is_expected.to have_http_status(200)
           expect(assigns(:projected_dossiers)).to eq(nil)
           expect(assigns(:hidden_dossier)).to eq(hidden_dossier)
         end
@@ -144,37 +106,40 @@ describe RechercheController, type: :controller do
       context 'with an id out of range' do
         let(:query) { 123456789876543234567 }
 
-        it { is_expected.to have_http_status(200) }
-
         it 'does not return the dossier' do
-          subject
-          expect(assigns(:projected_dossiers).count).to eq(0)
+          is_expected.to have_http_status(200)
+          expect(assigns(:projected_dossiers)).to be_empty
         end
       end
     end
 
     describe 'by champs' do
+      before do
+        dossier.project_champs_public[0].value = "Name of district A"
+        dossier.project_champs_public[1].value = "75000"
+        dossier.save!
+
+        dossier_with_expert.project_champs_public[0].value = "Name of district B"
+        dossier_with_expert.save!
+
+        perform_enqueued_jobs(only: DossierIndexSearchTermsJob)
+      end
+
       context 'when search is a string' do
         let(:query) { 'district A' }
 
-        it { is_expected.to have_http_status(200) }
-
         it 'returns the expected dossier' do
-          subject
-          expect(assigns(:projected_dossiers).count).to eq(1)
-          expect(assigns(:projected_dossiers).first).to eq(dossier)
+          is_expected.to have_http_status(200)
+          expect(assigns(:projected_dossiers)).to match_array([dossier])
         end
       end
 
       context 'when search is a string of number' do
         let(:query) { '75000  ' }
 
-        it { is_expected.to have_http_status(200) }
-
         it 'returns the expected dossier' do
-          subject
-          expect(assigns(:projected_dossiers).count).to eq(1)
-          expect(assigns(:projected_dossiers).first).to eq(dossier)
+          is_expected.to have_http_status(200)
+          expect(assigns(:projected_dossiers)).to match_array([dossier])
         end
       end
 
@@ -192,12 +157,9 @@ describe RechercheController, type: :controller do
         let(:user) { avis.experts_procedure.expert.user }
         let(:query) { 'district' }
 
-        it { is_expected.to have_http_status(200) }
-
         it 'returns only the dossier available to the expert' do
-          subject
-          expect(assigns(:projected_dossiers).count).to eq(1)
-          expect(assigns(:projected_dossiers).first).to eq(dossier_with_expert)
+          is_expected.to have_http_status(200)
+          expect(assigns(:projected_dossiers)).to match_array([dossier_with_expert])
         end
       end
     end
@@ -205,22 +167,24 @@ describe RechercheController, type: :controller do
     describe 'by private annotations' do
       let(:query) { 'invalid' }
 
-      before { subject }
+      before do
+        dossier_with_expert.project_champs_private[1].value = "Dossier B is invalid"
+        dossier_with_expert.save!
 
-      it { is_expected.to have_http_status(200) }
+        perform_enqueued_jobs(only: DossierIndexSearchTermsJob)
+      end
 
       it 'returns the expected dossier' do
-        expect(assigns(:projected_dossiers).count).to eq(1)
-        expect(assigns(:projected_dossiers).first).to eq(dossier_with_expert)
+        is_expected.to have_http_status(200)
+        expect(assigns(:projected_dossiers)).to match_array([dossier_with_expert])
       end
 
       context 'as an expert' do
         let(:user) { avis.experts_procedure.expert.user }
 
-        it { is_expected.to have_http_status(200) }
-
         it 'does not allow experts to search in private annotations' do
-          expect(assigns(:projected_dossiers).count).to eq(0)
+          is_expected.to have_http_status(200)
+          expect(assigns(:projected_dossiers)).to be_empty
         end
       end
     end
@@ -229,8 +193,8 @@ describe RechercheController, type: :controller do
       subject { get :index, params: {} }
 
       it 'returns 0 dossier' do
-        expect(subject).to have_http_status(200)
-        expect(assigns(:projected_dossiers).count).to eq(0)
+        is_expected.to have_http_status(200)
+        expect(assigns(:projected_dossiers)).to be_empty
       end
     end
 
