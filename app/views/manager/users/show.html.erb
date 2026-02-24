@@ -38,6 +38,15 @@
         class: "button") %>
     <% end %>
 
+    <% if user.blocked_at %>
+      <%= button_to(
+        "Réactiver le compte",
+        reactivate_manager_user_path(page.resource),
+        method: :put,
+        class: "button",
+        data: { turbo_confirm: "Confirmez-vous la réactivation du compte de #{user.email} ?" }) %>
+    <% end %>
+
     <%= link_to(
       "Modifier",
       edit_manager_user_path(page.resource),

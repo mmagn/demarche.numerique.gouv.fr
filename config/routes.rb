@@ -58,6 +58,7 @@ Rails.application.routes.draw do
       put 'enable_feature', on: :member
       get 'emails', on: :member
       put 'unblock_email'
+      put 'reactivate', on: :member
     end
 
     resources :experts, only: [:index, :show]

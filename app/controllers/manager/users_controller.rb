@@ -102,6 +102,21 @@ module Manager
       redirect_to emails_manager_user_path(@user)
     end
 
+    def reactivate
+      user = User.find(params[:id])
+
+      if user.blocked_at.nil?
+        flash[:notice] = "Ce compte n'est pas bloqué."
+      else
+        user.update!(blocked_at: nil, blocked_reason: nil)
+        UserMailer.account_reactivated(user).deliver_later
+        logger.info("L'utilisateur #{user.id} a été réactivé par #{current_super_admin.id}")
+        flash[:notice] = "Le compte de l'utilisateur #{user.email} a été réactivé."
+      end
+
+      redirect_to manager_user_path(user)
+    end
+
     private
 
     def targeted_email

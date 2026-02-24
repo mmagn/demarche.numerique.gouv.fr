@@ -196,4 +196,14 @@ RSpec.describe UserMailer, type: :mailer do
 
     it { expect(subject['BYPASS_UNVERIFIED_MAIL_PROTECTION']).to be_present }
   end
+
+  describe '.account_reactivated' do
+    subject { described_class.account_reactivated(user) }
+
+    it 'sends reactivation notification to user with login link' do
+      expect(subject.to).to eq([user.email])
+      expect(subject.body).to include(user.email)
+      expect(subject.body).to have_link('Se connecter', href: new_user_session_url)
+    end
+  end
 end
