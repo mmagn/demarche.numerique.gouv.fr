@@ -37,7 +37,7 @@ class EditableChamp::ChampLabelContentComponent < ApplicationComponent
     if hint_renderable?
       hints << {
         text: hint,
-        controller: 'date-input-hint',
+        controller: (@champ.date? || @champ.datetime?) ? 'date-input-hint' : nil,
       }
     end
 
