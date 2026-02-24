@@ -16,6 +16,14 @@ describe Manager::UsersController, type: :controller do
     end
 
     it { expect(response.body).to include(user.email) }
+
+    context 'when user is blocked' do
+      let(:user) { create(:user, blocked_at: Time.zone.now) }
+
+      it 'displays the reactivate button' do
+        expect(response.body).to include("Réactiver le compte")
+      end
+    end
   end
 
   describe '#update' do
@@ -71,6 +79,47 @@ describe Manager::UsersController, type: :controller do
       subject
 
       expect(User.find_by(id: user.id)).to be_nil
+    end
+  end
+
+  describe '#reactivate' do
+    subject { put :reactivate, params: { id: user.id } }
+
+    context 'when user is blocked' do
+      let(:user) { create(:user, blocked_at: Time.zone.now, blocked_reason: "Activité suspecte") }
+
+      it 'clears blocked_at and blocked_reason' do
+        subject
+        user.reload
+
+        expect(user.blocked_at).to be_nil
+        expect(user.blocked_reason).to be_nil
+      end
+
+      it 'enqueues a reactivation email to the user' do
+        expect { subject }.to have_enqueued_mail(UserMailer, :account_reactivated).with(user)
+      end
+
+      it 'redirects to user show page with confirmation flash' do
+        subject
+
+        expect(flash[:notice]).to include("réactivé")
+        expect(response).to redirect_to(manager_user_path(user))
+      end
+    end
+
+    context 'when user is not blocked' do
+      let(:user) { create(:user, blocked_at: nil) }
+
+      it 'does not enqueue a reactivation email' do
+        expect { subject }.not_to have_enqueued_mail(UserMailer, :account_reactivated)
+      end
+
+      it 'sets an informational flash message' do
+        subject
+
+        expect(flash[:notice]).to include("n'est pas bloqué")
+      end
     end
   end
 end

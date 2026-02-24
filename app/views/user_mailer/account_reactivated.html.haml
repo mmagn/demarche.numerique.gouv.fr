@@ -1,0 +1,20 @@
+- content_for(:title, @subject)
+
+%p
+  Bonjour,
+
+%p
+  Votre compte #{APPLICATION_NAME} associé à l'adresse
+  %strong= @user.email
+  a été réactivé par un administrateur.
+
+%p
+  Vous pouvez désormais vous connecter à nouveau en cliquant sur le bouton ci-dessous.
+
+= round_button('Se connecter', new_user_session_url, :primary)
+= vertical_margin(6)
+
+%p
+  Si vous avez des questions, veuillez contacter le support.
+
+= render partial: "layouts/mailers/signature"

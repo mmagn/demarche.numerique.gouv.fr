@@ -119,6 +119,13 @@ class UserMailer < ApplicationMailer
     mail(to: user.email, subject: @subject, content: @content, procedure: @procedure)
   end
 
+  def account_reactivated(user)
+    @user = user
+    @subject = "Votre compte a été réactivé"
+
+    mail(to: user.email, subject: @subject)
+  end
+
   def self.critical_email?(action_name)
     [
       'france_connect_merge_confirmation',

@@ -43,6 +43,10 @@ class UserMailerPreview < ActionMailer::Preview
     UserMailer.notify_after_closing(user, "Cette démarche est close")
   end
 
+  def account_reactivated
+    UserMailer.account_reactivated(user)
+  end
+
   private
 
   def user
