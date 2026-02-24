@@ -7,6 +7,7 @@
           %p.fr-tag= number_commentaires
         %h3.fr-h6
           - if @unread_commentaires
-            %span.notifications{ 'aria-label': 'notifications' }
+            %span.notifications
+              %span.fr-sr-only= "notification"
           = t('.title', count: number_commentaires)
       %p.fr-btn.fr-btn--tertiary= t('views.shared.actions.see')

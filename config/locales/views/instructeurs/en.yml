@@ -1,5 +1,10 @@
 en:
   instructeurs:
+    procedures:
+      index:
+        title: "Procedures"
+      notifications_button:
+        notifications_details: Notifications details
     procedure:
       archive_pending_html: Archive creation pending<br>(requested %{created_period} ago)
       archive_ready_html: Download archive<br>(requested %{generated_period} ago)

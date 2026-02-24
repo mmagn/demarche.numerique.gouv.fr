@@ -30,7 +30,9 @@
 
 <%- each_statut_having_notification do |statut| %>
   <%= turbo_stream.update "procedure-#{procedure.id}-#{statut.to_s.dasherize}-notification" do %>
-    <span class="notifications" aria-label="<%= t('.notifications') %>"></span>
+    <span class="notifications">
+      <span class="fr-sr-only"><%= t('.notifications') %></span>
+    </span>
   <% end %>
 <% end %>
 

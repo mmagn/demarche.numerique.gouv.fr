@@ -72,7 +72,7 @@ describe 'Inviting an expert:', js: true do
 
       visit expert_all_avis_path
       expect(page).to have_text('1 avis à donner')
-      expect(page).to have_text('0 avis donnés')
+      expect(page).to have_text('0 avis donné')
 
       expect(page).to have_selector('.fr-badge', text: 1)
       expect(page).to have_selector('.notifications')
@@ -105,7 +105,7 @@ describe 'Inviting an expert:', js: true do
 
       visit expert_all_avis_path
       expect(page).to have_text('1 avis à donner')
-      expect(page).to have_text('0 avis donnés')
+      expect(page).to have_text('0 avis donné')
 
       click_on '1 avis à donner'
       click_on avis.dossier.user.email
@@ -187,7 +187,7 @@ describe 'Inviting an expert:', js: true do
 
       visit expert_all_avis_path
       expect(page).to have_text('1 avis à donner')
-      expect(page).to have_text('0 avis donnés')
+      expect(page).to have_text('0 avis donné')
 
       click_on '1 avis à donner'
       click_on avis_1.dossier.user.email
@@ -203,7 +203,7 @@ describe 'Inviting an expert:', js: true do
 
       visit expert_all_avis_path
       expect(page).to have_text('1 avis à donner')
-      expect(page).to have_text('0 avis donnés')
+      expect(page).to have_text('0 avis donné')
 
       click_on '1 avis à donner'
       click_on avis_2.dossier.user.email

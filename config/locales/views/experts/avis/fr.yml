@@ -1,13 +1,21 @@
 fr:
   experts:
     avis:
-      procedure:
-        management: Gestion des notifications de la démarche
-        to_give: "avis à donner"
+      index:
+        title: "Avis"
+        to_give:
+          zero: "avis à donner"
+          one: "avis à donner"
+          other: "avis à donner"
         given:
+          zero: "avis donné"
           one: "avis donné"
           other: "avis donnés"
+      procedure:
+        management: Gestion des notifications de la démarche
         tabs_aria_label: "Avis"
+        to_give: "Avis à donner"
+        given: "Avis rendus"
         th:
           dossier_number: "N° dossier"
           applicant: "Demandeur"

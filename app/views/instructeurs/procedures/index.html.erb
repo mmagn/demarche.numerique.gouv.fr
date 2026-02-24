@@ -3,7 +3,7 @@
 <div class="sub-header" data-controller="lazy-modal">
   <div class="fr-container">
     <div class="flex fr-mb-2v">
-      <h1 class="fr-h3 fr-mb-0">Démarches</h1>
+      <h1 class="fr-h3 fr-mb-0"><%= t('.title') %></h1>
 
       <%# Use .size to reuse the procedures array loaded for the view %>
       <%= render Instructeurs::ProceduresDossiersSyntheseButtonComponent.new(procedures_count: @all_procedures.size) %>
@@ -37,7 +37,7 @@
       <h2 class="fr-h6 fr-m-0"><%= page_entries_info @procedures %></h2>
 
       <% if @statut == "en-cours" && @procedures_en_cours_count > 1 %>
-        <%= link_to "Personnaliser l'ordre", order_positions_instructeur_procedures_path, class: 'fr-btn fr-btn--sm fr-btn--tertiary fr-btn--icon-left fr-icon-settings-5-line' %>
+        <%= link_to t('views.instructeurs.customise_order'), order_positions_instructeur_procedures_path, class: 'fr-btn fr-btn--sm fr-btn--tertiary fr-btn--icon-left fr-icon-settings-5-line' %>
       <% end %>
     </div>
     <div

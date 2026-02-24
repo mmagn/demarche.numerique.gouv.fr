@@ -1,8 +1,8 @@
-- content_for(:title, "Avis")
+- content_for(:title, t('.title'))
 
 .sub-header
   .fr-container
-    %h1.fr-h3 Avis
+    %h1.fr-h3= t('.title')
 
 .fr-container
   - @avis_by_procedure.each do |p, procedure_avis|
@@ -16,14 +16,15 @@
           = link_to(procedure_expert_avis_index_path(p, statut: Instructeurs::AvisController::A_DONNER_STATUS)) do
             - without_answer_count = procedure_avis.select { _1.answer.nil? }.reject{ _1.dossier.termine?}.size
             - if without_answer_count > 0
-              %span.notifications{ 'aria-label': "notifications" }
+              %span.notifications
+                %span.fr-sr-only= "notification"
             .center.fr-text--bold.fr-text--sm
               = without_answer_count
             .center.fr-text--xs
-              avis à donner
+              = t(".to_give", count: without_answer_count)
         %li.fr-btn.fr-btn--tertiary.flex.justify-center.fr-enlarge-link
           = link_to(procedure_expert_avis_index_path(p, statut: Instructeurs::AvisController::DONNES_STATUS)) do
             - with_answer_count = procedure_avis.select { |a| a.answer.present? }.size
             .center.fr-text--bold.fr-text--sm= with_answer_count
             .center.fr-text--xs
-              = pluralize(with_answer_count, "avis donné")
+              = t(".given", count: with_answer_count)

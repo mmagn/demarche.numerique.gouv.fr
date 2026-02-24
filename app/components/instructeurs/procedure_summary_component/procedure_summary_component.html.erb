@@ -33,6 +33,9 @@
 
             <ul id="procedure-management-<%= p.id %>" class="fr-collapse fr-m-0">
               <li>
+                <%= link_to t('instructeurs.dossiers.header.banner.history.title'), procedure_history_instructeur_procedure_path(procedure), class: 'fr-nav__link' %>
+              </li>
+              <li>
                 <%= link_to t('instructeurs.dossiers.header.banner.administrators_list'), administrateurs_instructeur_procedure_path(p), class: 'fr-nav__link' %>
               </li>
 

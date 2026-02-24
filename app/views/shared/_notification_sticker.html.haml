@@ -1,3 +1,4 @@
 %div{ id: "notification-sticker-#{label.parameterize.underscore}" }
   - if notification
-    %span.notifications{ 'aria-label': 'notifications' }
+    %span.notifications
+      %span.fr-sr-only= "notification"
