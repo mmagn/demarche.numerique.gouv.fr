@@ -1,0 +1,28 @@
+name: Warm bundle cache
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - Gemfile.lock
+      - .ruby-version
+      - package.json
+      - vite.config.ts
+      - app/javascript/**
+      - app/assets/**
+      - patches/**
+
+jobs:
+  warm-cache:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Ruby and bundle cache
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Setup assets cache
+        uses: ./.github/actions/ci-setup-assets
