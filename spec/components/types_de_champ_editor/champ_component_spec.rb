@@ -129,6 +129,53 @@ describe TypesDeChampEditor::ChampComponent, type: :component do
     end
   end
 
+  describe 'piece_justificative field' do
+    let(:procedure) { create(:procedure, piece_justificative_multiple: true, types_de_champ_public: [{ type: :piece_justificative }]) }
+    let(:coordinate) { procedure.draft_revision.revision_types_de_champ_public.first }
+    let(:component) { described_class.new(coordinate:, upper_coordinates: []) }
+
+    before do
+      allow_any_instance_of(Procedure).to receive(:stable_ids_used_by_routing_rules).and_return([])
+      allow_any_instance_of(ProcedureRevisionTypeDeChamp).to receive(:used_by_ineligibilite_rules?).and_return(false)
+      render_inline(component)
+    end
+
+    it 'displays max file size hint' do
+      expect(page).to have_text("Taille maximale autorisée : 200 Mo")
+    end
+
+    it 'displays "joindre" in multi-file mention' do
+      expect(page).to have_text("Les usagers pourront joindre plusieurs fichiers si nécessaire.")
+      expect(page).not_to have_text("envoyer plusieurs fichiers")
+    end
+
+    context 'when nature is titre_identite' do
+      let(:tdc) { procedure.draft_revision.types_de_champ.first }
+
+      before do
+        tdc.update!(nature: 'TITRE_IDENTITE')
+        render_inline(component)
+      end
+
+      it 'does not display multi-file mention' do
+        expect(page).not_to have_text("joindre plusieurs fichiers")
+      end
+    end
+
+    context 'when nature is RIB' do
+      let(:tdc) { procedure.draft_revision.types_de_champ.first }
+
+      before do
+        tdc.update!(nature: 'RIB')
+        render_inline(component)
+      end
+
+      it 'does not display multi-file mention' do
+        expect(page).not_to have_text("joindre plusieurs fichiers")
+      end
+    end
+  end
+
   describe 'hide old titre_identite in creation list' do
     let(:procedure) { create(:procedure, types_de_champ_public: [{ type: :text }]) }
     let(:coordinate) { procedure.draft_revision.revision_types_de_champ_public.first }
