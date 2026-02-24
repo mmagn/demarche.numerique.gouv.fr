@@ -20,7 +20,37 @@ class Columns::JSONPathColumn < Columns::ChampColumn
   end
 
   def filtered_ids(dossiers, filter)
-    filtered_ids_for_values(dossiers, filter[:value])
+    case filter
+    in { operator: 'before', value: [end_date, *_] }
+      filtered_ids_for_date_range(dossiers, ..end_date&.then { Time.zone.parse(_1) }&.beginning_of_day)
+    in { operator: 'after', value: [start_date, *_] }
+      filtered_ids_for_date_range(dossiers, (start_date&.then { Time.zone.parse(_1) }&.end_of_day..))
+    in { operator: 'this_week' }
+      filtered_ids_for_date_range(dossiers, Time.current.all_week)
+    in { operator: 'this_month' }
+      filtered_ids_for_date_range(dossiers, Time.current.all_month)
+    in { operator: 'this_year' }
+      filtered_ids_for_date_range(dossiers, Time.current.all_year)
+    else
+      filtered_ids_for_values(dossiers, filter[:value])
+    end
+  end
+
+  private
+
+  def filtered_ids_for_date_range(dossiers, range)
+    return dossiers.ids if range.begin.nil? && range.end.nil?
+
+    start_date = range.begin&.to_date&.iso8601
+    end_date = range.end&.to_date&.iso8601
+
+    parts = []
+    parts << %(@ >= "#{start_date}") if start_date
+    parts << %(@ <= "#{end_date}") if end_date
+
+    condition = sanitize_sql(%{champs.value_json @? '#{jsonpath} ? (#{parts.join(' && ')})'})
+
+    dossiers.with_type_de_champ(stable_id).where(condition).ids
   end
 
   def filtered_ids_for_values(dossiers, search_terms)
@@ -44,8 +74,6 @@ class Columns::JSONPathColumn < Columns::ChampColumn
       raise
     end
   end
-
-  private
 
   def column_id = "type_de_champ/#{stable_id}-#{jsonpath}"
 
