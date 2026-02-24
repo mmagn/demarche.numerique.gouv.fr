@@ -58,9 +58,16 @@ class Columns::JSONPathColumn < Columns::ChampColumn
 
     return dossiers.ids if search_terms.empty?
 
-    value = quote_string(search_terms.join('|'))
+    if type == :integer
+      integers = search_terms.filter_map { Integer(_1) rescue nil }
 
-    condition = sanitize_sql(%{champs.value_json @? '#{jsonpath} ? (@ like_regex "#{value}" flag "i")'})
+      return dossiers.ids if integers.empty?
+
+      condition = sanitize_sql(%{champs.value_json @? '#{jsonpath} ? (#{integers.map { |i| "@ == #{i}" }.join(" || ")})'})
+    else
+      value = quote_string(search_terms.join('|'))
+      condition = sanitize_sql(%{champs.value_json @? '#{jsonpath} ? (@ like_regex "#{value}" flag "i")'})
+    end
 
     dossiers.with_type_de_champ(stable_id)
       .where(condition)
