@@ -15,7 +15,7 @@ class TypesDeChamp::QuotientFamilialTypeDeChamp < TypesDeChamp::TypeDeChampBase
   end
 
   def columns(procedure:, displayable: true, prefix: nil)
-    Columns::QuotientFamilialColumn::QUOTIENT_FAMILIAL_COLUMNS.map do |label, jsonpath|
+    Columns::QuotientFamilialColumn::QUOTIENT_FAMILIAL_COLUMNS.map do |label, jsonpath, type|
       Columns::QuotientFamilialColumn.new(
         procedure_id: procedure.id,
         stable_id:,
@@ -23,7 +23,7 @@ class TypesDeChamp::QuotientFamilialTypeDeChamp < TypesDeChamp::TypeDeChampBase
         label: "#{libelle_with_prefix(prefix)} – #{label}",
         jsonpath:,
         displayable:,
-        type: :text,
+        type:,
         mandatory: mandatory?
       )
     end
