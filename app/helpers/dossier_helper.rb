@@ -164,6 +164,7 @@ module DossierHelper
       safe_join([
         tag.span(count, class: "fr-background-alt--grey fr-my-1v fr-mr-1v fr-px-1v fr-text-default--grey"),
         tag.span(nil, class: [badge_notification_class(type), 'fr-my-0', 'fr-mx-0', 'fr-px-0'], aria: { hidden: true }),
+        tag.span(badge_notification_text_a11y(type, summary: true), class: "fr-sr-only"),
         badge_notification_text(type, generic: true),
       ])
     end
@@ -176,7 +177,10 @@ module DossierHelper
   end
 
   def tag_notification(notification, generic: false)
-    tag.span(badge_notification_text(notification, generic:), class: badge_notification_class(notification))
+    safe_join([
+      tag.span(badge_notification_text(notification, generic:), class: badge_notification_class(notification)),
+      tag.span(badge_notification_text_a11y(notification, summary: false), class: "fr-sr-only"),
+    ])
   end
 
   def tags_notification(notifications, generic: false)
@@ -220,6 +224,24 @@ module DossierHelper
       end
     else
       t("activerecord.attributes.notification.#{type}")
+    end
+  end
+
+  def badge_notification_text_a11y(notification, summary:)
+    type = extract_notification_type(notification)
+
+    case type
+    when DossierNotification.notification_types.fetch(:dossier_modifie),
+      DossierNotification.notification_types.fetch(:message),
+      DossierNotification.notification_types.fetch(:annotation_instructeur)
+      DossierNotification.notification_types.fetch(:avis_externe)
+      if summary
+        t("activerecord.attributes.notification.a11y.news.for_summary")
+      else
+        t("activerecord.attributes.notification.a11y.news.for_not_summary")
+      end
+    else
+      t("activerecord.attributes.notification.a11y.others") if summary
     end
   end
 
