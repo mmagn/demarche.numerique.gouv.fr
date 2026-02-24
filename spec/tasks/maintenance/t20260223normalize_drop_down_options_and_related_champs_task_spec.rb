@@ -5,7 +5,11 @@ require "rails_helper"
 module Maintenance
   RSpec.describe T20260223NormalizeDropDownOptionsAndRelatedChampsTask do
     describe "#process" do
-      subject(:process) { described_class.new.process(type_de_champ) }
+      subject(:process) do
+        task = described_class.new
+        task.procedure_id = procedure.id.to_s
+        task.process(type_de_champ)
+      end
 
       context "with drop down list champs" do
         let(:procedure) do
@@ -87,8 +91,13 @@ module Maintenance
         let(:dossier) { create(:dossier, :with_populated_champs, procedure:) }
         let!(:champ) { dossier.champs.first }
 
-        it "does nothing" do
-          expect { process }.not_to change { [type_de_champ.reload.drop_down_options, champ.reload.value] }
+        before do
+          champ.update_columns(value: "  Foo   Bar  ")
+        end
+
+        it "normalizes related champ values" do
+          expect { process }.to change { champ.reload.value }.from("  Foo   Bar  ").to("Foo Bar")
+          expect(type_de_champ.reload.drop_down_options).to eq(["Foo Bar", "Baz"])
         end
       end
     end
