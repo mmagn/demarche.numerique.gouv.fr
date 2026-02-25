@@ -11,13 +11,13 @@
       - data.each do |label, value, opts = {}|
         .champ-row
           %dt.champ-label= label
-          - if value.is_a?(Array)
-            %dd.champ-content
+          - if value.is_a?(Hash)
+            %dd
             %dl
-              - value.each do |l, v|
+              - value.each do |l, v, o = {}|
                 .flex
-                  %dt.champ-content.fr-mr-1v= l
-                  %dd.champ-content{ class: class_names('copy-zone': opts.fetch(:copy, true)), 'data-to-copy': opts.fetch(:data_to_copy, nil) }
+                  %dt.champ-label.fr-mr-1v= l
+                  %dd.champ-content{ class: class_names('copy-zone': o.fetch(:copy, true)), 'data-to-copy': o.fetch(:data_to_copy, nil) }
                     = v
                     %span{ 'data-copy-message-placeholder': true }
           - else

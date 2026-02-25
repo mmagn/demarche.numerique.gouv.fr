@@ -46,27 +46,27 @@ class QuotientFamilial::QuotientFamilialComponent < ApplicationComponent
   private
 
   def qf_values(qf)
-    [
-      ["Valeur :", number_with_delimiter(qf["valeur"], delimiter: " ")],
-      ["Période effective :", I18n.l(Date.parse(qf["periode_effective"]), format: "%m/%Y")],
-    ]
+    {
+      "Valeur": number_with_delimiter(qf["valeur"], delimiter: " "),
+      "Période effective": I18n.l(Date.parse(qf["periode_effective"]), format: "%m/%Y"),
+    }
   end
 
   def individual_values(individual)
     [
-      ["Nom de naissance :", individual["nom_naissance"]],
-      ["Nom d'usage :", individual["nom_usage"]],
-      ["Prénoms :", individual["prenoms"]],
-      ["Date de naissance :", I18n.l(Date.parse(individual["date_naissance"]), format: :short)],
-      ["Sexe :", individual["sexe"]],
-    ].reject { |_, v| v.nil? }
+      ["Nom de naissance", individual["nom_naissance"]],
+      ["Nom d'usage", individual["nom_usage"]],
+      ["Prénoms", individual["prenoms"]],
+      ["Date de naissance", I18n.l(Date.parse(individual["date_naissance"]), format: :short)],
+      ["Sexe", individual["sexe"]],
+    ].reject { |_, v| v.nil? }.to_h
   end
 
   def adresse_values(adresse)
-    [
-      ["Identité du destinataire :", adresse["destinataire"]],
-      ["Adresse :", format_adresse(adresse)],
-    ]
+    {
+      "Identité du destinataire": adresse["destinataire"],
+      "Adresse": format_adresse(adresse),
+    }
   end
 
   def format_adresse(adresse)
