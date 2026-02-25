@@ -30,7 +30,6 @@ features = [
   :export_order_by_revision,
   :export_template,
   :groupe_instructeur_api_hack,
-  :notification,
   :ocr,
   :pro_connect_restricted,
   :rdv,
