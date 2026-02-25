@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "vips"
-
 class UninterlaceService
   def process(file)
+    require "vips"
+
     uninterlace_png(file)
   end
 

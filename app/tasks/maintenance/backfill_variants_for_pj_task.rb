@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "vips"
-
 module Maintenance
   class BackfillVariantsForPjTask < MaintenanceTasks::Task
     # Enqueues jobs to generate thumbnails for files (images and/or PDFs)
@@ -32,6 +30,8 @@ module Maintenance
     end
 
     def process(dossier)
+      require "vips"
+
       BackfillVariantsForDossierJob.perform_later(dossier.id, file_type)
     end
   end

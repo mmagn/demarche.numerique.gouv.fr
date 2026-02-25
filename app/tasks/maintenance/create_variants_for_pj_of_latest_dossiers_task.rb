@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "vips"
-
 module Maintenance
   class CreateVariantsForPjOfLatestDossiersTask < MaintenanceTasks::Task
     # Génère les vignettes de fichiers (images et/ou PDF) pour les dossiers déposés entre 2 dates (facultatif).
@@ -27,6 +25,8 @@ module Maintenance
     end
 
     def process(dossier)
+      require "vips"
+
       champ_ids = Champ
         .where(dossier_id: dossier)
         .where(type: ["Champs::PieceJustificativeChamp", 'Champs::TitreIdentiteChamp'])

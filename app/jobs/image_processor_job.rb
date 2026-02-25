@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "vips"
-
 class ImageProcessorJob < ApplicationJob
   queue_as do
     blob = self.arguments.first
@@ -38,13 +36,16 @@ class ImageProcessorJob < ApplicationJob
   # Usually invalid image or ImageMagick decoder blocked for this format
   retry_on MiniMagick::Invalid, attempts: 3
   retry_on MiniMagick::Error, attempts: 3
-  retry_on Vips::Error, attempts: 3
+
+  retry_on "Vips::Error", attempts: 3 # not as const because we don't load vips at load time
 
   rescue_from ActiveStorage::PreviewError do |exception|
     retry_or_discard(exception)
   end
 
   def perform(blob)
+    require "vips" # load at runtime, not at bootime because vips is available only in jobs
+
     return if blob.nil?
     raise FileNotScannedYetError if blob.virus_scanner.pending?
     return if ActiveStorage::Attachment.find_by(blob_id: blob.id)&.record_type == "ActiveStorage::VariantRecord"

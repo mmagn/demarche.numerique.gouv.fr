@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "vips"
-
 class AutoRotateService
   def process(file, output)
+    require "vips"
+
     image = Vips::Image.new_from_file(file.to_path)
     orientation = image.get("orientation")
 

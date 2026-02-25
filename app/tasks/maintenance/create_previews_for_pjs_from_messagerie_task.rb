@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "vips"
-
 module Maintenance
   class CreatePreviewsForPjsFromMessagerieTask < MaintenanceTasks::Task
     attribute :start_text, :string
@@ -20,6 +18,8 @@ module Maintenance
     end
 
     def process(dossier)
+      require "vips"
+
       commentaire_ids = Commentaire
         .where(dossier_id: dossier)
         .pluck(:id)
