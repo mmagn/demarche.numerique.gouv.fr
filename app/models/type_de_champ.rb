@@ -490,7 +490,11 @@ class TypeDeChamp < ApplicationRecord
   end
 
   def drop_down_options_from_text=(text)
-    self.drop_down_options = text.to_s.lines.map(&:strip).reject(&:empty?)
+    self.drop_down_options = text.to_s.lines
+  end
+
+  def drop_down_options=(options)
+    super(normalize_drop_down_options(options))
   end
 
   def value_is_in_options?(checked_value)
@@ -900,5 +904,9 @@ class TypeDeChamp < ApplicationRecord
       self.pj_limit_formats = nil
       self.pj_format_families = []
     end
+  end
+
+  def normalize_drop_down_options(options)
+    Array.wrap(options).filter_map { _1.to_s.squish.presence }
   end
 end
