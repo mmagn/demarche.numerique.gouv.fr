@@ -18,6 +18,8 @@ module Maintenance
     end
 
     def process(dossier)
+      require "vips"
+
       commentaire_ids = Commentaire
         .where(dossier_id: dossier)
         .pluck(:id)
@@ -31,7 +33,7 @@ module Maintenance
         if attachment.blob.content_type.in?(RARE_IMAGE_TYPES) && attachment.variant(resize_to_limit: [2000, 2000]).key.nil?
           attachment.variant(resize_to_limit: [2000, 2000]).processed
         end
-      rescue MiniMagick::Error, ActiveStorage::Error
+      rescue Vips::Error, ActiveStorage::Error
       end
     end
   end

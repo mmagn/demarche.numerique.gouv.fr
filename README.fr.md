@@ -17,6 +17,7 @@ Vous souhaitez y apporter des changements ou des améliorations ? Lisez notre [
 #### Tous environnements
 
 - postgresql (version >= 15)
+- libvips-dev
 - imagemagick et gsfonts pour générer les filigranes sur les titres d’identité ou générer des minitiatures d’images.
 
 > [!WARNING]

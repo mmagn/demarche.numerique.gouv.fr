@@ -18,6 +18,8 @@ module Maintenance
     end
 
     def process(dossier)
+      require "vips"
+
       commentaire_ids = Commentaire
         .where(dossier_id: dossier)
         .pluck(:id)
@@ -28,7 +30,7 @@ module Maintenance
       attachments.each do |attachment|
         next if !(attachment.previewable? && attachment.representation_required?)
         attachment.preview(resize_to_limit: [400, 400]).processed unless attachment.preview(resize_to_limit: [400, 400]).image.attached?
-      rescue MiniMagick::Error, ActiveStorage::Error
+      rescue Vips::Error, ActiveStorage::Error
       end
     end
   end

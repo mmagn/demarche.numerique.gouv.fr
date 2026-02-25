@@ -2,6 +2,8 @@
 
 class UninterlaceService
   def process(file)
+    require "vips"
+
     uninterlace_png(file)
   end
 
@@ -9,8 +11,8 @@ class UninterlaceService
 
   def uninterlace_png(uploaded_file)
     if interlaced?(uploaded_file.to_path)
-      chunky_img = ChunkyPNG::Image.from_io(uploaded_file.to_io)
-      chunky_img.save(uploaded_file.to_path, interlace: false)
+      image = Vips::Image.new_from_file(uploaded_file.to_path)
+      image.write_to_file(uploaded_file.to_path, interlace: false)
       uploaded_file.reopen(uploaded_file.to_path, 'rb')
     end
     uploaded_file
@@ -18,11 +20,11 @@ class UninterlaceService
 
   def interlaced?(png_path)
     return false if png_path.blank?
-    begin
-      png = MiniMagick::Image.open(png_path)
-    rescue MiniMagick::Invalid
-      return false
-    end
-    png.data["interlace"] != "None"
+
+    image = Vips::Image.new_from_file(png_path)
+
+    return false if !image.get_fields.include?("interlaced")
+
+    image.get("interlaced") != 0
   end
 end

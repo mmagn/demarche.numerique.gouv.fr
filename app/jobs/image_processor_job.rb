@@ -25,7 +25,7 @@ class ImageProcessorJob < ApplicationJob
   discard_on ActiveStorage::FileNotFoundError
   discard_on ActiveRecord::InvalidForeignKey
 
-  # If imagemagick can't process the image due to policy.xml or the file itself, ignore the error
+  # Known MiniMagick errors to swallow (watermark still uses ImageMagick)
   KNOWN_ERRORS = [
     'improper image header',
     'width or height exceeds limit',
@@ -37,19 +37,23 @@ class ImageProcessorJob < ApplicationJob
   retry_on MiniMagick::Invalid, attempts: 3
   retry_on MiniMagick::Error, attempts: 3
 
+  retry_on "Vips::Error", attempts: 3 # not as const because we don't load vips at load time
+
   rescue_from ActiveStorage::PreviewError do |exception|
     retry_or_discard(exception)
   end
 
   def perform(blob)
+    require "vips" # load at runtime, not at bootime because vips is available only in jobs
+
     return if blob.nil?
     raise FileNotScannedYetError if blob.virus_scanner.pending?
     return if ActiveStorage::Attachment.find_by(blob_id: blob.id)&.record_type == "ActiveStorage::VariantRecord"
 
     add_ocr_data(blob)
     auto_rotate(blob) if ["image/jpeg", "image/jpg"].include?(blob.content_type)
-    uninterlace(blob) if blob.content_type == "image/png"
-    create_representations(blob) if blob.representation_required? && mime_type_authorized_by_policy?(blob)
+    uninterlace(blob) if blob.content_type == "image/png" && embeddable_in_pdf?(blob)
+    create_representations(blob) if blob.representation_required?
     add_watermark(blob) if blob.watermark_pending?
   rescue MiniMagick::Error => e
     if KNOWN_ERRORS.any? { e.message.match?(it) }
@@ -57,13 +61,11 @@ class ImageProcessorJob < ApplicationJob
     else
       raise e
     end
+  rescue Vips::Error => e
+    Rails.logger.info "ImageProcessorJob raising vips error: #{e.message}"
   end
 
   private
-
-  def mime_type_authorized_by_policy?(blob)
-    blob.content_type.in?(AUTHORIZED_CONTENT_TYPES_IN_POLICY_XML)
-  end
 
   def auto_rotate(blob)
     blob.open do |file|
@@ -84,6 +86,13 @@ class ImageProcessorJob < ApplicationJob
 
       blob.upload(processed)
       blob.save!
+    end
+  end
+
+  def embeddable_in_pdf?(blob)
+    blob.attachments.any? do |attachment|
+      attachment.name.in?(%w[logo signature]) &&
+        attachment.record_type.in?(%w[AttestationTemplate GroupeInstructeur])
     end
   end
 

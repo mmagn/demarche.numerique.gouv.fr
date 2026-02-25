@@ -4,6 +4,10 @@ description: 'Setup the environment for running the Rails app'
 runs:
   using: composite
   steps:
+    - name: Install libvips for image processing
+      run: sudo apt-get update && sudo apt-get install -y libvips-dev
+      shell: bash
+
     - name: Setup Ruby
       uses: ruby/setup-ruby@v1
       with:

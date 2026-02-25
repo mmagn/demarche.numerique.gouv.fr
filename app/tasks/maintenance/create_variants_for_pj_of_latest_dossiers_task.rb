@@ -25,6 +25,8 @@ module Maintenance
     end
 
     def process(dossier)
+      require "vips"
+
       champ_ids = Champ
         .where(dossier_id: dossier)
         .where(type: ["Champs::PieceJustificativeChamp", 'Champs::TitreIdentiteChamp'])
@@ -45,7 +47,7 @@ module Maintenance
         elsif attachment.previewable?
           attachment.representation(resize_to_limit: [400, 400]).processed
         end
-      rescue MiniMagick::Error, ActiveStorage::Error
+      rescue Vips::Error, ActiveStorage::Error
       end
     end
 

@@ -19,7 +19,6 @@ gem 'bootsnap', '>= 1.4.4', require: false # Reduces boot times through caching;
 gem 'browser'
 gem 'charlock_holmes'
 gem 'chartkick'
-gem 'chunky_png'
 gem 'clamav-client', require: 'clamav/client'
 gem "concurrent-ruby", "< 1.3.5" # force version to avoid https://github.com/rails/rails/pull/54264, should be removed after rails 7.2.x
 gem 'daemons'

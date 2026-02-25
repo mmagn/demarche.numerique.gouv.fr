@@ -30,6 +30,8 @@ module Maintenance
     end
 
     def process(dossier)
+      require "vips"
+
       BackfillVariantsForDossierJob.perform_later(dossier.id, file_type)
     end
   end
