@@ -231,7 +231,7 @@ class ApplicationController < ActionController::Base
     gon.matomo = matomo_config
     gon.sentry = sentry_config
 
-    if !chatbot_disabled_page? && (administrateur_signed_in? || (user_signed_in? && feature_enabled?(:chatbot)))
+    if !chatbot_disabled_page? && user_signed_in?
       gon.crisp = crisp_config
     end
   end
