@@ -65,24 +65,32 @@ export class Clipboard2Controller extends Controller {
   private copyContent(wrapper: HTMLElement): void {
     const button = wrapper.querySelector<HTMLButtonElement>('button.copy-btn');
 
-    if (button) {
-      button.innerText = '';
-    }
-
     const textToCopy = (
       wrapper.dataset['toCopy'] ||
       wrapper.querySelector<HTMLElement>('[data-to-copy]')?.innerText ||
-      wrapper.innerText ||
-      ''
+      this.getTextWithoutElement(wrapper, button)
     ).trim();
 
-    if (document.hasFocus()) {
+    if (document.hasFocus() && textToCopy) {
       navigator.clipboard.writeText(textToCopy).then(() => {
         if (button) {
           this.setCopiedState(button);
         }
       });
     }
+  }
+
+  private getTextWithoutElement(
+    wrapper: HTMLElement,
+    exclude: Element | null
+  ): string {
+    if (!exclude) {
+      return wrapper.innerText;
+    }
+
+    const clone = wrapper.cloneNode(true) as HTMLElement;
+    clone.querySelector('button.copy-btn')?.remove();
+    return clone.innerText;
   }
 
   private insertButton(wrapper: HTMLElement, button: HTMLButtonElement): void {
