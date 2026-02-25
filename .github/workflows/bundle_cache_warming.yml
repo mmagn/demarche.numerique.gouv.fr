@@ -16,6 +16,14 @@ on:
 jobs:
   warm-cache:
     runs-on: ubuntu-22.04
+    services:
+      postgres:
+        image: postgis/postgis:17-3.5
+        env:
+          POSTGRES_USER: tps_test
+          POSTGRES_DB: tps_test
+          POSTGRES_PASSWORD: tps_test
+        ports: ["5432:5432"]
     steps:
       - uses: actions/checkout@v4
 
