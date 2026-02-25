@@ -27,6 +27,10 @@
     padding-bottom: 0;
     font-size: 0.8rem;
     font-weight: 300;
+
+    &.no_colon::after {
+      content: none;
+    }
   }
 
   dd.champ-content {
@@ -41,6 +45,10 @@
 
   .champ-content {
     position: relative;
+  }
+
+  .sub_list {
+    border-left: 1px solid var(--border-default-grey);
   }
 
   [data-copy-message-placeholder] {
