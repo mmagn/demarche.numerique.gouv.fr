@@ -66,10 +66,7 @@ module ChampExternalDataConcern
     def pending? = waiting_for_job? || fetching?
     def done? = fetched? || external_error?
 
-    # this is dedicated to REFERENTIEL_EXTERNE type de champ, with asynchronous call
     def uses_external_data? = false
-    # this is dedicated to FRANCE CONNECT type de champ, with synchronous call
-    def requires_external_data? = false
 
     def external_data_needed_for_validation? = uses_external_data?
 

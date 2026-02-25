@@ -256,8 +256,6 @@ module DossierChampsConcern
     revision.types_de_champ_public.filter(&:france_connect?).filter_map do |type_de_champ|
       champ = project_champ(type_de_champ)
 
-      next if !champ.requires_external_data?
-
       champ.fetch! if champ.may_fetch?
     end
   end
