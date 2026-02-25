@@ -66,9 +66,9 @@ module ChampExternalDataConcern
     def pending? = waiting_for_job? || fetching?
     def done? = fetched? || external_error?
 
-    def uses_external_data? = false
+    def has_async_external_data? = false
 
-    def external_data_needed_for_validation? = uses_external_data?
+    def external_data_needed_for_validation? = has_async_external_data?
 
     private
 

@@ -4,7 +4,7 @@ class Champs::PoleEmploiChamp < Champs::TextChamp
   # see https://github.com/betagouv/api-particulier/blob/master/src/presentation/middlewares/pole-emploi-input-validation.middleware.ts
   store :external_id, accessors: [:identifiant], coder: JSON
 
-  def uses_external_data?
+  def has_async_external_data?
     true
   end
 

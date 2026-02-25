@@ -28,7 +28,7 @@ class Champs::PieceJustificativeChamp < Champ
     false
   end
 
-  def uses_external_data?
+  def has_async_external_data?
     RIB?
   end
 

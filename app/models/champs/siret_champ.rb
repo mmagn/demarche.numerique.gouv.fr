@@ -5,7 +5,7 @@ class Champs::SiretChamp < Champ
   validate :validate_etablissement, if: :validate_champ_value?
   normalizes :external_id, with: -> siret { siret.gsub(/[[:space:]]/, "") }
 
-  def uses_external_data?
+  def has_async_external_data?
     true
   end
 

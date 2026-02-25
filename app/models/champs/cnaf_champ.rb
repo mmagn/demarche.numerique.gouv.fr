@@ -8,7 +8,7 @@ class Champs::CnafChamp < Champs::TextChamp
 
   store :external_id, accessors: [:numero_allocataire, :code_postal], coder: JSON
 
-  def uses_external_data?
+  def has_async_external_data?
     true
   end
 

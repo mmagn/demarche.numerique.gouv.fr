@@ -7,7 +7,7 @@ class Champs::DgfipChamp < Champs::TextChamp
 
   store :external_id, accessors: [:numero_fiscal, :reference_avis], coder: JSON
 
-  def uses_external_data?
+  def has_async_external_data?
     true
   end
 

@@ -45,7 +45,7 @@ class Champs::ReferentielChamp < Champ
     end
   end
 
-  def uses_external_data?
+  def has_async_external_data?
     exact_match?
   end
 
