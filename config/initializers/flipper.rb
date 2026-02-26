@@ -33,7 +33,6 @@ features = [
   :ocr,
   :pro_connect_restricted,
   :rdv,
-  :referentiel_type_de_champ,
   :sva,
   :switch_domain,
   :llm_nightly_improve_procedure,

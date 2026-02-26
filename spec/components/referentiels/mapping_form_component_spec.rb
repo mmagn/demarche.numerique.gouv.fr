@@ -13,7 +13,6 @@ RSpec.describe Referentiels::MappingFormComponent, type: :component do
     delegate :application, to: Rails
 
     before do
-      Flipper.enable_actor(:referentiel_type_de_champ, procedure)
       render_inline(component)
     end
 
