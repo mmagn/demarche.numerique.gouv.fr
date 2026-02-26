@@ -3,7 +3,7 @@
 require "rails_helper"
 
 module Maintenance
-  RSpec.describe CreateVariantsForPjsFromMessagerieTask do
+  RSpec.describe CreateVariantsForPjsFromMessagerieTask, :external_deps do
     describe "#process" do
       let(:procedure) { create(:procedure_with_dossiers) }
       let(:dossier) { procedure.dossiers.first }

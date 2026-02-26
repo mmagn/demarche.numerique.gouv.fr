@@ -3,7 +3,7 @@
 require "rails_helper"
 
 module Maintenance
-  RSpec.describe CreateVariantsForPjOfLatestDossiersTask do
+  RSpec.describe CreateVariantsForPjOfLatestDossiersTask, :external_deps do
     describe "#process" do
       let(:procedure) { create(:procedure_with_dossiers, types_de_champ_public: [{ type: :piece_justificative, libelle: 'Justificatif de domicile', stable_id: 3 }]) }
       let(:dossier) { procedure.dossiers.first }
@@ -53,7 +53,7 @@ module Maintenance
         end
       end
 
-      context "when pj is a pdf", :external_deps do
+      context "when pj is a pdf" do
         let(:file) { fixture_file_upload('spec/fixtures/files/piece_justificative_0.pdf', 'application/pdf') }
 
         it "creates a representation" do

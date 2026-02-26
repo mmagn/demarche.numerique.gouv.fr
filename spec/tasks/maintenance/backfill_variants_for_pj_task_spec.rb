@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Maintenance::BackfillVariantsForPjTask do
+RSpec.describe Maintenance::BackfillVariantsForPjTask, :external_deps do
   describe '#process' do
     let(:procedure) { create(:procedure, types_de_champ_public: [{ type: :piece_justificative }]) }
     let(:dossier) { create(:dossier, :en_construction, :with_populated_champs, procedure:, depose_at: 1.day.ago) }

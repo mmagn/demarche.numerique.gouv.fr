@@ -19,7 +19,7 @@ RSpec.describe GalleryHelper, type: :helper do
   describe ".image_variant_url_for" do
     subject { image_variant_url_for(attachment) }
 
-    context "when image attachment has a variant" do
+    context "when image attachment has a variant", :external_deps do
       let(:file) { fixture_file_upload('spec/fixtures/files/logo_test_procedure.png', 'image/png') }
 
       it "returns the variant URL when processed" do
