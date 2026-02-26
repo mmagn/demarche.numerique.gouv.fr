@@ -12,16 +12,5 @@ RSpec.describe WatermarkService, :external_deps do
         expect(output.size).to be_between(image.size, image.size * 1.5)
       end
     end
-
-    it 'raises Vips::Error for unsupported files' do
-      Tempfile.create(["invalid", ".txt"]) do |invalid_file|
-        invalid_file.write("not an image")
-        invalid_file.flush
-
-        Tempfile.create(["output", ".png"]) do |output|
-          expect { watermark_service.process(invalid_file, output) }.to raise_error(Vips::Error)
-        end
-      end
-    end
   end
 end

@@ -43,7 +43,7 @@ class BackfillVariantsForDossierJob < ApplicationJob
       preview = attachment.preview(resize_to_limit: [400, 400])
       preview.processed if preview.image.blank?
     end
-  rescue MiniMagick::Error, ActiveStorage::Error, EOFError, Excon::Error => e
+  rescue Vips::Error, ActiveStorage::Error, EOFError, Excon::Error => e
     Rails.logger.warn "BackfillVariantsForDossierJob: failed to process attachment #{attachment.id}: #{e.message}"
   end
 

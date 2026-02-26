@@ -20,22 +20,8 @@ Would you like to make changes or improvements? Read our [contribution guide](CO
 #### All environments
 
 - postgresql (version >= 15)
-- libvips-dev
-- imagemagick and gsfonts to generate watermarks on identity documents
-
-> [!WARNING]
-> Remember to restrict ImageMagick's policy to block exploitation of malicious images.
-> The default configuration is usually insufficient for images from the web.
-> For example, on Debian/Ubuntu in `/etc/ImageMagick-6/policy.xml`:
-
-```xml
-<!-- in addition to the default policy, add at the end of the file -->
-<policymap>
-    <policy domain="coder" rights="none" pattern="*"/>
-    <policy domain="coder" rights="read | write" pattern="{JPG,JPEG,PNG,JSON}"/>
-    <policy domain="module" rights="none" pattern="{MSL,MVG,PS,SVG,URL,XPS}"/>
-</policymap>
-```
+- libvips-dev (image processing and watermark generation)
+- gsfonts (fonts for watermark text rendering)
 
 We are currently migrating from `delayed_job` to `sidekiq` for asynchronous job processing.
 To run sidekiq, you will need:
