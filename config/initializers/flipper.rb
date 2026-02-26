@@ -30,6 +30,7 @@ features = [
   :groupe_instructeur_api_hack,
   :ocr,
   :pro_connect_restricted,
+  :quotient_familial_type_de_champ,
   :rdv,
   :sva,
   :switch_domain,

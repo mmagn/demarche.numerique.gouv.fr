@@ -50,7 +50,7 @@ class Columns::JSONPathColumn < Columns::ChampColumn
 
     condition = sanitize_sql(%{champs.value_json @? '#{jsonpath} ? (#{parts.join(' && ')})'})
 
-    dossiers.with_type_de_champ(stable_id).where(condition).ids
+    targeted_dossiers(dossiers, condition).ids
   end
 
   def filtered_ids_for_values(dossiers, search_terms)
@@ -69,9 +69,7 @@ class Columns::JSONPathColumn < Columns::ChampColumn
       condition = sanitize_sql(%{champs.value_json @? '#{jsonpath} ? (@ like_regex "#{value}" flag "i")'})
     end
 
-    dossiers.with_type_de_champ(stable_id)
-      .where(condition)
-      .ids
+    targeted_dossiers(dossiers, condition).ids
 
   rescue ActiveRecord::StatementInvalid => e
     if e.cause.is_a?(PG::InvalidRegularExpression)
@@ -91,4 +89,10 @@ class Columns::JSONPathColumn < Columns::ChampColumn
   def quote_string(string) = ActiveRecord::Base.connection.quote_string(string)
 
   def sanitize_sql(sql) = ActiveRecord::Base.sanitize_sql(sql)
+
+  private
+
+  def targeted_dossiers(dossiers, condition)
+    dossiers.with_type_de_champ(stable_id).where(condition)
+  end
 end

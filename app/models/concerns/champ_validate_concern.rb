@@ -37,7 +37,7 @@ module ChampValidateConcern
     end
 
     def validate_external_data_response?
-      validate_champ_value? && uses_external_data? && external_data_needed_for_validation?
+      validate_champ_value? && has_async_external_data? && external_data_needed_for_validation?
     end
   end
 end

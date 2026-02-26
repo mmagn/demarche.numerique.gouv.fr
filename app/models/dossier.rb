@@ -158,7 +158,7 @@ class Dossier < ApplicationRecord
   has_one :attestation_acceptation_template, through: :procedure
   has_one :attestation_refus_template, through: :procedure
 
-  delegate :types_de_champ_public, :types_de_champ_private, to: :revision
+  delegate :types_de_champ_public, :types_de_champ_private, :has_france_connect_type_de_champ?, to: :revision
 
   belongs_to :transfer, class_name: 'DossierTransfer', foreign_key: 'dossier_transfer_id', optional: true, inverse_of: :dossiers
   has_many :transfer_logs, class_name: 'DossierTransferLog', dependent: :destroy
@@ -1151,7 +1151,7 @@ class Dossier < ApplicationRecord
 
   def enqueue_fetch_external_data_jobs
     project_champs.each do |champ|
-      if champ.uses_external_data? && champ.may_fetch_later?
+      if champ.has_async_external_data? && champ.may_fetch_later?
         champ.fetch_later!
       end
     end

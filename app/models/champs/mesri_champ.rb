@@ -4,7 +4,7 @@ class Champs::MesriChamp < Champs::TextChamp
   # see https://github.com/betagouv/api-particulier/blob/master/src/presentation/middlewares/mesri-input-validation.middleware.ts
   store :external_id, accessors: [:ine], coder: JSON
 
-  def uses_external_data?
+  def has_async_external_data?
     true
   end
 

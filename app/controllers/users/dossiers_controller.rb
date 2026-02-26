@@ -26,6 +26,7 @@ module Users
     before_action :set_dossier_stream, only: [:modifier, :update, :submit_en_construction, :check_completude, :champ], if: :update_with_stream?
     before_action :show_demarche_en_test_banner
     before_action :store_user_location!, only: :new
+    before_action :set_default_value_for_france_connect_champs, only: [:brouillon, :modifier]
 
     around_action only: :submit_en_construction do |_controller, action|
       lock_action("lock-submit-en-construction-#{@dossier.id}", &action)
@@ -581,6 +582,7 @@ module Users
         :country_code,
         :commune_code,
         :postal_code,
+        :preview_state,
         value: [],
       ]
       # Strong attributes do not support records (indexed hash); they only support hashes with
@@ -648,7 +650,7 @@ module Users
         if champ_changed
           champ.update_timestamps if dossier.brouillon?
 
-          if champ.uses_external_data?
+          if champ.has_async_external_data?
             champ.reset_external_data!
             champ.fetch_later! if champ.may_fetch_later?
           end
@@ -728,6 +730,10 @@ module Users
 
     def deleted_dossier_for(dossier_id)
       DeletedDossier.find_by(dossier_id:, user_id: current_user.id)
+    end
+
+    def set_default_value_for_france_connect_champs
+      @dossier.set_default_value_for_france_connect_champs
     end
   end
 end

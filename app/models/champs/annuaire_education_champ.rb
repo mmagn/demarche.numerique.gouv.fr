@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Champs::AnnuaireEducationChamp < Champs::TextChamp
-  def uses_external_data?
+  def has_async_external_data?
     true
   end
 

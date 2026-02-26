@@ -8,7 +8,7 @@ class Champs::CnafChamp < Champs::TextChamp
 
   store :external_id, accessors: [:numero_allocataire, :code_postal], coder: JSON
 
-  def uses_external_data?
+  def has_async_external_data?
     true
   end
 
@@ -22,7 +22,8 @@ class Champs::CnafChamp < Champs::TextChamp
   end
 
   def ready_for_external_call?
-    valid_champ_value?
+    return false if numero_allocataire.nil? || code_postal.nil?
+    numero_allocataire.match?(/\A\d{1,7}\z/) && code_postal.match?(/\A\w{5}\z/)
   end
 
   def numero_allocataire_input_id

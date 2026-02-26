@@ -20,7 +20,7 @@ class Champs::RNFChamp < Champ
     RNFService.new.(rnf_id:).fmap { |data| { data:, value_json: extract_value_json(data:) } }
   end
 
-  def uses_external_data?
+  def has_async_external_data?
     true
   end
 

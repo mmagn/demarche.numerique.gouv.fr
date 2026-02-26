@@ -14,7 +14,7 @@ module Maintenance
     run_on_first_deploy
 
     def collection
-      # all types with uses_external_data? = true && should_ui_auto_refresh? = true
+      # all types with has_async_external_data? = true && should_ui_auto_refresh? = true
       targets = [
         "Champs::COJOChamp",
         "Champs::RNFChamp",
@@ -25,7 +25,7 @@ module Maintenance
       # instead we gonna a use a dedicated tasks working from procedure_id
       # pj_type = "Champs::PieceJustificativeChamp"
 
-      # other with uses_external_data? = true but should_ui_auto_refresh? = false
+      # other with has_async_external_data? = true but should_ui_auto_refresh? = false
       # "Champs::AnnuaireEducationChamp",
       # "Champs::CNAFChamp",
       # "Champs::DGFIPChamp",

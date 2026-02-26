@@ -8,6 +8,7 @@ describe TypesDeChampEditor::ChampComponent, type: :component do
 
     before do
       Flipper.enable_actor(:engagement_juridique_type_de_champ, procedure)
+      Flipper.enable(:quotient_familial_type_de_champ, procedure)
       allow_any_instance_of(Procedure).to receive(:stable_ids_used_by_routing_rules).and_return(routing_rules_stable_ids)
       allow_any_instance_of(ProcedureRevisionTypeDeChamp).to receive(:used_by_ineligibilite_rules?).and_return(ineligibilite_rules_used?)
       render_inline(component)
@@ -95,6 +96,38 @@ describe TypesDeChampEditor::ChampComponent, type: :component do
       it 'includes an uploader for notice_explicative' do
         expect(page).to have_css('label', text: 'Notice explicative')
         expect(page).to have_css('input[type=file]')
+      end
+    end
+
+    describe 'tdc quotient familial' do
+      let(:procedure) { create(:procedure, types_de_champ_public:, types_de_champ_private: [{ type: :text }]) }
+
+      context "when coordinate public" do
+        let(:types_de_champ_public) { [{ type: :quotient_familial, libelle: 'Quotient familial' }] }
+        let(:coordinate) { procedure.draft_revision.revision_types_de_champ_public.first }
+
+        it 'does not have mandatory configuration' do
+          expect(page).to have_css('option[selected]', text: "Quotient familial")
+          expect(page).not_to have_field('Champ obligatoire')
+        end
+      end
+
+      context "when coordinate private" do
+        let(:types_de_champ_public) { [] }
+        let(:coordinate) { procedure.draft_revision.revision_types_de_champ_private.first }
+
+        it 'does not include quotient familial tdc' do
+          expect(page).not_to have_css('option', text: "Quotient familial")
+        end
+      end
+
+      context "when coordinate is repetition" do
+        let(:types_de_champ_public) { [{ type: :repetition, children: [{ type: :text }] }] }
+        let(:coordinate) { procedure.draft_revision.revision_types_de_champ_public.first.children_revision_types_de_champ.first }
+
+        it "does not include quotient familial for child tdc" do
+          expect(page).not_to have_css('option', text: "Quotient familial")
+        end
       end
     end
 

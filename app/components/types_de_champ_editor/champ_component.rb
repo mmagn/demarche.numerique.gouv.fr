@@ -14,8 +14,22 @@ class TypesDeChampEditor::ChampComponent < ApplicationComponent
 
   delegate :type_de_champ, :revision, :procedure, to: :coordinate
 
-  def can_be_mandatory?
-    !type_de_champ.non_fillable?
+  def mandatory_configurable?
+    type_de_champ.fillable? && !type_de_champ.must_be_mandatory?
+  end
+
+  def libelle_configurable?
+    !type_de_champ.type_champ.in?([
+      TypeDeChamp.type_champs.fetch(:quotient_familial),
+    ])
+  end
+
+  def description_configurable?
+    !type_de_champ.type_champ.in?([
+      TypeDeChamp.type_champs.fetch(:quotient_familial),
+      TypeDeChamp.type_champs.fetch(:header_section),
+      TypeDeChamp.type_champs.fetch(:titre_identite),
+    ])
   end
 
   def type_de_champ_path
@@ -111,6 +125,7 @@ class TypesDeChampEditor::ChampComponent < ApplicationComponent
 
   EXCLUDE_FROM_BLOCK = [
     TypeDeChamp.type_champs.fetch(:repetition),
+    TypeDeChamp.type_champs.fetch(:quotient_familial),
   ]
 
   def filter_block_type_champ(type_champ)
@@ -119,7 +134,7 @@ class TypesDeChampEditor::ChampComponent < ApplicationComponent
 
   def filter_public_or_private_only_type_champ(type_champ)
     if coordinate.private?
-      true
+      !TypeDeChamp::PUBLIC_ONLY_TYPES.include?(type_champ)
     else
       !TypeDeChamp::PRIVATE_ONLY_TYPES.include?(type_champ)
     end

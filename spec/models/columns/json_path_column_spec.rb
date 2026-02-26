@@ -186,6 +186,34 @@ describe Columns::JSONPathColumn do
         end
       end
     end
+
+    context "on a champ which requires the user to confirm the accuracy of the data (champs FC)" do
+      let(:jsonpath) { '$.fc_data' }
+      let(:column) { Columns::QuotientFamilialColumn.new(procedure_id: procedure.id, label: 'label', stable_id:, tdc_type:, jsonpath:, type: :integer, displayable: true, mandatory: true) }
+      let(:dossier_with_correct_data) { create(:dossier, procedure:) }
+      let(:dossier_with_incorrect_data) { create(:dossier, procedure:) }
+
+      before do
+        dossier_with_correct_data.champs.first.update(value_json: { fc_data: 123 }, value: 'true')
+        dossier_with_incorrect_data.champs.first.update(value_json: { fc_data: 123 }, value: 'false')
+      end
+
+      subject { column.filtered_ids(Dossier.all, { operator: 'match', value: ['123'] }) }
+
+      it do
+        is_expected.to include(dossier_with_correct_data.id)
+        is_expected.not_to include(dossier_with_incorrect_data.id)
+      end
+
+      context do
+        let(:column) { described_class.new(procedure_id: procedure.id, label: 'label', stable_id:, tdc_type:, jsonpath:, type: :integer, displayable: true, mandatory: true) }
+
+        it 'has no effect on standard json path columns (to be sure)' do
+          is_expected.to include(dossier_with_correct_data.id)
+          is_expected.to include(dossier_with_incorrect_data.id)
+        end
+      end
+    end
   end
 
   describe '#initializer' do
