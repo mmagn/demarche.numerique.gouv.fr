@@ -20,6 +20,9 @@ module Maintenance
     attribute :file_type, :string
     validates :file_type, inclusion: { in: ['image', 'pdf', ''] }
 
+    attribute :spread_duration_hours, :integer, default: 6
+    validates :spread_duration_hours, numericality: { greater_than: 0 }
+
     def collection
       start_date = DateTime.parse(start_text)
       end_date = DateTime.parse(end_text)
@@ -32,7 +35,7 @@ module Maintenance
     def process(dossier)
       require "vips"
 
-      BackfillVariantsForDossierJob.perform_later(dossier.id, file_type)
+      BackfillVariantsForDossierJob.set(wait: rand(0..spread_duration_hours.hours)).perform_later(dossier.id, file_type)
     end
   end
 end
