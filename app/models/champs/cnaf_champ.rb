@@ -22,7 +22,8 @@ class Champs::CnafChamp < Champs::TextChamp
   end
 
   def ready_for_external_call?
-    valid_champ_value?
+    return false if numero_allocataire.nil? || code_postal.nil?
+    numero_allocataire.match?(/\A\d{1,7}\z/) && code_postal.match?(/\A\w{5}\z/)
   end
 
   def numero_allocataire_input_id

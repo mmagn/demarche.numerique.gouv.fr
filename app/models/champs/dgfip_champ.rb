@@ -21,7 +21,8 @@ class Champs::DgfipChamp < Champs::TextChamp
   end
 
   def ready_for_external_call?
-    valid_champ_value?
+    return false if numero_fiscal.nil? || reference_avis.nil?
+    numero_fiscal.match?(/\A\w{13,14}\z/) && reference_avis.match?(/\A\w{13,14}\z/)
   end
 
   def numero_fiscal_input_id
