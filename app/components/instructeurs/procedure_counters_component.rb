@@ -43,8 +43,7 @@ class Instructeurs::ProcedureCountersComponent < ApplicationComponent
   end
 
   def notifications?
-    current_instructeur.feature_enabled?(:notification) &&
-      @notifications_counts_per_procedure[procedure.id]&.any?
+    @notifications_counts_per_procedure[procedure.id]&.any?
   end
 
   def each_statut_having_notification
