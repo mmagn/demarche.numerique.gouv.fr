@@ -11,7 +11,6 @@ RSpec.describe Referentiels::NewFormComponent, type: :component do
     let(:types_de_champ_public) { [{ type: :referentiel }] }
     let(:type_de_champ) { procedure.draft_revision.types_de_champ_public.first }
     before do
-      Flipper.enable_actor(:referentiel_type_de_champ, procedure)
       render_inline(component)
     end
 

@@ -10,7 +10,6 @@ describe "procedure exports" do
   end
 
   scenario "create an export_template tabular", js: true do
-    Flipper.enable(:export_template, procedure)
     visit instructeur_procedure_path(procedure)
 
     find("button", text: "Téléchargements").click
