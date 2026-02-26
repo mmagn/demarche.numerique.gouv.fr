@@ -71,7 +71,7 @@ describe 'The routing with rules', js: true do
     select_combobox('Emails', 'victor@gouv.fr', custom_value: true)
 
     perform_enqueued_jobs { click_on 'Affecter' }
-    expect(page).to have_text("L’instructeur victor@gouv.fr a été affecté")
+    expect(page).to have_text("L’instructeur victor@gouv.fr a été ajouté")
 
     victor = User.find_by(email: 'victor@gouv.fr').instructeur
 
@@ -79,7 +79,7 @@ describe 'The routing with rules', js: true do
     select_combobox('Emails', 'alain@gouv.fr', custom_value: true)
 
     perform_enqueued_jobs { click_on 'Affecter' }
-    expect(page).to have_text("L’instructeur alain@gouv.fr a été affecté")
+    expect(page).to have_text("L’instructeur alain@gouv.fr a été ajouté")
 
     alain = User.find_by(email: 'alain@gouv.fr').instructeur
 
@@ -101,14 +101,14 @@ describe 'The routing with rules', js: true do
     select_combobox('Emails', 'marie@gouv.fr', custom_value: true)
 
     perform_enqueued_jobs { click_on 'Affecter' }
-    expect(page).to have_text("L’instructeur marie@gouv.fr a été affecté")
+    expect(page).to have_text("L’instructeur marie@gouv.fr a été ajouté")
 
     marie = User.find_by(email: 'marie@gouv.fr').instructeur
 
     # add superwoman to scientifique groupe
     select_combobox('Emails', 'alain@gouv.fr', custom_value: true)
     perform_enqueued_jobs { click_on 'Affecter' }
-    expect(page).to have_text("L’instructeur alain@gouv.fr a été affecté")
+    expect(page).to have_text("L’instructeur alain@gouv.fr a été ajouté")
 
     # add routing rules
     within('.target select') { select('Spécialité') }
