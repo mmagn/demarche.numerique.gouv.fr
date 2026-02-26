@@ -18,7 +18,7 @@ class BackfillVariantsForDossierJob < ApplicationJob
 
     attachments = ActiveStorage::Attachment
       .includes(:blob)
-      .where(record_id: champ_ids)
+      .where(record_type: 'Champ', record_id: champ_ids)
 
     attachments.each do |attachment|
       process_attachment(attachment, file_type)
