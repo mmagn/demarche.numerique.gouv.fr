@@ -18,6 +18,20 @@ RSpec.describe Maintenance::BackfillVariantsForPjTask do
         task.process(dossier)
       }.to have_enqueued_job(BackfillVariantsForDossierJob).with(dossier.id, 'pdf')
     end
+
+    context 'with default spread_duration_hours' do
+      it 'defaults to 6 hours' do
+        expect(task.spread_duration_hours).to eq(6)
+      end
+    end
+
+    context 'with custom spread_duration_hours' do
+      before { task.tap { _1.spread_duration_hours = 12 } }
+
+      it 'uses the custom spread duration' do
+        expect(task.spread_duration_hours).to eq(12)
+      end
+    end
   end
 
   describe '#collection' do
