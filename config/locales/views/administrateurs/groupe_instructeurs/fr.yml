@@ -17,8 +17,8 @@ fr:
           one: "%{emails} n’est pas une adresse électronique valide"
           other: "%{emails} ne sont pas des adresses électroniques valides"
         assignment:
-          one: "L’instructeur %{emails} a été affecté au groupe « %{groupe} »."
-          other: "Les instructeurs %{emails} ont été affectés au groupe « %{groupe} »."
+          one: "L’instructeur %{emails} a été ajouté au groupe « %{groupe} »."
+          other: "Les instructeurs %{emails} ont été ajoutés au groupe « %{groupe} »."
       import:
         groupe:
           one: "%{count} groupe"
@@ -42,8 +42,8 @@ fr:
           one: "%{emails} nʼest pas une adresse électronique valide"
           other: "%{emails} ne sont pas des adresses électroniques valides"
         add_all_groupes_assignment:
-          one: "Lʼinstructeur %{emails} a été affecté à tous les groupes de la démarche."
-          other: "Les instructeurs %{emails} ont été affectés à tous les groupes de la démarche."
+          one: "Lʼinstructeur %{emails} a été ajouté à tous les groupes de la démarche."
+          other: "Les instructeurs %{emails} ont été ajoutés à tous les groupes de la démarche."
       remove_instructeur_from_all_groupes:
         remove_all_groupes_assignment:
           one: "Lʼinstructeur %{emails} a été retiré de tous les groupes de la démarche."
