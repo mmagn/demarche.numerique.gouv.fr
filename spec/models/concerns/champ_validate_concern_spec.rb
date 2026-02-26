@@ -79,6 +79,21 @@ RSpec.describe ChampValidateConcern do
         expect(dossier.errors).to be_empty
       }
     end
+
+    context 'external_data which needs validation but is not in revision' do
+      let(:types_de_champ_public) { [{ type: :piece_justificative, nature: 'RIB' }] }
+
+      before do
+        allow_any_instance_of(Champs::PieceJustificativeChamp).to receive(:external_data_needed_for_validation?).and_return(true)
+
+        dossier.champs.first.update_column(:external_state, 'waiting_for_job')
+        dossier.revision.revision_types_de_champ.delete_all
+
+        dossier.reload
+      end
+
+      it { expect(dossier.champs.first.send(:validate_external_data_response?)).to be(false) }
+    end
   end
 
   context 'when type changed' do

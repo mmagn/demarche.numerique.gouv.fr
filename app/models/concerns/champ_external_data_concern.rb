@@ -19,8 +19,6 @@ module ChampExternalDataConcern
 
   included do
     include AASM
-    validates_with ExternalDataChampValidator, if: :validate_external_data_response?
-
     attribute :fetch_external_data_exceptions, :external_data_exception, array: true
 
     # useful to serialize idle as nil
@@ -73,10 +71,6 @@ module ChampExternalDataConcern
     def external_data_needed_for_validation? = uses_external_data?
 
     private
-
-    def validate_external_data_response?
-      external_data_needed_for_validation? && uses_external_data? && validate_champ_value?
-    end
 
     def ready_for_external_call? = external_id.present?
 
