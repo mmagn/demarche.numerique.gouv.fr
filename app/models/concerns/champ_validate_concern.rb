@@ -4,6 +4,8 @@ module ChampValidateConcern
   extend ActiveSupport::Concern
 
   included do
+    validates_with ExternalDataChampValidator, if: :validate_external_data_response?
+
     protected
 
     # Champs public/private must be validated depending on the context
@@ -32,6 +34,10 @@ module ChampValidateConcern
 
     def in_dossier_stream?
       dossier.stream == stream
+    end
+
+    def validate_external_data_response?
+      external_data_needed_for_validation? && uses_external_data? && validate_champ_value?
     end
   end
 end
