@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe ImageProcessorJob, type: :job do
+describe ImageProcessorJob, :external_deps, type: :job do
   include Dry::Monads[:result]
 
   let(:antivirus_pending) { false }
@@ -98,7 +98,7 @@ describe ImageProcessorJob, type: :job do
       end
     end
 
-    context "when file is a pdf type", :external_deps do
+    context "when file is a pdf type" do
       let(:file) { fixture_file_upload('spec/fixtures/files/piece_justificative_0.pdf', 'application/pdf') }
 
       before do
