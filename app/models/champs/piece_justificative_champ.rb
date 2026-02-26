@@ -24,6 +24,10 @@ class Champs::PieceJustificativeChamp < Champ
     # We don’t know how to search inside documents yet
   end
 
+  def external_data_needed_for_validation?
+    false
+  end
+
   def uses_external_data?
     RIB?
   end

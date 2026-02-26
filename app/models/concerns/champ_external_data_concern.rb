@@ -70,10 +70,12 @@ module ChampExternalDataConcern
 
     def uses_external_data? = false
 
+    def external_data_needed_for_validation? = uses_external_data?
+
     private
 
     def validate_external_data_response?
-      uses_external_data? && validate_champ_value?
+      external_data_needed_for_validation? && uses_external_data? && validate_champ_value?
     end
 
     def ready_for_external_call? = external_id.present?
