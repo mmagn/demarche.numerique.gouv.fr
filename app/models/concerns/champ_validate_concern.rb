@@ -6,21 +6,14 @@ module ChampValidateConcern
   included do
     validates_with ExternalDataChampValidator, if: :validate_external_data_response?
 
-    protected
-
-    # Champs public/private must be validated depending on the context
-    def valid_champ_value?
-      valid?(public? ? :champs_public_value : :champs_private_value)
-    end
-
     private
 
-    def validate_champ_value?
+    def should_validate_in_current_context?
       case validation_context
       when :champs_public_value
-        public? && can_validate? && visible?
+        public? && is_validation_relevant? && visible?
       when :champs_private_value
-        private? && can_validate? && visible?
+        private? && is_validation_relevant? && visible?
       when :prefill
         true
       else
@@ -28,8 +21,8 @@ module ChampValidateConcern
       end
     end
 
-    def can_validate?
-      in_dossier_stream? && in_dossier_revision? && is_same_type_as_revision? && !row? && !in_discarded_row?
+    def is_validation_relevant?
+      in_dossier_stream? && in_dossier_revision? && is_same_type_as_revision? && !in_discarded_row?
     end
 
     def in_dossier_stream?
@@ -37,7 +30,7 @@ module ChampValidateConcern
     end
 
     def validate_external_data_response?
-      validate_champ_value? && has_async_external_data? && external_data_needed_for_validation?
+      should_validate_in_current_context? && has_async_external_data? && external_data_needed_for_validation?
     end
   end
 end

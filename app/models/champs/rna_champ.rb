@@ -7,9 +7,9 @@ class Champs::RNAChamp < Champ
 
   validates :value, allow_blank: true, format: {
     with: RNA_REGEXP, message: :invalid_rna,
-  }, if: :validate_champ_value?
+  }, if: :should_validate_in_current_context?
 
-  validate :ensure_association_found, if: :validate_champ_value?
+  validate :ensure_association_found, if: :should_validate_in_current_context?
 
   delegate :id, to: :procedure, prefix: true
 

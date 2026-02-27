@@ -2,7 +2,7 @@
 
 class Champs::SiretChamp < Champ
   include Dry::Monads[:result]
-  validate :validate_etablissement, if: :validate_champ_value?
+  validate :validate_etablissement, if: :should_validate_in_current_context?
   normalizes :external_id, with: -> siret { siret.gsub(/[[:space:]]/, "") }
 
   def has_async_external_data?
