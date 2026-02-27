@@ -6,13 +6,6 @@ module ChampValidateConcern
   included do
     validates_with ExternalDataChampValidator, if: :validate_external_data_response?
 
-    protected
-
-    # Champs public/private must be validated depending on the context
-    def valid_champ_value?
-      valid?(public? ? :champs_public_value : :champs_private_value)
-    end
-
     private
 
     def should_validate_in_current_context?
