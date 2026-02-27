@@ -18,9 +18,9 @@ module ChampValidateConcern
     def validate_champ_value?
       case validation_context
       when :champs_public_value
-        public? && can_validate? && visible?
+        public? && is_validation_relevant? && visible?
       when :champs_private_value
-        private? && can_validate? && visible?
+        private? && is_validation_relevant? && visible?
       when :prefill
         true
       else
@@ -28,7 +28,7 @@ module ChampValidateConcern
       end
     end
 
-    def can_validate?
+    def is_validation_relevant?
       in_dossier_stream? && in_dossier_revision? && is_same_type_as_revision? && !in_discarded_row?
     end
 
