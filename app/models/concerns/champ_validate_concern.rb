@@ -15,7 +15,7 @@ module ChampValidateConcern
 
     private
 
-    def validate_champ_value?
+    def should_validate_in_current_context?
       case validation_context
       when :champs_public_value
         public? && is_validation_relevant? && visible?
@@ -37,7 +37,7 @@ module ChampValidateConcern
     end
 
     def validate_external_data_response?
-      validate_champ_value? && has_async_external_data? && external_data_needed_for_validation?
+      should_validate_in_current_context? && has_async_external_data? && external_data_needed_for_validation?
     end
   end
 end

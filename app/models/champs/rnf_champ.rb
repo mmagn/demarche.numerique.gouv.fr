@@ -7,7 +7,7 @@ class Champs::RNFChamp < Champ
 
   validates :value, allow_blank: true, format: {
     with: RNF_REGEXP, message: :invalid_rnf,
-  }, if: :validate_champ_value?
+  }, if: :should_validate_in_current_context?
   def rnf_id
     external_id&.gsub(/[[:space:]]/, '')
   end
