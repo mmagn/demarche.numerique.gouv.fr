@@ -11,13 +11,12 @@ describe 'As an administateur i can setup a DossierSubmittedMessage', js: true d
     editor = find('.tiptap-editor')
     editor.click
 
-    # Type text that will be bold
     editor.send_keys('Texte super important')
     editor.send_keys(*Array.new(15, [:shift, :left])) # Select "super important"
     click_on 'Gras'
 
     within('#tiptap-preview .tiptap-content') do
-      expect(find("strong").text).to eq("super important")
+      expect(page).to have_css("strong", text: "super important")
     end
 
     # Link modal
