@@ -48,6 +48,8 @@ class EditableChamp::ChampLabelContentComponent < ApplicationComponent
         date_hints
       elsif @champ.integer_number? || @champ.decimal_number?
         number_hints
+      elsif @champ.textarea?
+        text_hints
       else
         []
       end
@@ -147,6 +149,16 @@ class EditableChamp::ChampLabelContentComponent < ApplicationComponent
       elsif max
         hints << I18n.t('activerecord.attributes.champs/decimal_number_champ.hints.range.max_only', max: max)
       end
+    end
+
+    hints
+  end
+
+  def text_hints
+    hints = []
+
+    if @champ.character_limit_base&.positive?
+      hints << I18n.t('activerecord.attributes.champs/textarea_champ.hints.recommended_size', size: @champ.character_limit_base)
     end
 
     hints
