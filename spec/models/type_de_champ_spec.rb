@@ -343,7 +343,7 @@ describe TypeDeChamp do
     context "when the type champ is changed" do
       before { type_de_champ.update(type_champ: :dossier_link) }
 
-      it { expect(type_de_champ.libelle).to eq("Numéro de dossier déposé sur %{app_name}") }
+      it { expect(type_de_champ.libelle).to eq("Numéro de dossier déposé sur demarche.numerique.gouv.fr") }
 
       context "when the libelle is customized" do
         let(:libelle) { "Customized libelle" }
