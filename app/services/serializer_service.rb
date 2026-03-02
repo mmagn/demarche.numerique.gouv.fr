@@ -362,6 +362,7 @@ class SerializerService
       number
       title
       description
+      state
       tags
       zones
       datePublication
