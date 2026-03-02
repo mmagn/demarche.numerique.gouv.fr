@@ -1,21 +1,42 @@
-<section class="procedure__item fr-mb-5w fr-pt-2w">
+<section
+  class="procedure__item fr-mb-5w fr-pt-2w"
+  data-controller="clipboard2"
+  data-clipboard2-copy-text-value="<%= t('clipboard.copy_procedure_link') %>"
+  data-clipboard2-copied-text-value="<%= t('clipboard.copied_procedure_link') %>"
+  data-clipboard2-copy-icon-class-name-value="fr-icon-links-line"
+>
   <div class="procedure__title">
-    <h3 class="card-title fr-mr-1v fr-mb-0">
+    <h3 class="card-title fr-mb-0">
       <%= link_to procedure_libelle_with_number(p), instructeur_procedure_path(p) %>
       <%= procedure_badge(p, 'align-middle') %>
     </h3>
-    <%= render Dsfr::CopyButtonComponent.new(text: commencer_url(p.path), title: t('instructeurs.dossiers.header.banner.copy_link_button')) %>
+
+    <span class="copy-zone" data-to-copy="<%= commencer_url(p.path) %>">
+      <span class="fr-icon-links-line copy-zone-trigger-icon fr-icon--xs"></span>
+      <span data-copy-message-placeholder></span>
+    </span>
   </div>
 
-  <nav class="fr-nav fr-mr-1v" role="navigation" aria-label="<%= t('.menu_aria_label', name: procedure_libelle_with_number(p)) %>">
-    <button class="fr-nav__btn hide-chevron" aria-expanded="false" aria-controls="mega-menu-<%= p.id %>">
+  <nav
+    class="fr-nav fr-mr-1v"
+    role="navigation"
+    aria-label="<%= t('.menu_aria_label', name: procedure_libelle_with_number(p)) %>"
+  >
+    <button
+      class="fr-nav__btn hide-chevron"
+      aria-expanded="false"
+      aria-controls="mega-menu-<%= p.id %>"
+    >
       <span class="fr-icon-menu-2-fill fr-icon--sm fr-mr-1w"></span>
       <%= t('.menu') %>
     </button>
 
     <div class="fr-collapse fr-menu" id="mega-menu-<%= p.id %>" tabindex="-1">
       <div class="fr-menu__list">
-        <button class="fr-btn--close fr-btn" aria-controls="mega-menu-<%= p.id %>">
+        <button
+          class="fr-btn--close fr-btn"
+          aria-controls="mega-menu-<%= p.id %>"
+        >
           <%= t('utils.modal_close') %>
         </button>
 
@@ -26,15 +47,23 @@
 
           <li>
             <h4 class="fr-accordion__title">
-              <button class="fr-accordion__btn fr-text--bold" aria-expanded="false" aria-controls="procedure-management-<%= p.id %>">
+              <button
+                class="fr-accordion__btn fr-text--bold"
+                aria-expanded="false"
+                aria-controls="procedure-management-<%= p.id %>"
+              >
                 <%= t('instructeurs.dossiers.header.banner.procedure_management') %>
               </button>
             </h4>
 
-            <ul id="procedure-management-<%= p.id %>" class="fr-collapse fr-m-0">
+            <ul
+              id="procedure-management-<%= p.id %>"
+              class="fr-collapse fr-m-0"
+            >
               <li>
                 <%= link_to t('instructeurs.dossiers.header.banner.history.title'), procedure_history_instructeur_procedure_path(procedure), class: 'fr-nav__link' %>
               </li>
+
               <li>
                 <%= link_to t('instructeurs.dossiers.header.banner.administrators_list'), administrateurs_instructeur_procedure_path(p), class: 'fr-nav__link' %>
               </li>
@@ -65,7 +94,11 @@
 
           <li>
             <h4 class="fr-accordion__title">
-              <button class="fr-accordion__btn fr-text--bold" aria-expanded="false" aria-controls="user-support-<%= p.id %>">
+              <button
+                class="fr-accordion__btn fr-text--bold"
+                aria-expanded="false"
+                aria-controls="user-support-<%= p.id %>"
+              >
                 <%= t('instructeurs.dossiers.header.banner.user_support') %>
               </button>
             </h4>
@@ -85,17 +118,36 @@
                 <%= link_to t('instructeurs.dossiers.header.banner.preview'), apercu_instructeur_procedure_path(p), target: "_blank", rel: "noopener", class: 'fr-nav__link' %>
               </li>
 
-              <li>
-                <%= link_to "#", class: "fr-nav__link fr-link fr-link--md fr-link--icon-left fr-icon-clipboard-line", data: { controller: "clipboard", clipboard_text_value: commencer_url(p.path), action: "click->clipboard#copy" } do %>
+              <li
+                data-controller="clipboard-inline"
+                data-clipboard-inline-to-copy-value="<%= commencer_url(p.path) %>"
+                data-clipboard-inline-copied-text-value="<%= t('clipboard.copied_procedure_link') %>"
+              >
+                <button
+                  type="button"
+                  class="fr-nav__link fr-link--icon-left fr-icon-links-line"
+                  data-action="click->clipboard-inline#copy"
+                  data-clipboard-inline-target="label"
+                >
                   <%= t('instructeurs.dossiers.header.banner.copy_link_button') %>
-                <% end %>
+                </button>
+
+                <span
+                  class="fr-sr-only"
+                  aria-live="polite"
+                  data-clipboard-inline-target="liveRegion"
+                ></span>
               </li>
             </ul>
           </li>
 
           <li>
             <h4 class="fr-accordion__title">
-              <button class="fr-accordion__btn fr-text--bold" aria-expanded="false" aria-controls="downloads-<%= p.id %>">
+              <button
+                class="fr-accordion__btn fr-text--bold"
+                aria-expanded="false"
+                aria-controls="downloads-<%= p.id %>"
+              >
                 <%= t('instructeurs.dossiers.header.banner.downloads') %>
               </button>
             </h4>
@@ -122,7 +174,12 @@
   </nav>
 
   <ul class="procedure-stats flex fr-background-alt--grey justify-around wrap fr-p-1w">
-    <li class="fr-btn fr-btn--tertiary-no-outline flex justify-center fr-enlarge-link fr-my-1w">
+    <li
+      class="
+        fr-btn fr-btn--tertiary-no-outline flex justify-center
+        fr-enlarge-link fr-my-1w
+      "
+    >
       <%= link_to instructeur_procedure_path(p, statut: 'a-suivre') do %>
         <span id="procedure-<%= p.id %>-a-suivre-notification"></span>
 
@@ -138,7 +195,12 @@
       <% end %>
     </li>
 
-    <li class="fr-btn fr-btn--tertiary-no-outline flex justify-center fr-enlarge-link fr-my-1w">
+    <li
+      class="
+        fr-btn fr-btn--tertiary-no-outline flex justify-center
+        fr-enlarge-link fr-my-1w
+      "
+    >
       <%= link_to(instructeur_procedure_path(p, statut: 'suivis')) do %>
         <span id="procedure-<%= p.id %>-suivis-notification"></span>
 
@@ -154,7 +216,12 @@
       <% end %>
     </li>
 
-    <li class="fr-btn fr-btn--tertiary-no-outline flex justify-center fr-enlarge-link fr-my-1w">
+    <li
+      class="
+        fr-btn fr-btn--tertiary-no-outline flex justify-center
+        fr-enlarge-link fr-my-1w
+      "
+    >
       <%= link_to(instructeur_procedure_path(p, statut: 'traites')) do %>
         <span id="procedure-<%= p.id %>-traites-notification"></span>
 
@@ -170,7 +237,12 @@
       <% end %>
     </li>
 
-    <li class="fr-btn fr-btn--tertiary-no-outline flex justify-center fr-enlarge-link fr-my-1w">
+    <li
+      class="
+        fr-btn fr-btn--tertiary-no-outline flex justify-center
+        fr-enlarge-link fr-my-1w
+      "
+    >
       <%= link_to(instructeur_procedure_path(p, statut: 'tous')) do %>
         <div class="center fr-text--bold">
           <span id="procedure-<%= p.id %>-dossier-count">
@@ -185,7 +257,12 @@
     </li>
 
     <% if p.procedure_expires_when_termine_enabled %>
-      <li class="fr-btn fr-btn--tertiary-no-outline flex justify-center fr-enlarge-link fr-my-1w">
+      <li
+        class="
+          fr-btn fr-btn--tertiary-no-outline flex justify-center
+          fr-enlarge-link fr-my-1w
+        "
+      >
         <%= link_to(instructeur_procedure_path(p, statut: 'expirant')) do %>
           <div class="center fr-text--bold">
             <span class="fr-icon-timer-line fr-icon--sm"></span>
@@ -193,6 +270,7 @@
 
           <div class="center fr-text--sm">
             <%= t('instructeurs.dossiers.labels.close_to_expiration') %>
+
             <span id="procedure-<%= p.id %>-expirant-count">
               <%= placeholder_span %>
             </span>
@@ -201,7 +279,12 @@
       </li>
     <% end %>
 
-    <li class="fr-btn fr-btn--tertiary-no-outline flex justify-center fr-enlarge-link fr-my-1w">
+    <li
+      class="
+        fr-btn fr-btn--tertiary-no-outline flex justify-center
+        fr-enlarge-link fr-my-1w
+      "
+    >
       <%= link_to(instructeur_procedure_path(p, statut: 'archives')) do %>
         <div class="center fr-text--bold">
           <span class="fr-icon-folder-2-line fr-icon--sm"></span>
@@ -209,6 +292,7 @@
 
         <div class="center fr-text--sm">
           <%= t('instructeurs.dossiers.labels.to_archive') %>
+
           <span id="procedure-<%= p.id %>-archives-count">
             <%= placeholder_span %>
           </span>
@@ -216,7 +300,12 @@
       <% end %>
     </li>
 
-    <li class="fr-btn fr-btn--tertiary-no-outline flex justify-center fr-enlarge-link fr-my-1w">
+    <li
+      class="
+        fr-btn fr-btn--tertiary-no-outline flex justify-center
+        fr-enlarge-link fr-my-1w
+      "
+    >
       <%= link_to(instructeur_procedure_path(p, statut: 'supprimes')) do %>
         <div class="center fr-text--bold">
           <span class="fr-icon-delete-line fr-icon--sm"></span>
@@ -224,6 +313,7 @@
 
         <div class="center fr-text--sm">
           <%= t('instructeurs.dossiers.labels.trash') %>
+
           <span id="procedure-<%= p.id %>-supprimes-count">
             <%= placeholder_span %>
           </span>

@@ -132,6 +132,7 @@ ignore_unused:
 - 'views.shared.avis.en_attente'
 - 'views.shared.actions.edit'
 - 'insee_down'
+- 'clipboard.copy_procedure_link'
 # - '{devise,kaminari,will_paginate}.*'
 # - 'simple_form.{yes,no}'
 # - 'simple_form.{placeholders,hints,labels}.*'

@@ -453,6 +453,16 @@ ul.dropdown-items {
     white-space: nowrap !important;
   }
 
+  .copy-zone-trigger-icon {
+    color: var(--text-active-blue-france);
+    margin-left: 0.5rem; // exact match with margin + padding badge button
+  }
+
+  &:hover .copy-zone-trigger-icon,
+  &:has(.copy-btn:focus-visible) .copy-zone-trigger-icon {
+    display: none;
+  }
+
   &:hover .copy-btn,
   .copy-btn:focus-visible {
     background-color: var(--background-action-low-blue-france);
