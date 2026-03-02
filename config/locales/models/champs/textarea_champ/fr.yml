@@ -1,0 +1,6 @@
+fr:
+  activerecord:
+    attributes:
+      champs/textarea_champ:
+        hints:
+          recommended_size: La taille maximale conseillée est de %{size} caractères.

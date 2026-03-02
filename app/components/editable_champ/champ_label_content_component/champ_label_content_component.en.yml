@@ -1,6 +1,5 @@
 ---
 en:
-  changes_to_save: "modifications to submit"
-  modified_at: "modified on %{datetime}"
-  check_content_rebased: "Information: field updated by administration. Check its content."
-  recommended_size: The recommended maximum size is %{size} characters.
+  changes_to_save: 'modifications to submit'
+  modified_at: 'modified on %{datetime}'
+  check_content_rebased: 'Information: field updated by administration. Check its content.'

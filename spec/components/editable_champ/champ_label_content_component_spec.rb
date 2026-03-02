@@ -3,9 +3,10 @@
 RSpec.describe EditableChamp::ChampLabelContentComponent, type: :component do
   let(:form) { double(object: champ) }
 
+  let(:champ_class) { Champ }
   let(:champ) do
     instance_double(
-      Champ,
+      champ_class,
       formatted?: true,
       formatted_simple?: true,
       formatted_advanced?: false,
@@ -17,7 +18,8 @@ RSpec.describe EditableChamp::ChampLabelContentComponent, type: :component do
       date?: false,
       datetime?: false,
       integer_number?: false,
-      decimal_number?: false
+      decimal_number?: false,
+      textarea?: false
     )
   end
 
@@ -157,6 +159,38 @@ RSpec.describe EditableChamp::ChampLabelContentComponent, type: :component do
 
       it "returns no hints" do
         expect(component.hints_for_champ).to eq([])
+      end
+    end
+
+    context "when champ is textarea without limit" do
+      let(:champ_class) { Champs::TextareaChamp }
+
+      before do
+        allow(champ).to receive(:visible?).and_return(true)
+        allow(champ).to receive(:formatted?).and_return(false)
+        allow(champ).to receive(:textarea?).and_return(true)
+        allow(champ).to receive(:character_limit_base).and_return(nil)
+      end
+
+      it "returns no hints" do
+        expect(component.hints_for_champ).to eq([])
+      end
+    end
+
+    context "when champ is textarea with limit" do
+      let(:champ_class) { Champs::TextareaChamp }
+
+      before do
+        allow(champ).to receive(:visible?).and_return(true)
+        allow(champ).to receive(:formatted?).and_return(false)
+        allow(champ).to receive(:textarea?).and_return(true)
+        allow(champ).to receive(:character_limit_base).and_return(400)
+      end
+
+      it "returns hint" do
+        expect(component.hints_for_champ).to eq([
+          { text: "La taille maximale conseillée est de 400 caractères.", controller: nil },
+        ])
       end
     end
   end
