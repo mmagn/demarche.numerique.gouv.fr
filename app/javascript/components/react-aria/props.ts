@@ -21,6 +21,14 @@ const ArrayOfStrings = s.coerce(s.array(Item), s.array(s.string()), (items) =>
   items.map<Item>((label) => ({ label, value: label }))
 );
 
+const ItemsSchema = s.union([s.array(Item), ArrayOfStrings, ArrayOfTuples]);
+
+export const Section = s.object({
+  label: s.string(),
+  items: ItemsSchema
+});
+export type Section = { label: string; items: Item[] };
+
 const ComboBoxPropsSchema = s.partial(
   s.object({
     id: s.string(),
@@ -35,7 +43,7 @@ const ComboBoxPropsSchema = s.partial(
     'aria-label': s.string(),
     'aria-labelledby': s.string(),
     'aria-describedby': s.string(),
-    items: s.union([s.array(Item), ArrayOfStrings, ArrayOfTuples]),
+    items: ItemsSchema,
     formValue: s.enums(['text', 'key']),
     form: s.string(),
     data: s.record(s.string(), s.string())
@@ -47,7 +55,8 @@ export const SingleComboBoxProps = s.assign(
     s.object({
       selectedKey: s.nullable(s.string()),
       emptyFilterKey: s.nullable(s.string()),
-      placeholder: s.string()
+      placeholder: s.string(),
+      sections: s.array(Section)
     })
   )
 );
@@ -61,7 +70,8 @@ export const MultiComboBoxProps = s.assign(
       focusOnSelect: s.string(),
       placeholder: s.string(),
       tagsBelow: s.boolean(),
-      hideSelectedTags: s.boolean()
+      hideSelectedTags: s.boolean(),
+      sections: s.array(Section)
     })
   )
 );

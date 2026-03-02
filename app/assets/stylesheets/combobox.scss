@@ -69,6 +69,15 @@
       color: var(--text-default-blue-france);
     }
 
+    .fr-ds-combobox__section-header {
+      padding: 4px 8px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: var(--text-mention-grey);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
     .fr-menu__item {
       padding: 4px 8px;
       margin-bottom: 2px !important;
