@@ -22,17 +22,15 @@ class TargetedUserLink < ApplicationRecord
     end
   end
 
-  def redirect_url(url_helper, confirmation_token = nil)
+  def redirect_url(url_helper, confirmation_token = nil, batch: false)
     case target_context
     when "invite"
       invite = find_invite!
-
       user = User.find_by(email: target_email)
       user&.active? ?
         url_helper.invite_path(invite) :
         url_helper.invite_path(invite, params: { email: invite.email })
     when "avis"
-
       avis = target_model
       if !avis.expert.user.active?
         params = { email: avis.expert.email, confirmation_token: confirmation_token }
@@ -40,6 +38,8 @@ class TargetedUserLink < ApplicationRecord
       elsif avis.expert.user.unverified_email?
         params = { token: confirmation_token }
         url_helper.users_confirm_email_url(**params)
+      elsif batch
+        url_helper.procedure_expert_avis_index_path(avis.procedure)
       else
         url_helper.expert_avis_path(avis.procedure, avis)
       end

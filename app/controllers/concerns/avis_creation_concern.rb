@@ -7,6 +7,7 @@ module AvisCreationConcern
     result = CreateAvisService.call(
       dossier: dossier,
       instructeur_or_expert: user,
+      batch: false,
       params: params,
       avis_source: avis_source
     )
