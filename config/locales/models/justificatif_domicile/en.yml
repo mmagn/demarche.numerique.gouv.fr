@@ -1,0 +1,11 @@
+---
+en:
+  activemodel:
+    attributes:
+      justificatif_domicile:
+        beneficiary: Beneficiary
+        address: Address
+        postal_code: Postcode
+        locality: Locality
+        country: Country
+        issue_date: Issue date

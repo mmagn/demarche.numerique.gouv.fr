@@ -5,8 +5,11 @@
 }
 
 .external-champ {
-  background-color: var(--blue-cumulus-975-75);
   overflow: auto;
+
+  &.trusted-data {
+    background-color: var(--blue-cumulus-975-75);
+  }
 
   .source {
     background-color: var(--blue-cumulus-925-125);

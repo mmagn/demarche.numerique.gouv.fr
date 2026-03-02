@@ -124,6 +124,41 @@ describe Champs::PieceJustificativeChamp do
     end
   end
 
+  describe '#ocr_result' do
+    let(:procedure) { create(:procedure, types_de_champ_public: [{ type: :piece_justificative, nature: 'JUSTIFICATIF_DOMICILE' }]) }
+    let(:dossier) { create(:dossier, :with_populated_champs, procedure:) }
+    let(:champ) { dossier.champs.first }
+
+    context 'when not fetched' do
+      before { allow(champ).to receive(:fetched?).and_return(false) }
+
+      it { expect(champ.ocr_result).to be_nil }
+    end
+
+    context 'when fetched but value_json is nil' do
+      before do
+        allow(champ).to receive(:fetched?).and_return(true)
+        allow(champ).to receive(:value_json).and_return(nil)
+      end
+
+      it { expect(champ.ocr_result).to be_nil }
+    end
+
+    context 'when fetched with value_json' do
+      let(:value_json) { { 'beneficiary' => 'Jane Smith', 'address' => '123 Main St' } }
+
+      before do
+        allow(champ).to receive(:fetched?).and_return(true)
+        allow(champ).to receive(:value_json).and_return(value_json)
+      end
+
+      it do
+        expect(champ.ocr_result).to be_a(JustificatifDomicile)
+        expect(champ.ocr_result.beneficiary).to eq('Jane Smith')
+      end
+    end
+  end
+
   describe "#for_export" do
     subject { champ.type_de_champ.champ_value_for_export(champ) }
 

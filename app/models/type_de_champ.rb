@@ -117,6 +117,7 @@ class TypeDeChamp < ApplicationRecord
     non_specifie: 'NON_SPECIFIE',
     TITRE_IDENTITE: 'TITRE_IDENTITE',
     RIB: 'RIB',
+    justificatif_domicile: 'JUSTIFICATIF_DOMICILE',
   }
 
   def titre_identite_nature?

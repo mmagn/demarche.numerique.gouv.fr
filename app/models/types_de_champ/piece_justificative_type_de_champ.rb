@@ -57,8 +57,39 @@ class TypesDeChamp::PieceJustificativeTypeDeChamp < TypesDeChamp::TypeDeChampBas
          mandatory: mandatory?
        )
       end
+    elsif justificatif_domicile?
+      cs += JustificatifDomicile.attribute_types
+        .map { |attr, type| [attr, active_model_type_to_column_type(type)] }
+        .map do |attr, type|
+        jsonpath = "$.#{attr}"
+        Columns::JSONPathColumn.new(
+          procedure_id: procedure.id,
+          stable_id:,
+          tdc_type: type_champ,
+          label: "#{libelle_with_prefix(prefix)} – #{attr}",
+          type:,
+          jsonpath:,
+          displayable: true,
+          mandatory: mandatory?
+        )
+      end
     end
 
     cs
+  end
+
+  private
+
+  def active_model_type_to_column_type(am_type)
+    case am_type
+    in ActiveModel::Type::String
+      :text
+    in ActiveModel::Type::Date
+      :date
+    in ActiveModel::Type::Boolean
+      :boolean
+    else
+      raise "unknown type #{am_type}"
+    end
   end
 end

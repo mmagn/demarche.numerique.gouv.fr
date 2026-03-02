@@ -2,7 +2,7 @@
   - if profile == 'instructeur'
     - champ.piece_justificative_file.attachments.each do |attachment|
       = render Attachment::DemandeItemComponent.new(attachment:)
-      = render Instructeurs::OCRViewerComponent.new(champ:)
+      = render Instructeurs::OCRViewerComponent.new(champ:) if champ.is_a?(Champs::PieceJustificativeChamp)
 
   - else
     %ul

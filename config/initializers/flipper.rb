@@ -28,7 +28,7 @@ features = [
   :export_avec_horodatage,
   :export_order_by_revision,
   :groupe_instructeur_api_hack,
-  :ocr,
+  :analyse_justificatif_domicile,
   :pro_connect_restricted,
   :quotient_familial_type_de_champ,
   :rdv,

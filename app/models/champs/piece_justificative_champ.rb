@@ -28,8 +28,16 @@ class Champs::PieceJustificativeChamp < Champ
     false
   end
 
-  def has_async_external_data?
-    RIB?
+  def has_async_external_data? = ocr_compatible?
+
+  def ocr_result
+    return nil if !fetched? || value_json.nil?
+
+    if RIB?
+      RIB.new(value_json.dig('rib'))
+    elsif justificatif_domicile?
+      JustificatifDomicile.new(value_json)
+    end
   end
 
   private
@@ -44,7 +52,7 @@ class Champs::PieceJustificativeChamp < Champ
 
   def fetch_external_data
     blob = piece_justificative_file.blobs.first
-    OCRService.analyze(blob)
+    OCRService.analyze(blob, nature: type_de_champ.nature)
   end
 
   def log_content_type_rejection(content_type, allowed_types, attachment)

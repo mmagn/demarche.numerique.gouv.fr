@@ -84,6 +84,7 @@ class Champ < ApplicationRecord
     :expression_reguliere_error_message,
     :RIB?,
     :france_connect?,
+    :justificatif_domicile?,
     to: :type_de_champ
 
   delegate(*TypeDeChamp.type_champs.values.map { "#{_1}?".to_sym }, to: :type_de_champ)
@@ -335,6 +336,8 @@ class Champ < ApplicationRecord
 
     dossier.update_columns(attributes)
   end
+
+  def ocr_compatible? = RIB? || justificatif_domicile?
 
   class NotImplemented < ::StandardError
     def initialize(method)
