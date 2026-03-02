@@ -13,6 +13,12 @@ class Cron::Datagouv::FileByMonthJob < Cron::Datagouv::BaseJob
   private
 
   def data_for(month:)
-    [month.strftime(DATE_FORMAT), Dossier.visible_by_user_or_administration.where(created_at: month.all_month).count]
+    [
+      month.strftime(DATE_FORMAT),
+      Dossier
+        .where(for_procedure_preview: false, created_at: month.all_month).count +
+      DeletedDossier
+        .where(created_at: month.all_month).count,
+    ]
   end
 end

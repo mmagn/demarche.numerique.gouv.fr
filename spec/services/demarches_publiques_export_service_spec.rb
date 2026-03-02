@@ -13,6 +13,7 @@ describe DemarchesPubliquesExportService do
         number: procedure.id,
         title: procedure.libelle,
         description: "Demande de subvention à l’intention des associations",
+        state: 'publiee',
         service: {
           nom: procedure.service.nom,
           organisme: "organisme",
