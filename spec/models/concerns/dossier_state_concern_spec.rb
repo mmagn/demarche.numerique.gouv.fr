@@ -121,6 +121,57 @@ RSpec.describe DossierStateConcern do
     end
   end
 
+  describe 'AMI notifications' do
+    before do
+      allow(Ami::CreateNotificationService).to receive(:call)
+    end
+
+    it 'enqueues AMI notification after passer_en_construction' do
+      dossier.after_commit_passer_en_construction
+      expect(Ami::CreateNotificationService).to have_received(:call).with(dossier:, trigger: :dossier_state_change, state: nil)
+    end
+
+    it 'enqueues AMI notification after passer_en_instruction' do
+      dossier.after_commit_passer_en_instruction({})
+      expect(Ami::CreateNotificationService).to have_received(:call).with(dossier:, trigger: :dossier_state_change, state: nil)
+    end
+
+    it 'enqueues AMI notification after passer_automatiquement_en_instruction' do
+      dossier.after_commit_passer_automatiquement_en_instruction
+      expect(Ami::CreateNotificationService).to have_received(:call).with(dossier:, trigger: :dossier_state_change, state: nil)
+    end
+
+    it 'enqueues AMI notification after accepter' do
+      dossier.after_commit_accepter({})
+      expect(Ami::CreateNotificationService).to have_received(:call).with(dossier:, trigger: :dossier_state_change, state: nil)
+    end
+
+    it 'enqueues AMI notification after accepter_automatiquement' do
+      dossier.after_commit_accepter_automatiquement
+      expect(Ami::CreateNotificationService).to have_received(:call).with(dossier:, trigger: :dossier_state_change, state: nil)
+    end
+
+    it 'enqueues AMI notification after refuser' do
+      dossier.after_commit_refuser({})
+      expect(Ami::CreateNotificationService).to have_received(:call).with(dossier:, trigger: :dossier_state_change, state: nil)
+    end
+
+    it 'enqueues AMI notification after refuser_automatiquement' do
+      dossier.after_commit_refuser_automatiquement
+      expect(Ami::CreateNotificationService).to have_received(:call).with(dossier:, trigger: :dossier_state_change, state: nil)
+    end
+
+    it 'enqueues AMI notification after classer_sans_suite' do
+      dossier.after_commit_classer_sans_suite({})
+      expect(Ami::CreateNotificationService).to have_received(:call).with(dossier:, trigger: :dossier_state_change, state: nil)
+    end
+
+    it 'enqueues AMI notification after repasser_en_instruction' do
+      dossier.after_commit_repasser_en_instruction({})
+      expect(Ami::CreateNotificationService).to have_received(:call).with(dossier:, trigger: :dossier_state_change, state: :repasser_en_instruction)
+    end
+  end
+
   describe 'accepter' do
     let(:dossier_state) { :en_instruction }
 

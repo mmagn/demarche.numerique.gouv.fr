@@ -47,6 +47,7 @@ module DossierStateConcern
   def after_commit_passer_en_construction
     NotificationMailer.send_en_construction_notification(self).deliver_later
     NotificationMailer.send_notification_for_tiers(self).deliver_later if self.for_tiers?
+    enqueue_ami_notification
     groupe_instructeur.instructeurs.with_instant_email_new_dossier(self.procedure).each do |instructeur|
       DossierMailer.notify_new_dossier_depose_to_instructeur(self, instructeur.email).deliver_later
     end
@@ -84,6 +85,7 @@ module DossierStateConcern
     if !disable_notification
       NotificationMailer.send_en_instruction_notification(self).deliver_later
       NotificationMailer.send_notification_for_tiers(self).deliver_later if self.for_tiers?
+      enqueue_ami_notification
     end
 
     DossierNotification.destroy_notifications_by_dossier_and_type(self, :dossier_expirant)
@@ -113,6 +115,7 @@ module DossierStateConcern
   def after_commit_passer_automatiquement_en_instruction
     NotificationMailer.send_en_instruction_notification(self).deliver_later
     NotificationMailer.send_notification_for_tiers(self).deliver_later if self.for_tiers?
+    enqueue_ami_notification
     DossierNotification.destroy_notifications_by_dossier_and_type(self, :dossier_depose)
   end
 
@@ -171,6 +174,7 @@ module DossierStateConcern
         NotificationMailer.send_accepte_notification(self).deliver_later
       end
       NotificationMailer.send_notification_for_tiers(self).deliver_later if self.for_tiers?
+      enqueue_ami_notification
     end
 
     send_dossier_decision_to_experts(self)
@@ -205,6 +209,7 @@ module DossierStateConcern
       NotificationMailer.send_accepte_notification(self).deliver_later
     end
     NotificationMailer.send_notification_for_tiers(self).deliver_later if self.for_tiers?
+    enqueue_ami_notification
 
     send_dossier_decision_to_experts(self)
     clean_champs_after_instruction!
@@ -245,6 +250,7 @@ module DossierStateConcern
         NotificationMailer.send_refuse_notification(self).deliver_later
       end
       NotificationMailer.send_notification_for_tiers(self).deliver_later if self.for_tiers?
+      enqueue_ami_notification
     end
 
     send_dossier_decision_to_experts(self)
@@ -278,6 +284,7 @@ module DossierStateConcern
       NotificationMailer.send_refuse_notification(self).deliver_later
     end
     NotificationMailer.send_notification_for_tiers(self).deliver_later if self.for_tiers?
+    enqueue_ami_notification
 
     send_dossier_decision_to_experts(self)
     clean_champs_after_instruction!
@@ -316,6 +323,7 @@ module DossierStateConcern
         NotificationMailer.send_sans_suite_notification(self).deliver_later
       end
       NotificationMailer.send_notification_for_tiers(self).deliver_later if self.for_tiers?
+      enqueue_ami_notification
     end
 
     send_dossier_decision_to_experts(self)
@@ -355,6 +363,7 @@ module DossierStateConcern
     if !disable_notification
       NotificationMailer.send_repasser_en_instruction_notification(self).deliver_later
       NotificationMailer.send_notification_for_tiers(self, repasser_en_instruction: true).deliver_later if self.for_tiers?
+      enqueue_ami_notification
     end
 
     DossierNotification.destroy_notifications_by_dossier_and_type(self, :dossier_expirant)
@@ -440,5 +449,9 @@ module DossierStateConcern
     return if champ_to_remove_ids.empty?
 
     champs.where(id: champ_to_remove_ids, stream: Champ::MAIN_STREAM).destroy_all
+  end
+
+  def enqueue_ami_notification
+    Ami::CreateNotificationService.call(dossier: self)
   end
 end
