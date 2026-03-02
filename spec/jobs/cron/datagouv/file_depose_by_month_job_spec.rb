@@ -17,5 +17,11 @@ RSpec.describe Cron::Datagouv::FileDeposeByMonthJob, type: :job do
 
       it { is_expected.to eq(['2024-01', 0]) }
     end
+
+    context 'when dossiers were deleted' do
+      let!(:deleted_dossier) { create(:deleted_dossier, depose_at: Date.parse('15/01/2024')) }
+
+      it { is_expected.to eq(['2024-01', 1]) }
+    end
   end
 end

@@ -15,8 +15,8 @@ class Cron::Datagouv::FileDeposeByMonthJob < Cron::Datagouv::BaseJob
   def data_for(month:)
     [
       month.strftime(DATE_FORMAT),
-      Dossier.visible_by_user_or_administration
-        .where(depose_at: month.all_month).count +
+      Dossier
+        .where(for_procedure_preview: false, depose_at: month.all_month).count +
       DeletedDossier
         .where(depose_at: month.all_month).count,
     ]
