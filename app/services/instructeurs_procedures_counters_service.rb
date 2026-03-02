@@ -54,6 +54,8 @@ class InstructeursProceduresCountersService
       'traites' => dossiers_termines_count_per_procedure.values.sum,
       'tous' => dossiers_count_per_procedure.values.sum,
       'expirant' => dossiers_expirant_count_per_procedure.values.sum,
+      'archives' => dossiers_archives_count_per_procedure.values.sum,
+      'supprimes' => dossiers_supprimes_count_per_procedure.values.sum,
     }
 
     Result.new(

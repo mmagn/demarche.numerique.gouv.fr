@@ -72,8 +72,8 @@ describe InstructeursProceduresCountersService do
           expect(subject.all_dossiers_counts['traites']).to eq(2 + 1 + 1 + 1)
           expect(subject.all_dossiers_counts['tous']).to eq(5 + 3 + 2 + 1)
           expect(subject.all_dossiers_counts['expirant']).to eq(2 + 0)
-          expect(subject.all_dossiers_counts['archives']).to eq(nil)
-          expect(subject.all_dossiers_counts['supprimes']).to eq(nil)
+          expect(subject.all_dossiers_counts['archives']).to eq(1)
+          expect(subject.all_dossiers_counts['supprimes']).to eq(2)
         end
       end
 
