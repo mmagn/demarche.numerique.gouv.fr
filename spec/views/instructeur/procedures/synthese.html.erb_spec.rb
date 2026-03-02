@@ -3,7 +3,7 @@
 describe 'instructeurs/procedures/synthese', type: :view do
   before do
     counters = InstructeursProceduresCountersService::Result.new(
-      all_dossiers_counts: { "a-suivre" => 2, "suivis" => 0, "traites" => 1, "tous" => 3 },
+      all_dossiers_counts: { "a-suivre" => 2, "suivis" => 0, "traites" => 1, "tous" => 3, "expirant" => 1, "archives" => 4, "supprimes" => 2 },
       dossiers_count_per_procedure: {},
       dossiers_a_suivre_count_per_procedure: {},
       dossiers_termines_count_per_procedure: {},
@@ -26,5 +26,8 @@ describe 'instructeurs/procedures/synthese', type: :view do
     is_expected.not_to have_text('suivis par moi')
     is_expected.to match(/1.+traité/m)
     is_expected.to match(/3.+au total/m)
+    is_expected.to match(/1.+expirant/m)
+    is_expected.to match(/4.+à archiver/m)
+    is_expected.to match(/2.+corbeille/m)
   end
 end
