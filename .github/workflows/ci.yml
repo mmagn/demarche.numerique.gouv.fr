@@ -135,7 +135,7 @@ jobs:
 
       - name: Install build dependancies
         # - libvips-dev for image variant processing
-        # - fonts pickable by ImageMagick (still needed for watermark)
+        # - fonts for watermark text rendering
         # - rust for YJIT support
         # - poppler-utils for pdf previews
         run: sudo apt-get update && sudo apt-get install -y libvips-dev gsfonts rustc poppler-utils

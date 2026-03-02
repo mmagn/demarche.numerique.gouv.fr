@@ -25,18 +25,6 @@ class ImageProcessorJob < ApplicationJob
   discard_on ActiveStorage::FileNotFoundError
   discard_on ActiveRecord::InvalidForeignKey
 
-  # Known MiniMagick errors to swallow (watermark still uses ImageMagick)
-  KNOWN_ERRORS = [
-    'improper image header',
-    'width or height exceeds limit',
-    'attempt to perform an operation not allowed by the security policy',
-    'no decode delegate for this image format',
-  ]
-
-  # Usually invalid image or ImageMagick decoder blocked for this format
-  retry_on MiniMagick::Invalid, attempts: 3
-  retry_on MiniMagick::Error, attempts: 3
-
   retry_on "Vips::Error", attempts: 3 # not as const because we don't load vips at load time
 
   rescue_from ActiveStorage::PreviewError do |exception|
@@ -55,12 +43,6 @@ class ImageProcessorJob < ApplicationJob
     uninterlace(blob) if blob.content_type == "image/png" && embeddable_in_pdf?(blob)
     create_representations(blob) if blob.representation_required?
     add_watermark(blob) if blob.watermark_pending?
-  rescue MiniMagick::Error => e
-    if KNOWN_ERRORS.any? { e.message.match?(it) }
-      Rails.logger.info "ImageProcessorJob raising known error: #{e.message}"
-    else
-      raise e
-    end
   rescue Vips::Error => e
     Rails.logger.info "ImageProcessorJob raising vips error: #{e.message}"
   end

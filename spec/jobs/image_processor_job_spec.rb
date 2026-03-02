@@ -251,44 +251,6 @@ describe ImageProcessorJob, :external_deps, type: :job do
       allow(blob).to receive(:representation_required?).and_return(true)
     end
 
-    context 'when ImageMagick raises a "width or height exceeds limit" error' do
-      before do
-        allow_any_instance_of(described_class).to receive(:create_representations)
-          .and_raise(MiniMagick::Error.new("width or height exceeds limit"))
-      end
-
-      it 'completes successfully without raising an error' do
-        expect {
-          described_class.perform_now(blob)
-        }.not_to raise_error
-      end
-
-      it 'does not enqueue a retry job' do
-        expect {
-          described_class.perform_now(blob)
-        }.not_to have_enqueued_job(described_class)
-      end
-
-      it 'logs the error' do
-        allow(Rails.logger).to receive(:info).and_call_original
-        described_class.perform_now(blob)
-        expect(Rails.logger).to have_received(:info).with(/ImageProcessorJob raising known error: width or height exceeds limit/)
-      end
-    end
-
-    context 'when ImageMagick raises an unknown error' do
-      before do
-        allow_any_instance_of(described_class).to receive(:create_representations)
-          .and_raise(MiniMagick::Error.new("unknown error"))
-      end
-
-      it 'enqueues a retry job' do
-        expect {
-          described_class.perform_now(blob)
-        }.to have_enqueued_job(described_class)
-      end
-    end
-
     context 'when Vips raises an error during variant creation' do
       before do
         allow_any_instance_of(described_class).to receive(:create_representations)

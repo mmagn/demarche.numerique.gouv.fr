@@ -65,7 +65,6 @@ gem 'lograge'
 gem 'logstash-event'
 gem 'maintenance_tasks'
 gem 'matrix' # needed by prawn and not default in ruby 3.1
-gem 'mini_magick'
 gem 'net-imap', require: false # See https://github.com/mikel/mail/pull/1439
 gem 'net-pop', require: false # same
 gem 'net-smtp', require: false # same

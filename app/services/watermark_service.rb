@@ -2,119 +2,71 @@
 
 class WatermarkService
   POINTSIZE = 20
-  KERNING = 1.2
   ANGLE = 45
-  FILL_COLOR = "rgba(0,0,0,0.4)"
+  FILL_COLOR = [0, 0, 0]
+  OPACITY = 0.4
 
   attr_reader :text
-  attr_reader :text_length
 
   def initialize(text = APPLICATION_NAME)
-    @text = " #{text} " # give more space around each occurence
-    @text_length = @text.length
+    @text = " #{text} " # give more space around each occurrence
   end
 
   def process(file, output)
-    metadata = image_metadata(file)
+    require "vips"
 
-    return if metadata.blank?
-
-    watermark_image(file, output, metadata)
+    image = Vips::Image.new_from_file(file.to_path, access: :sequential)
+    watermarked = apply_watermark(image)
+    watermarked.write_to_file(output.to_path)
 
     output
   end
 
   private
 
-  def watermark_image(file, output, metadata)
-    MiniMagick.convert do |convert|
-      setup_conversion_commands(convert, file)
-      apply_watermark(convert, metadata)
-      convert << output.to_path
-    end
+  def apply_watermark(image)
+    image = image.addalpha unless image.has_alpha?
+
+    overlay = build_watermark_overlay(image.width, image.height)
+    image.composite(overlay, :over)
   end
 
-  def setup_conversion_commands(convert, file)
-    convert << file.to_path
-    convert << "-pointsize"
-    convert << POINTSIZE
-    convert << "-kerning"
-    convert << KERNING
-    convert << "-fill"
-    convert << FILL_COLOR
-    convert << "-gravity"
-    convert << "northwest"
+  PADDING_RATIO = 0.25 # espacement entre chaque occurrence du filigrane
+
+  # Parcourt l'image en y apposant un filigrane en mosaïque de texte en diagonal
+  # avec un motif en damier (décalage d'un demi-tile sur les lignes impaires)
+  def build_watermark_overlay(width, height)
+    text_image = Vips::Image.text(text, font: "sans #{POINTSIZE}", dpi: 72)
+    rotated_text = text_image.rotate(-ANGLE)
+    colored_text = colorize_text(rotated_text)
+
+    # Ajouter du padding autour du texte pour espacer les occurrences
+    pad_x = (colored_text.width * PADDING_RATIO).round
+    pad_y = (colored_text.height * PADDING_RATIO).round
+    tile = colored_text.embed(pad_x, pad_y, colored_text.width + pad_x * 2, colored_text.height + pad_y * 2)
+
+    tile_w = tile.width
+    tile_h = tile.height
+
+    # Construire 2 rangées : normale et décalée d'un demi-tile (motif damier)
+    row_across = (width.to_f / tile_w).ceil + 3
+    row = tile.replicate(row_across, 1)
+    shifted_row = row.crop(tile_w / 2, 0, (row_across - 1) * tile_w + tile_w / 2, tile_h)
+
+    brick = row.crop(0, 0, shifted_row.width, tile_h).join(shifted_row, :vertical)
+
+    # Répliquer verticalement pour couvrir la hauteur
+    down = (height.to_f / (tile_h * 2)).ceil + 2
+    tiled = brick.replicate(1, down)
+
+    # Crop avec un décalage pour mieux couvrir les bords
+    tiled.crop(tile_w / 2, tile_h / 2, [width, tiled.width - tile_w / 2].min, [height, tiled.height - tile_h / 2].min)
   end
 
-  # Parcourt l’image ligne par ligne et colonne par colonne en y apposant un filigrane
-  # en alternant un décalage horizontal sur chaque ligne
-  def apply_watermark(convert, metadata)
-    stride_x, stride_y, initial_offsets_x, initial_offset_y = calculate_watermark_params
+  def colorize_text(text_image)
+    alpha = (text_image.cast(:float) * OPACITY).cast(:uchar)
 
-    0.step(by: stride_y, to: metadata[:height] + stride_y * 2).with_index do |offset_y, index|
-      initial_offset_x = initial_offsets_x[index % 2]
-
-      0.step(by: stride_x, to: metadata[:width] + stride_x * 2) do |offset_x|
-        x = initial_offset_x + offset_x
-        y = initial_offset_y + offset_y
-        draw_text(convert, x, y)
-      end
-    end
-  end
-
-  def calculate_watermark_params
-    # Approximation de la longueur du texte, qui marche bien pour les constantes par défaut
-    char_width_approx = POINTSIZE / 2
-    char_height_approx = POINTSIZE * 3 / 4
-
-    # Dimensions du rectangle de texte
-    text_width_approx = char_width_approx * text_length * Math.cos(ANGLE * (Math::PI / 180)).abs
-    text_height_approx = char_width_approx * text_length * Math.sin(ANGLE * (Math::PI / 180)).abs + char_height_approx
-    diagonal_length = Math.sqrt(text_width_approx**2 + text_height_approx**2)
-
-    # Calcul des décalages entre chaque colonne et ligne
-    # afin que chaque occurence "suive" la précédente
-    stride_x = ((diagonal_length + char_width_approx) / Math.cos(ANGLE * (Math::PI / 180)))
-    stride_y = text_height_approx
-
-    initial_offsets_x = [0, (0 - stride_x / 2).round] # Motif de damier en alternant le décalage horizontal
-    initial_offset_y = 0 - stride_y # Offset négatif pour mieux couvrir le nord ouest
-
-    [stride_x.round, stride_y.round, initial_offsets_x, initial_offset_y.round]
-  end
-
-  def draw_text(convert, x, y)
-    # A chaque insertion de texte, positionne le curseur, définit la rotation, puis réinitialise ces paramètres pour la prochaine occurence
-    # Note: x and y can be negative value
-    convert << "-draw"
-    convert << "translate #{x},#{y} rotate #{-ANGLE} text 0,0 '#{text}' rotate #{ANGLE} translate #{-x},#{-y}"
-  end
-
-  def image_metadata(file)
-    read_image(file) do |image|
-      width = image.width
-      height = image.height
-
-      if rotated_image?(image)
-        width, height = height, width
-      end
-
-      { width: width, height: height }
-    end
-  end
-
-  def read_image(file)
-    image = MiniMagick::Image.new(file.to_path)
-
-    if image.valid?
-      yield image
-    else
-      Rails.logger.info "Skipping image analysis because ImageMagick doesn't support the file #{file}"
-      nil
-    end
-  end
-
-  def rotated_image?(image)
-    ['RightTop', 'LeftBottom'].include?(image["%[orientation]"])
+    rgb = text_image.new_from_image(FILL_COLOR).copy(interpretation: :srgb)
+    rgb.bandjoin(alpha)
   end
 end
