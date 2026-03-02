@@ -858,7 +858,7 @@ class Procedure < ApplicationRecord
     recent_ids = types_de_champ_scope
       .joins(:revision_types_de_champ)
       .where(revision_types_de_champ: { revision_id: revision_ids, parent_id: parent_ids })
-      .group(:stable_id).select('MAX(types_de_champ.id)')
+      .group(:stable_id).pluck('MAX(types_de_champ.id)')
 
     # fetch the more recent procedure_revision_types_de_champ
     # which includes recents_ids
@@ -867,7 +867,7 @@ class Procedure < ApplicationRecord
       .where(type_de_champ_id: recent_ids)
       .where.not(revision_id: draft_revision_id)
       .group(:type_de_champ_id)
-      .select('MAX(id)')
+      .pluck('MAX(id)')
 
     TypeDeChamp
       .joins(:revision_types_de_champ)
