@@ -22,6 +22,11 @@ class EditableChamp::HeaderSectionComponent < ApplicationComponent
     class_names(
       {
         "section-#{level}": true,
+        # Accessibility:
+        # A hidden <h2> ("Formulaire") is injected above the form to fix
+        # the document heading structure. We decrement the DSFR visual
+        # heading level so the UI appearance remains unchanged.
+        "fr-h#{level - 1}": true,
         'header-section': @champ.dossier.auto_numbering_section_headers_for?(@champ.type_de_champ),
         'hidden': !@champ.visible?,
       }.merge(@html_class)
