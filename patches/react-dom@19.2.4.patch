@@ -1,0 +1,20 @@
+diff --git a/cjs/react-dom-client.development.js b/cjs/react-dom-client.development.js
+index fa853b3a79413c8ddc553441ee259d4b34f59d69..0ccc4c8e33a401e4ea954e291c97c0983232ab36 100644
+--- a/cjs/react-dom-client.development.js
++++ b/cjs/react-dom-client.development.js
+@@ -3965,8 +3965,13 @@
+           (isDeeplyEqual = !1));
+       for (var _key in next)
+         if (_key in prev) {
+-          var key = prev[_key];
+-          var nextValue = next[_key];
++          var key, nextValue;
++          try {
++            key = prev[_key];
++            nextValue = next[_key];
++          } catch (e) {
++            continue;
++          }
+           if (key !== nextValue) {
+             if (0 === indent && "children" === _key)
+               (isDeeplyEqual = "\u00a0\u00a0".repeat(indent) + _key),
