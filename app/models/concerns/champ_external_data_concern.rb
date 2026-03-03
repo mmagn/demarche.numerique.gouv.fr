@@ -62,64 +62,64 @@ module ChampExternalDataConcern
         transitions from: [:idle, :waiting_for_job, :fetching, :fetched, :external_error], to: :idle
       end
     end
+  end
 
-    def pending? = waiting_for_job? || fetching?
-    def done? = fetched? || external_error?
+  def pending? = waiting_for_job? || fetching?
+  def done? = fetched? || external_error?
 
-    def has_async_external_data? = false
+  def has_async_external_data? = false
 
-    def external_data_needed_for_validation? = has_async_external_data?
+  def external_data_needed_for_validation? = has_async_external_data?
 
-    private
+  private
 
-    def ready_for_external_call? = external_id.present?
+  def ready_for_external_call? = external_id.present?
 
-    def fetch_external_data_later(wait: nil)
-      ChampFetchExternalDataJob.set(wait:).perform_later(self, external_id)
-    end
+  def fetch_external_data_later(wait: nil)
+    ChampFetchExternalDataJob.set(wait:).perform_later(self, external_id)
+  end
 
-    # it should only be called after fetch! event callback
-    def fetch_and_handle_result
-      fetch_external_data.then { handle_result(it) }
-    end
+  # it should only be called after fetch! event callback
+  def fetch_and_handle_result
+    fetch_external_data.then { handle_result(it) }
+  end
 
-    def fetch_external_data
-      raise NotImplemented.new(:fetch_external_data)
-    end
+  def fetch_external_data
+    raise NotImplemented.new(:fetch_external_data)
+  end
 
-    def handle_result(result)
-      if result.is_a?(Dry::Monads::Result)
-        case result
-        in Success(hash)
-          update_external_data!(hash)
-          external_data_fetched!
-        in Failure(retryable: true, reason:, code:)
-          save_external_exception(reason, code)
-          retry!
-          raise RetryableFetchError.new(reason)
-        in Failure(retryable: false, reason:, code:)
-          save_external_exception(reason, code)
-          Sentry.capture_exception(reason) if code != 404
-          external_data_error!
-        end
-      elsif result.present?
-        update_external_data!(data: result)
+  def handle_result(result)
+    if result.is_a?(Dry::Monads::Result)
+      case result
+      in Success(hash)
+        update_external_data!(hash)
         external_data_fetched!
+      in Failure(retryable: true, reason:, code:)
+        save_external_exception(reason, code)
+        retry!
+        raise RetryableFetchError.new(reason)
+      in Failure(retryable: false, reason:, code:)
+        save_external_exception(reason, code)
+        Sentry.capture_exception(reason) if code != 404
+        external_data_error!
       end
+    elsif result.present?
+      update_external_data!(data: result)
+      external_data_fetched!
     end
+  end
 
-    def update_external_data!(hash)
-      update!(hash.merge(fetch_external_data_exceptions: []))
-    end
+  def update_external_data!(hash)
+    update!(hash.merge(fetch_external_data_exceptions: []))
+  end
 
-    def save_external_exception(exception, code)
-      exceptions = fetch_external_data_exceptions || []
-      exceptions << ExternalDataException.new(reason: exception.inspect, code:)
-      update_columns(fetch_external_data_exceptions: exceptions)
-    end
+  def save_external_exception(exception, code)
+    exceptions = fetch_external_data_exceptions || []
+    exceptions << ExternalDataException.new(reason: exception.inspect, code:)
+    update_columns(fetch_external_data_exceptions: exceptions)
+  end
 
-    def after_reset_external_data(opts = {})
-      update(opts.merge(data: nil, value_json: nil, fetch_external_data_exceptions: []))
-    end
+  def after_reset_external_data(opts = {})
+    update(opts.merge(data: nil, value_json: nil, fetch_external_data_exceptions: []))
   end
 end

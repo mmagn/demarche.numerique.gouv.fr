@@ -3,13 +3,11 @@
 module ProcedureChorusConcern
   extend ActiveSupport::Concern
 
-  included do
-    def chorus_configuration
-      @chorus_configuration ||= ChorusConfiguration.new(chorus)
-    end
+  def chorus_configuration
+    @chorus_configuration ||= ChorusConfiguration.new(chorus)
+  end
 
-    def chorusable?
-      feature_enabled?(:engagement_juridique_type_de_champ)
-    end
+  def chorusable?
+    feature_enabled?(:engagement_juridique_type_de_champ)
   end
 end

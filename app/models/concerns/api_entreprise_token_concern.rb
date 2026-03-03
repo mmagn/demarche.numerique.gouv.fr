@@ -5,15 +5,15 @@ module APIEntrepriseTokenConcern
 
   included do
     validates_associated :api_entreprise_token
+  end
 
-    def api_entreprise_token
-      t = self[:api_entreprise_token].presence || ENV['API_ENTREPRISE_KEY']
+  def api_entreprise_token
+    t = self[:api_entreprise_token].presence || ENV['API_ENTREPRISE_KEY']
 
-      APIEntrepriseToken.new(t)
-    end
+    APIEntrepriseToken.new(t)
+  end
 
-    def specific_api_entreprise_token?
-      self[:api_entreprise_token].present?
-    end
+  def specific_api_entreprise_token?
+    self[:api_entreprise_token].present?
   end
 end
