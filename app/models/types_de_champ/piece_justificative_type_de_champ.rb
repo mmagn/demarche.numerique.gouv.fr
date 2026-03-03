@@ -8,7 +8,11 @@ class TypesDeChamp::PieceJustificativeTypeDeChamp < TypesDeChamp::TypeDeChampBas
   def tags_for_template = [].freeze
 
   def champ_value_for_export(champ, path = :value)
-    champ.piece_justificative_file.map { _1.filename.to_s }.join(', ')
+    if titre_identite_nature?
+      champ.piece_justificative_file.attached? ? "présent" : "absent"
+    else
+      champ.piece_justificative_file.map { _1.filename.to_s }.join(', ')
+    end
   end
 
   def champ_value_for_api(champ, version: 2)
