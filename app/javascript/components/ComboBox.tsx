@@ -14,7 +14,8 @@ import {
   TagList,
   Tag,
   Virtualizer,
-  ListLayout
+  ListLayout,
+  Collection
 } from 'react-aria-components';
 import { useMemo, useRef, createContext, useContext, useId } from 'react';
 import type { RefObject } from 'react';
@@ -152,20 +153,20 @@ export function ComboBox({
               ) : undefined
             }
           >
-            {sections
-              ? sections.map((section) => (
-                  <ListBoxSection key={section.label}>
+            {sections ? (
+              <Collection items={sections}>
+                {(section) => (
+                  <ListBoxSection id={section.label}>
                     <Header className="fr-ds-combobox__section-header">
                       {section.label}
                     </Header>
-                    {section.items.map((item) => (
-                      <ComboBoxItem key={item.value} id={item.value}>
-                        {item.label}
-                      </ComboBoxItem>
-                    ))}
+                    <Collection items={section.items}>{children}</Collection>
                   </ListBoxSection>
-                ))
-              : children}
+                )}
+              </Collection>
+            ) : (
+              children
+            )}
           </ListBox>
         </Virtualizer>
       </Popover>
