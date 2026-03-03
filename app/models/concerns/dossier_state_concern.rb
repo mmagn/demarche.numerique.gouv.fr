@@ -425,7 +425,11 @@ module DossierStateConcern
   end
 
   def clear_titres_identite!
-    champ_to_clear_stable_ids = champs.filter { _1.class == Champs::TitreIdentiteChamp }.to_set(&:stable_id)
+    champ_to_clear_stable_ids = champs.filter do |champ|
+      champ.class == Champs::TitreIdentiteChamp ||
+        (champ.piece_justificative? && champ.titre_identite_nature?)
+    end.to_set(&:stable_id)
+
     champs.where(stable_id: champ_to_clear_stable_ids).find_each(&:clear)
   end
 
