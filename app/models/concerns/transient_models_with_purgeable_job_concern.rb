@@ -7,6 +7,7 @@
 #   based on a state machine
 module TransientModelsWithPurgeableJobConcern
   extend ActiveSupport::Concern
+
   included do
     include AASM
 
@@ -41,18 +42,18 @@ module TransientModelsWithPurgeableJobConcern
       where(job_status: [job_statuses.fetch(:pending)])
         .where(updated_at: ...(Time.zone.now - duration))
     }
+  end
 
-    def available?
-      generated? && file.url.present?
-    end
+  def available?
+    generated? && file.url.present?
+  end
 
-    def compute_with_safe_stale_for_purge(&block)
-      restart! if failed? # restart for AASM
-      yield
-      make_available!
-    rescue => e
-      fail!         # fail for observability
-      raise e       # re-raise for retryable behaviour
-    end
+  def compute_with_safe_stale_for_purge(&block)
+    restart! if failed? # restart for AASM
+    yield
+    make_available!
+  rescue => e
+    fail!         # fail for observability
+    raise e       # re-raise for retryable behaviour
   end
 end

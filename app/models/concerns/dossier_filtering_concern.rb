@@ -3,14 +3,15 @@
 module DossierFilteringConcern
   extend ActiveSupport::Concern
 
+  DATE_SINCE_MAPPING = {
+    'updated_since' => 'updated_at',
+    'depose_since' => 'depose_at',
+    'en_construction_since' => 'en_construction_at',
+    'en_instruction_since' => 'en_instruction_at',
+    'processed_since' => 'processed_at',
+  }
+
   included do
-    DATE_SINCE_MAPPING = {
-      'updated_since' => 'updated_at',
-      'depose_since' => 'depose_at',
-      'en_construction_since' => 'en_construction_at',
-      'en_instruction_since' => 'en_instruction_at',
-      'processed_since' => 'processed_at',
-    }
     scope :filter_by_datetimes, lambda { |column, dates|
       if dates.present?
         case column
@@ -45,7 +46,7 @@ module DossierFilteringConcern
 
       where("unaccent(#{table_column}) ILIKE ANY (ARRAY((SELECT unaccent(unnest(ARRAY[?])))))", safe_quoted_terms)
     }
-
-    def sanitize_sql_like(q) = ActiveRecord::Base.sanitize_sql_like(q)
   end
+
+  def sanitize_sql_like(q) = ActiveRecord::Base.sanitize_sql_like(q)
 end
