@@ -1001,6 +1001,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_13_120001) do
     t.jsonb "archives_filters", default: [], null: false, array: true
     t.integer "assign_to_id"
     t.datetime "created_at", precision: nil
+    t.boolean "customized", default: false, null: false
     t.jsonb "displayed_columns", default: [], null: false, array: true
     t.jsonb "displayed_fields", default: [{"label"=>"Demandeur", "table"=>"user", "column"=>"email"}], null: false
     t.jsonb "expirant_filters", default: [], null: false, array: true
