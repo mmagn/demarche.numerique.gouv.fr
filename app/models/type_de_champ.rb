@@ -281,7 +281,7 @@ class TypeDeChamp < ApplicationRecord
 
     I18n.t(type_champ,
       scope: [:activerecord, :attributes, :type_de_champ, :default_libelle],
-      default: I18n.t(type_champ, scope: [:activerecord, :attributes, :type_de_champ, :type_champs]))
+      default: I18n.t(type_champ, scope: [:activerecord, :attributes, :type_de_champ, :type_champs]), app_name: APPLICATION_NAME)
   end
 
   def safe_referentiel_mapping
