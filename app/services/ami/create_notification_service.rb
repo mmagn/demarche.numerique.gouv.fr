@@ -28,7 +28,7 @@ module Ami
 
     def initialize(dossier:)
       @dossier = dossier
-      @state = dossier.state
+      @state = dossier.state.to_sym
     end
 
     def self.call(dossier:)
@@ -36,11 +36,17 @@ module Ami
     end
 
     def call
-      return if !eligible?
+      if !eligible?
+        Rails.logger.debug { "AMI notification not eligible for dossier #{dossier.id}: #{not_eligible_reason}" }
+        return
+      end
 
       Rails.logger.debug { "AMI notification eligible for dossier #{dossier.id} (state: #{state})" }
 
       payload = create_notification_payload(send_date: Time.zone.now.iso8601)
+      return if payload[:recipient_fc_hash].blank?
+
+      Ami::SendNotificationJob.perform_later(payload, context)
     end
 
     def create_notification_payload(send_date:)
@@ -67,6 +73,14 @@ module Ami
       return ":ami_notifications feature flag disabled" unless dossier.procedure.feature_enabled?(:ami_notifications)
 
       return "state: #{state} not eligible" unless AMI_NOTIFICATIONS_ENABLED_STATES.include?(state)
+    end
+
+    def context
+      {
+        procedure: dossier.procedure.id,
+        dossier: dossier.id,
+        state:,
+      }
     end
 
     def status_label
