@@ -52,8 +52,8 @@ module Ami
     def create_notification_payload(send_date:)
       {
         recipient_fc_hash: RecipientFcHash.call(dossier.user),
-        content_title: "Mise a jour du dossier #{dossier.id}",
-        content_body: "Le dossier #{dossier.id} est maintenant #{status_label}.",
+        content_title:,
+        content_body:,
         item_type: ITEM_TYPE,
         item_id: dossier.id.to_s,
         item_status_label: status_label,
@@ -73,6 +73,14 @@ module Ami
       return ":ami_notifications feature flag disabled" unless dossier.procedure.feature_enabled?(:ami_notifications)
 
       return "state: #{state} not eligible" unless AMI_NOTIFICATIONS_ENABLED_STATES.include?(state)
+    end
+
+    def content_title
+      "Mise à jour de votre dossier n°#{dossier.id} pour la démarche #{dossier.procedure.libelle}"
+    end
+
+    def content_body
+      "Le statut du dossier est maintenant #{status_label}."
     end
 
     def context
