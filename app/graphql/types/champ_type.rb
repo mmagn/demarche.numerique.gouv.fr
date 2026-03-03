@@ -17,7 +17,7 @@ module Types
     end
 
     def columns
-      if object.repetition? || object.titre_identite?
+      if object.repetition? || object.titre_identite? || object.titre_identite_nature?
         []
       else
         object.type_de_champ.columns(procedure: object.procedure)
