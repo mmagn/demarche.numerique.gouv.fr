@@ -87,8 +87,8 @@
     <% etablissement = dossier.etablissement %>
     <div class="fr-mt-1w fr-mb-4w fr-px-2w">
       <% if etablissement.as_degraded_mode? %>
-        <%= render Dossiers::DegradedIdentiteEntrepriseComponent.new(etablissement:, profile: @profile) %>
-      <% elsif @profile == 'usager' %>
+        <%= render Dossiers::DegradedIdentiteEntrepriseComponent.new(etablissement:, profile: profile) %>
+      <% elsif profile == 'usager' %>
         <%= render Dossiers::IdentiteEntrepriseForUsagerComponent.new(etablissement:) %>
       <% else %>
         <%= render Dossiers::IdentiteEntrepriseComponent.new(etablissement:) %>

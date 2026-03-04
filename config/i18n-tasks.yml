@@ -120,6 +120,7 @@ ignore_unused:
 - 'combo_search_component.screen_reader_instructions'
 - 'links.common.*'
 - 'views.instructeurs.dossiers.acts_on_behalf'
+- 'views.shared.dossiers.identite_entreprise.non_diffusible'
 - 'views.components.*'
 - 'utils.array'
 - 'utils.boolean'
