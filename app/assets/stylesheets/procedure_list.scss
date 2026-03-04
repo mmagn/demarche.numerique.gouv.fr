@@ -17,6 +17,27 @@
     display: inline;
   }
 
+  // Fix when the procedure label is too long,
+  // the button should not wrap to the next line when hovering over copy zone.
+  .copy-zone {
+    position: relative;
+  }
+
+  .copy-zone:hover .copy-zone-trigger-icon,
+  .copy-zone:has(.copy-btn:focus-visible) .copy-zone-trigger-icon {
+    visibility: hidden !important;
+    display: inline !important;
+  }
+
+  .copy-zone:hover .copy-btn,
+  .copy-zone .copy-btn:focus-visible {
+    position: absolute !important;
+    left: 0;
+    top: 0;
+    white-space: nowrap !important;
+    max-width: none;
+  }
+
   .fr-nav {
     position: absolute;
     top: 0.8125rem;
