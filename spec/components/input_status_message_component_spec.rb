@@ -143,5 +143,34 @@ RSpec.describe Dsfr::InputStatusMessageComponent, type: :component do
         end
       end
     end
+
+    context 'with siret champs' do
+      let(:types_de_champ_public) { [{ type: :siret }] }
+      let(:errors_on_attribute) { false }
+      let(:error_full_messages) { [] }
+
+      context "when etablissement is non-diffusible (diffusable_commercialement: false)" do
+        before do
+          etablissement = create(:etablissement, :non_diffusable, entreprise_raison_sociale: "SECRET EI", entreprise_forme_juridique: "Entrepreneur individuel")
+          champ.update!(value: etablissement.siret, external_id: etablissement.siret, etablissement:)
+        end
+
+        it "renders the status message with masked denomination (Non-diffusible), not the real name" do
+          expect(subject).to have_css(".fr-message--info", text: "Non-diffusible")
+          expect(subject).not_to have_text("SECRET EI")
+        end
+      end
+
+      context "when etablissement is diffusible" do
+        before do
+          etablissement = create(:etablissement, diffusable_commercialement: true, entreprise_raison_sociale: "GRTGAZ", entreprise_forme_juridique: "SA")
+          champ.update!(value: etablissement.siret, external_id: etablissement.siret, etablissement:)
+        end
+
+        it "renders the status message with the real denomination" do
+          expect(subject).to have_css(".fr-message--info", text: "GRTGAZ")
+        end
+      end
+    end
   end
 end
