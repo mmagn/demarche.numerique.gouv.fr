@@ -47,6 +47,7 @@ describe Instructeurs::ProcedurePresentationController, type: :controller do
 
         filtered_column = FilteredColumn.new(column: state_column, filter: 'en_construction')
         expect(procedure_presentation.tous_filters).to eq([filtered_column])
+        expect(procedure_presentation.customized).to eq(true)
       end
     end
 
@@ -108,6 +109,7 @@ describe Instructeurs::ProcedurePresentationController, type: :controller do
         expect(response.body).to include('<turbo-stream action="refresh">')
 
         expect(procedure_presentation.reload.tous_filters).to eq([FilteredColumn.new(column:, filter: { operator: 'in', value: ['Marseille'] })])
+        expect(procedure_presentation.reload.customized).to eq(false)
       end
     end
 
