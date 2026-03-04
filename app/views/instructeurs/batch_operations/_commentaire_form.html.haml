@@ -17,7 +17,7 @@
 
     .fr-input-group
       = f.label :piece_jointe, class: 'fr-label'
-      = render Attachment::EditComponent.new(attached_file: commentaire.piece_jointe)
+      = render Attachment::UniqueComponent.new(context: Attachment::Context.new(attached_file: commentaire.piece_jointe))
 
     - if dossier_ids.present?
       - dossier_ids.each do |id|

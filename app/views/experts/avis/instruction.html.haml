@@ -41,7 +41,7 @@
 
 
 
-            = render Attachment::EditComponent.new(attached_file: @avis.piece_justificative_file, view_as: :download)
+            = render Attachment::UniqueComponent.new(context: Attachment::Context.new(attached_file: @avis.piece_justificative_file, view_as: :download))
 
             %p.confidentiel
               - if @avis.confidentiel?
