@@ -52,9 +52,9 @@ module Dsfr
       when TypeDeChamp.type_champs[:siret]
         # TODO: use fetched? after T20251029backfillChampSiretExternalStateTask
         if @champ.etablissement && @champ.etablissement.entreprise_capital_social.present?
-          { state: :info, text: t('.siret.fetched_with_capital', raison_sociale_or_name: raison_sociale_or_name(@champ.etablissement), forme_juridique: @champ.etablissement.entreprise_forme_juridique, capital_sociale: pretty_currency(@champ.etablissement.entreprise_capital_social)) }
+          { state: :info, text: t('.siret.fetched_with_capital', raison_sociale_or_name: displayable_raison_sociale_or_name(@champ.etablissement), forme_juridique: @champ.etablissement.entreprise_forme_juridique, capital_sociale: pretty_currency(@champ.etablissement.entreprise_capital_social)) }
         elsif @champ.etablissement && @champ.etablissement.entreprise_capital_social.blank?
-          { state: :info, text: t('.siret.fetched', raison_sociale_or_name: raison_sociale_or_name(@champ.etablissement), forme_juridique: @champ.etablissement.entreprise_forme_juridique) }
+          { state: :info, text: t('.siret.fetched', raison_sociale_or_name: displayable_raison_sociale_or_name(@champ.etablissement), forme_juridique: @champ.etablissement.entreprise_forme_juridique) }
         elsif @champ.external_error?
           { state: :warning, text: t('.siret.error', value: pretty_siret(@champ.external_id)) }
         elsif @champ.pending?
@@ -90,6 +90,16 @@ module Dsfr
           text = bank_name.present? ? t('.pj.valid_with_bank', iban:, bank_name:) : t('.pj.valid', iban:)
           { state: :valid, text: }
         end
+      end
+    end
+
+    private
+
+    def displayable_raison_sociale_or_name(etablissement)
+      if etablissement.diffusable_commercialement
+        raison_sociale_or_name(etablissement)
+      else
+        t('non_diffusible', scope: 'views.shared.dossiers.identite_entreprise')
       end
     end
   end

@@ -4,6 +4,7 @@ en:
       dossiers:
         identite_entreprise:
           warning_for_private_info: "The establishment SIRET %{siret} applied his right to not publish information regarding his identity. These informaiton won't be visible from instructor services."
+          non_diffusible: "Non-disclosable"
       avis:
         demande_envoyee_le: "Feedback send at %{date}"
         demande_revoquee_le: "Feedback revoked at %{date}"
