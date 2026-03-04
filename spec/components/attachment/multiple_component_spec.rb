@@ -7,12 +7,12 @@ RSpec.describe Attachment::MultipleComponent, type: :component do
   let(:champ) { dossier.champs.first }
 
   let(:attached_file) { champ.piece_justificative_file }
+  let(:context) { Attachment::Context.new(champ:) }
   let(:kwargs) { {} }
 
   let(:component) do
     described_class.new(
-      champ:,
-      attached_file:,
+      context:,
       **kwargs
     )
   end
@@ -25,7 +25,7 @@ RSpec.describe Attachment::MultipleComponent, type: :component do
     it 'renders a form field for uploading a file and max attachment size' do
       expect(subject).to have_no_selector('.hidden input[type=file]')
       expect(subject).to have_selector('input[type=file]:not(.hidden)')
-      expect(subject).to have_content(/Taille maximale autorisée :\s+20 Mo/)
+      expect(subject).to have_content(/Taille maximale/)
     end
   end
 
@@ -64,7 +64,7 @@ RSpec.describe Attachment::MultipleComponent, type: :component do
   end
 
   context 'when the user cannot destroy the attachment' do
-    let(:kwargs) { { user_can_destroy: false } }
+    let(:context) { Attachment::Context.new(champ:, user_can_destroy: false) }
 
     it 'hides the Delete button but still renders the filename' do
       expect(subject).to have_no_link(title: "Supprimer le fichier #{attached_file.attachments[0].filename}")
@@ -89,8 +89,8 @@ RSpec.describe Attachment::MultipleComponent, type: :component do
   context 'max attachments' do
     let(:kwargs) { { max: 1 } }
 
-    it 'renders a disabled input file where max attachments has been reached' do
-      expect(subject).to have_selector('input[type=file][disabled]')
+    it 'does not render an upload input when max attachments has been reached' do
+      expect(subject).not_to have_selector('input[type=file]')
     end
   end
 

@@ -22,4 +22,13 @@ class EditableChamp::PieceJustificativeComponent < EditableChamp::EditableChampB
       1
     end
   end
+
+  def attachment_context
+    Attachment::Context.new(
+      champ: @champ,
+      view_as:,
+      form_object_name: @form.object_name,
+      aria_labelledby: labelledby_id
+    )
+  end
 end
