@@ -77,6 +77,18 @@ class TypesDeChamp::PieceJustificativeTypeDeChamp < TypesDeChamp::TypeDeChampBas
           mandatory: mandatory?
         )
       end
+    elsif titre_identite_nature?
+      cs += [
+        Columns::TitreIdentiteColumn.new(
+          procedure_id: procedure.id,
+          stable_id:,
+          tdc_type: type_champ,
+          label: "#{libelle_with_prefix(prefix)} – filled",
+          type: :boolean,
+          displayable: true,
+          mandatory: mandatory?
+        ),
+      ]
     end
 
     cs
