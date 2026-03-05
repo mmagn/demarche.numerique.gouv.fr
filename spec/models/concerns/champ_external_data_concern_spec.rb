@@ -3,13 +3,13 @@
 RSpec.describe ChampExternalDataConcern do
   include Dry::Monads[:result]
 
-  describe '#save_external_exception' do
+  describe '#save_external_error' do
     let(:procedure) { create(:procedure, types_de_champ_public: [{ type: :rnf }]) }
     let(:dossier) { create(:dossier, procedure:) }
     let(:champ) { dossier.champs.first }
     context "add execption to the log" do
       it do
-        champ.send(:save_external_exception, double(inspect: 'PAN'), 404)
+        champ.send(:save_external_error, double(inspect: 'PAN'), 404)
         expect { champ.reload }.not_to raise_error
       end
     end
@@ -93,7 +93,7 @@ RSpec.describe ChampExternalDataConcern do
         allow(champ).to receive(:ready_for_external_call?).and_return(true)
         champ.fetch_later!
 
-        failure = Failure(retryable: false, reason: Exception.new('nop'), code:)
+        failure = Failure(retryable: false, error: Exception.new('nop'), code:)
         allow(champ).to receive(:fetch_external_data).and_return(failure)
         allow(Sentry).to receive(:capture_exception)
         champ.fetch!
@@ -120,7 +120,7 @@ RSpec.describe ChampExternalDataConcern do
         allow(champ).to receive(:ready_for_external_call?).and_return(true)
         champ.fetch_later!
 
-        failure = Failure(retryable: true, reason: Exception.new('nop'), code: 404)
+        failure = Failure(retryable: true, error: Exception.new('nop'), code: 404)
         allow(champ).to receive(:fetch_external_data).and_return(failure)
       end
 
