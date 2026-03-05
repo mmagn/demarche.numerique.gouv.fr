@@ -1,0 +1,9 @@
+<div class="attachment fr-upload-group <%= 'fr-mb-1w' unless persisted? %>">
+  <% if persisted? %>
+    <%= render Attachment::AttachmentRowComponent.new(attachment:, context:) %>
+  <% else %>
+    <%= render Attachment::ButtonUploaderComponent.new(context:) %>
+  <% end %>
+
+  <%= render Attachment::ErrorWrapperComponent.new(with_top_margin: true) %>
+</div>

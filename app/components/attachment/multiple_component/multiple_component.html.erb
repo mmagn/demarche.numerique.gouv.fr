@@ -1,0 +1,23 @@
+<div class="attachment-multiple <%= 'fr-downloads-group' if view_as == :download %> <%= 'destroyable' if user_can_destroy? %>">
+  <%= template %>
+
+  <% if show_hint? %>
+    <%= render hints_component %>
+  <% end %>
+
+  <div id="<%= empty_component_id %>" data-turbo-force="server">
+    <%= render drag_drop_uploader_component %>
+  </div>
+
+  <%= render Attachment::ErrorWrapperComponent.new(with_top_margin: false) %>
+
+  <% if @attachments.size >= 1 %>
+    <ul class="fr-my-1v attachment-files-list">
+      <% each_attachment do |attachment, index| %>
+        <li id="<%= dom_id(attachment) %>">
+          <%= render Attachment::AttachmentRowComponent.new(attachment:, context:) %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

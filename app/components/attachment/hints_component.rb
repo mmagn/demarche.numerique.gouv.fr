@@ -45,4 +45,31 @@ class Attachment::HintsComponent < ApplicationComponent
       end
     end
   end
+
+  def show_format_families?
+    format_families_info.present?
+  end
+
+  def show_exhaustive_formats?
+    return false if champ.nil? || !champ.piece_justificative?
+
+    tdc = champ.type_de_champ
+    tdc.titre_identite_nature? || tdc.RIB?
+  end
+
+  def exhaustive_formats
+    return nil unless show_exhaustive_formats?
+
+    champ.type_de_champ.allowed_extensions.join(', ')
+  end
+
+  def formats_accepted_text
+    format_families_info.map { |f| "#{f[:label]} (#{f[:top_formats]}...)" }.join(', ')
+  end
+
+  def tooltip_id
+    return nil if champ.nil?
+
+    "#{champ.focusable_input_id}-formats-tooltip"
+  end
 end
