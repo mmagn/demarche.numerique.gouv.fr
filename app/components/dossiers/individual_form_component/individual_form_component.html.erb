@@ -154,5 +154,8 @@
     <% end %>
   <% end %>
 
-  <%= f.submit t('views.users.dossiers.identite.continue'), class: "fr-btn", "data-email-input-target": "next" %>
+  <div class="fr-btns-group fr-btns-group--inline">
+    <%= link_to t('views.users.dossiers.identite.back'), back_url, class: "fr-btn fr-btn--secondary" %>
+    <%= f.submit t('views.users.dossiers.identite.continue'), class: "fr-btn", "data-email-input-target": "next" %>
+  </div>
 <% end %>
