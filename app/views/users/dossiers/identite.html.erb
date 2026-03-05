@@ -1,0 +1,50 @@
+<% content_for(:title, t("title", scope: [:metas, :users, :dossiers, :identite], procedure_label: @dossier.procedure.libelle)) %>
+
+<%= render partial: "shared/dossiers/submit_is_over", locals: { dossier: @dossier } %>
+
+<% if !dossier_submission_is_closed?(@dossier) %>
+  <% if @dossier.procedure.for_tiers_enabled? %>
+    <%= form_for @dossier, url: identite_dossier_path(@dossier), method: :patch, html: { class: "form" }, data: { turbo: true, controller: :autosubmit } do |f| %>
+      <p class="fr-text--sm"><%= t('utils.asterisk_html') %></p>
+
+      <fieldset id="radio-rich-hint" class="fr-fieldset">
+        <legend class="fr-fieldset__legend--regular fr-fieldset__legend">
+          <%= t('views.users.dossiers.identite.legend') %>
+          <%= render EditableChamp::AsteriskMandatoryComponent.new %>
+        </legend>
+
+        <div class="fr-fieldset__element">
+          <div class="fr-radio-group fr-radio-rich">
+            <%= f.radio_button :for_tiers, false, required: true, id: "radio-self-manage" %>
+
+            <label class="fr-label" for="radio-self-manage">
+              <%= t('activerecord.attributes.dossier.for_tiers.false') %>
+            </label>
+
+            <div class="fr-radio-rich__img">
+              <span class="fr-icon-user-fill"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fr-fieldset__element">
+          <div class="fr-radio-group fr-radio-rich">
+            <%= f.radio_button :for_tiers, true, required: true, id: "radio-tiers-manage" %>
+
+            <label class="fr-label" for="radio-tiers-manage">
+              <%= t('activerecord.attributes.dossier.for_tiers.true') %>
+            </label>
+
+            <div class="fr-radio-rich__img">
+              <span class="fr-icon-parent-fill"></span>
+            </div>
+          </div>
+        </div>
+
+        <%# autosubmit button to ATs: %>
+        <%= f.submit t('views.users.dossiers.identite.continue'), class: 'hidden' %>
+      </fieldset>
+    <% end %>
+  <% end %>
+  <%= render Dossiers::IndividualFormComponent.new(dossier: @dossier) %>
+<% end %>

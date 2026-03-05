@@ -11,7 +11,7 @@ describe 'users/dossiers/identite', type: :view do
   subject! { render }
 
   context 'when procedure has for_tiers_enabled' do
-    let(:procedure) { create(:simple_procedure, :for_individual) }
+    let_it_be(:procedure) { create(:simple_procedure, :for_individual) }
 
     it 'has choice for you or a tiers' do
       expect(rendered).to have_content "Pour vous"
