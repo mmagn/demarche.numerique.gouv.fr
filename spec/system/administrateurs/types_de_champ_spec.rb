@@ -52,6 +52,18 @@ describe 'As an administrateur I can edit types de champ', js: true do
 
     # Expect the files to be uploaded immediately
     expect(page).to have_text('file.pdf')
+
+    # Verify attachment is persisted in database
+    tdc = procedure.active_revision.types_de_champ_public.first
+    wait_until { tdc.reload.piece_justificative_template.attached? }
+    expect(tdc.piece_justificative_template).to be_attached
+    expect(tdc.piece_justificative_template.filename.to_s).to eq('file.pdf')
+
+    # Test deleting the template
+    click_on 'Supprimer le fichier file.pdf'
+    expect(page).not_to have_button('Supprimer le fichier file.pdf')
+    wait_until { !tdc.reload.piece_justificative_template.attached? }
+    expect(tdc.piece_justificative_template.attached?).to be(false)
   end
 
   context "with an explication champ" do
