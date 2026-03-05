@@ -76,6 +76,35 @@ describe 'As an administrateur I can edit types de champ', js: true do
     end
   end
 
+  context "with a drop_down_list champ" do
+    let(:procedure) { create(:procedure, types_de_champ_public: [{ type: :drop_down_list, libelle: 'Choix de dessert' }]) }
+
+    scenario "importing a CSV referentiel" do
+      expect(page).to have_text('Choix de dessert')
+
+      # Click on "Import référentiel" radio button
+      find('label', text: 'Import référentiel').click
+      expect(page).to have_text('Fichier de référentiel à importer (CSV)')
+
+      # Upload CSV file
+      tdc = procedure.active_revision.types_de_champ_public.first
+      file_input = find("##{dom_id(tdc, :import_referentiel)}", visible: :all)
+      file_input.attach_file(Rails.root.join('spec/fixtures/files/modele-import-referentiel.csv'))
+
+      # Wait for referentiel to be created
+      wait_until { tdc.reload.referentiel.present? }
+
+      expect(page).to have_text('3 options importées')
+      expect(page).to have_text('modele-import-referentiel.csv')
+
+      # Verify referentiel was created correctly
+      referentiel = tdc.referentiel
+      expect(referentiel).to be_a(Referentiels::CsvReferentiel)
+      expect(referentiel.items.count).to eq(3)
+      expect(referentiel.headers).to eq(['Dessert', 'Poids (g)', 'Calorie (kcal)'])
+    end
+  end
+
   scenario "adding multiple champs" do
     # Champs are created when clicking the 'Add field' button
     add_champ
