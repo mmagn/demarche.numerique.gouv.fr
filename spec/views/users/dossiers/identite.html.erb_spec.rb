@@ -47,6 +47,24 @@ describe 'users/dossiers/identite', type: :view do
     end
   end
 
+  context 'when procedure has for_tiers_enabled and identity already set for tiers' do
+    let(:procedure) { create(:simple_procedure, :for_individual) }
+    let(:dossier) do
+      create(:dossier, :with_service, :with_individual,
+             for_tiers: true,
+             mandataire_first_name: 'John',
+             mandataire_last_name: 'Doe',
+             identity_updated_at: Time.current,
+             state: Dossier.states.fetch(:brouillon),
+             procedure: procedure)
+    end
+
+    it 'checks the tiers radio' do
+      expect(rendered).to have_checked_field("radio-tiers-manage")
+      expect(rendered).not_to have_checked_field("radio-self-manage")
+    end
+  end
+
   context 'when procedure does not have for_tiers_enabled' do
     let(:procedure) { create(:simple_procedure, :for_individual, for_tiers_enabled: false) }
 
