@@ -170,6 +170,11 @@ RSpec.describe DossierStateConcern do
       dossier.after_commit_repasser_en_instruction({})
       expect(Ami::CreateNotificationService).to have_received(:call).with(dossier:, trigger: :dossier_state_change, state: :repasser_en_instruction)
     end
+
+    it 'enqueues AMI notification after repasser_en_construction' do
+      dossier.after_commit_repasser_en_construction
+      expect(Ami::CreateNotificationService).to have_received(:call).with(dossier:, trigger: :dossier_state_change, state: nil)
+    end
   end
 
   describe 'accepter' do

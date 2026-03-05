@@ -76,7 +76,7 @@ module Ami
     end
 
     def content_title
-      "Mise à jour de votre dossier n°#{dossier.id} pour la démarche #{dossier.procedure.libelle}"
+      "Mise à jour de votre dossier n° #{dossier.id} pour la démarche #{dossier.procedure.libelle}"
     end
 
     def content_body
@@ -92,7 +92,8 @@ module Ami
     end
 
     def status_label
-      I18n.t("activerecord.attributes.dossier/state.#{dossier.state}", default: dossier.state.humanize)
+      user_state = state == :en_construction ? "depose" : dossier.state
+      I18n.t("activerecord.attributes.dossier/state.#{user_state}")
     end
 
     def item_generic_status

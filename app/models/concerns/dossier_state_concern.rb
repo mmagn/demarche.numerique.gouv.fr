@@ -137,6 +137,7 @@ module DossierStateConcern
   end
 
   def after_commit_repasser_en_construction
+    enqueue_ami_notification
   end
 
   def after_accepter(h)
