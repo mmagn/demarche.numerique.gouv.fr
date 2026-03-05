@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-RSpec.describe Attachment::ButtonUploaderComponent, type: :component do
+RSpec.describe Attachment::FileInputComponent, type: :component do
   include ChampAriaLabelledbyHelper
 
   let(:procedure) { create(:procedure, :published, types_de_champ_public:) }
-  let(:types_de_champ_public) { [{ type: :titre_identite }] }
+  let(:types_de_champ_public) { [{ type: :piece_justificative }] }
   let(:dossier) { create(:dossier, procedure:) }
   let(:champ) { dossier.champs.first }
   let(:attached_file) { champ.piece_justificative_file }
@@ -20,6 +20,43 @@ RSpec.describe Attachment::ButtonUploaderComponent, type: :component do
   end
 
   subject { render_inline(component).to_html }
+
+  describe 'automatic multiple detection' do
+    context 'with has_many_attached (piece_justificative_file)' do
+      it 'automatically sets multiple=true' do
+        expect(component.as_multiple?).to eq(true)
+        expect(subject).to have_selector('input[type="file"][multiple]')
+      end
+    end
+
+    context 'with has_one_attached' do
+      let(:procedure) { create(:procedure) }
+      let(:context) { Attachment::Context.new(attached_file: procedure.logo) }
+      let(:component) { described_class.new(context:) }
+
+      it 'automatically sets multiple=false' do
+        expect(component.as_multiple?).to eq(false)
+        expect(subject).to have_selector('input[type="file"]')
+        expect(subject).not_to have_selector('input[multiple]')
+      end
+    end
+  end
+
+  describe 'hidden mode for remote drop zones' do
+    let(:kwargs) { { hidden: true } }
+
+    it 'adds sr-only class' do
+      expect(subject).to have_selector('input.sr-only[type="file"]')
+    end
+  end
+
+  describe 'custom id for remote drop zones' do
+    let(:kwargs) { { id: 'custom-file-123' } }
+
+    it 'uses custom id' do
+      expect(subject).to have_selector('input[type="file"]#custom-file-123')
+    end
+  end
 
   context 'piece justificative nature titre_identite' do
     let(:types_de_champ_public) { [{ type: :piece_justificative, nature: 'TITRE_IDENTITE' }] }
@@ -96,15 +133,15 @@ RSpec.describe Attachment::ButtonUploaderComponent, type: :component do
   end
 
   describe 'field name inference' do
-    it 'by default generates input name from attached file object' do
-      expect(subject).to have_selector("input[name='champs_titre_identite_champ[piece_justificative_file]']")
+    it 'by default generates input name from attached file object with [] for multiple' do
+      expect(subject).to have_selector("input[name='champs_piece_justificative_champ[piece_justificative_file][]']")
     end
 
     context 'when a form object_name is provided' do
       let(:context_kwargs) { { form_object_name: 'my_form' } }
 
-      it 'generates input name from form object name' do
-        expect(subject).to have_selector("input[name='my_form[piece_justificative_file]']")
+      it 'generates input name from form object name with [] for multiple' do
+        expect(subject).to have_selector("input[name='my_form[piece_justificative_file][]']")
       end
     end
   end
