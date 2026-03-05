@@ -4,6 +4,7 @@
 
 <% if !dossier_submission_is_closed?(@dossier) %>
   <% if @dossier.procedure.for_tiers_enabled? %>
+    <% identity_already_chosen = @dossier.identity_updated_at.present? %>
     <%= form_for @dossier, url: identite_dossier_path(@dossier), method: :patch, html: { class: "form" }, data: { turbo: true, controller: :autosubmit } do |f| %>
       <p class="fr-text--sm"><%= t('utils.asterisk_html') %></p>
 
@@ -15,7 +16,7 @@
 
         <div class="fr-fieldset__element">
           <div class="fr-radio-group fr-radio-rich">
-            <%= f.radio_button :for_tiers, false, required: true, id: "radio-self-manage" %>
+            <%= f.radio_button :for_tiers, false, required: true, id: "radio-self-manage", checked: identity_already_chosen && !@dossier.for_tiers %>
 
             <label class="fr-label" for="radio-self-manage">
               <%= t('activerecord.attributes.dossier.for_tiers.false') %>
@@ -29,10 +30,14 @@
 
         <div class="fr-fieldset__element">
           <div class="fr-radio-group fr-radio-rich">
-            <%= f.radio_button :for_tiers, true, required: true, id: "radio-tiers-manage" %>
+            <%= f.radio_button :for_tiers, true, required: true, id: "radio-tiers-manage", checked: identity_already_chosen && @dossier.for_tiers %>
 
             <label class="fr-label" for="radio-tiers-manage">
               <%= t('activerecord.attributes.dossier.for_tiers.true') %>
+
+              <span class="fr-hint-text">
+                <%= t('activerecord.attributes.dossier.for_tiers.true_hint') %>
+              </span>
             </label>
 
             <div class="fr-radio-rich__img">
@@ -46,5 +51,9 @@
       </fieldset>
     <% end %>
   <% end %>
-  <%= render Dossiers::IndividualFormComponent.new(dossier: @dossier) %>
+  <% if !@dossier.procedure.for_tiers_enabled? || identity_form_active %>
+    <%= render Dossiers::IndividualFormComponent.new(dossier: @dossier) %>
+  <% else %>
+    <div id="identite-form"></div>
+  <% end %>
 <% end %>
