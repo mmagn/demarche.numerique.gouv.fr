@@ -54,6 +54,28 @@ describe 'As an administrateur I can edit types de champ', js: true do
     expect(page).to have_text('file.pdf')
   end
 
+  context "with an explication champ" do
+    let(:procedure) { create(:procedure, types_de_champ_public: [{ type: :explication }]) }
+
+    scenario "adding a notice explicative" do
+      expect(page).to have_text('Notice explicative')
+
+      find('.attachment-field input[type=file]').attach_file(Rails.root + 'spec/fixtures/files/file.pdf')
+
+      expect(page).to have_text('file.pdf')
+
+      tdc = procedure.active_revision.types_de_champ_public.first
+      wait_until { tdc.reload.notice_explicative.attached? }
+      expect(tdc.notice_explicative).to be_attached
+
+      # Test de suppression
+      click_on 'Supprimer le fichier file.pdf'
+
+      wait_until { !tdc.reload.notice_explicative.attached? }
+      expect(tdc.notice_explicative.attached?).to be(false)
+    end
+  end
+
   scenario "adding multiple champs" do
     # Champs are created when clicking the 'Add field' button
     add_champ
