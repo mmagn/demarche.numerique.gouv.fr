@@ -488,6 +488,7 @@ en:
           annuaire_link_title: Search for a SIRET number in the Companies Directory
           siret_loading: Information retrieval…
           continue: Continue
+          back: Back
         merci:
           thanks: Thank you!
           dossier_success: Your file has been submitted on the procedure “%{libelle}”.

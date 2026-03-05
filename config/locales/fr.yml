@@ -492,6 +492,7 @@ fr:
           annuaire_link_title: Rechercher un numéro de SIRET sur l’Annuaire des Entreprises
           siret_loading: Récupération des informations…
           continue: Continuer
+          back: Retour
         merci:
           thanks: Merci !
           dossier_success: Votre dossier a bien été déposé sur la démarche “%{libelle}”.

@@ -15,8 +15,8 @@ describe 'users/dossiers/identite', type: :view do
 
     it 'has choice for you or a tiers' do
       expect(rendered).to have_content "Pour vous"
-      expect(rendered).to have_content "Pour un bénéficiaire : membre de la famille, proche, mandant, professionnel en charge du suivi du dossier…"
-    end
+      expect(rendered).to have_content "Pour une autre personne"
+      expect(rendered).to have_content "Vous déposez ce dossier pour un bénéficiaire en tant que mandataire"
 
     it 'has identity fields' do
       within('.individual-infos') do
@@ -39,7 +39,7 @@ describe 'users/dossiers/identite', type: :view do
 
     it 'has choice for you or a tiers' do
       expect(rendered).not_to have_content "Pour vous"
-      expect(rendered).not_to have_content "Pour un bénéficiaire : membre de la famille, proche, mandant, professionnel en charge du suivi du dossier…"
+      expect(rendered).not_to have_content "Pour une autre personne"
     end
 
     it 'has identity fields' do
