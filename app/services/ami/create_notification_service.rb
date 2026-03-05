@@ -7,6 +7,7 @@ module Ami
     ITEM_TYPE = "dossier"
 
     AMI_NOTIFICATIONS_ENABLED_STATES = [
+      :brouillon,
       :en_construction,
       :en_instruction,
       :accepte,
@@ -16,7 +17,8 @@ module Ami
     ].freeze
 
     ITEM_GENERIC_STATUS_BY_STATE = {
-      en_construction: "new",
+      brouillon: "new",
+      en_construction: "wip",
       en_instruction: "wip",
       repasser_en_instruction: "wip",
       accepte: "closed",
@@ -76,11 +78,19 @@ module Ami
     end
 
     def content_title
-      "Mise à jour de votre dossier n° #{dossier.id} pour la démarche #{dossier.procedure.libelle}"
+      if dossier.brouillon?
+        "Création de votre dossier n° #{dossier.id} pour la démarche #{dossier.procedure.libelle}"
+      else
+        "Mise à jour de votre dossier n° #{dossier.id} pour la démarche #{dossier.procedure.libelle}"
+      end
     end
 
     def content_body
-      "Le statut du dossier est maintenant #{status_label}."
+      if dossier.brouillon?
+        "Votre dossier vient d'être créé."
+      else
+        "Le statut du dossier est maintenant #{status_label}."
+      end
     end
 
     def context

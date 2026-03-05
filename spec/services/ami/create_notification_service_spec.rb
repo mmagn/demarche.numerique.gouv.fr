@@ -22,7 +22,7 @@ RSpec.describe Ami::CreateNotificationService do
 
       args = enqueued_jobs.last.fetch(:args)
       expect(args.first).to include("recipient_fc_hash" => payload.fetch(:recipient_fc_hash), "item_id" => payload.fetch(:item_id))
-      expect(args.second).to include("procedure_id" => dossier.procedure.id, "dossier_id" => dossier.id)
+      expect(args.second).to include("procedure" => dossier.procedure.id, "dossier" => dossier.id)
       expect(args.second.dig("state", "value")).to eq(dossier.state)
     end
 
@@ -36,6 +36,14 @@ RSpec.describe Ami::CreateNotificationService do
       allow(Ami::RecipientFcHash).to receive(:call).and_return(nil)
 
       expect { described_class.call(dossier:) }.not_to have_enqueued_job(Ami::SendNotificationJob)
+    end
+
+    context 'when dossier is brouillon' do
+      let(:dossier) { create(:dossier, :brouillon, :with_individual, procedure:, user:) }
+
+      it 'enqueues send job' do
+        expect { described_class.call(dossier:) }.to have_enqueued_job(Ami::SendNotificationJob)
+      end
     end
   end
 
@@ -72,6 +80,20 @@ RSpec.describe Ami::CreateNotificationService do
         item_canal: "demarche.numerique.gouv.fr",
         send_date:
       )
+    end
+
+    context 'when dossier is brouillon' do
+      let(:dossier) { create(:dossier, :brouillon, :with_individual, procedure:, user:) }
+
+      it 'builds a creation-oriented payload' do
+        payload = described_class.new(dossier:, trigger: :dossier_state_change, state: nil).create_notification_payload(send_date:)
+
+        expect(payload).to include(
+          content_title: "Création de votre dossier n° #{dossier.id} pour la démarche #{dossier.procedure.libelle}",
+          content_body: "Votre dossier vient d'être créé.",
+          item_generic_status: "new"
+        )
+      end
     end
   end
 end
