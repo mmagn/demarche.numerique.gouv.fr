@@ -15,7 +15,7 @@ module GroupeInstructeursSignatureConcern
         @available_instructeur_emails = available_instructeur_emails
       end
 
-      flash[:alert] = "Aucun fichier joint pour le tampon de l'attestation"
+      flash[:alert] = "Aucun fichier joint pour le tampon de l’attestation"
       render :show
     else
       if @groupe_instructeur.signature.attach(signature_file)
@@ -53,7 +53,7 @@ module GroupeInstructeursSignatureConcern
 
     case status
     when :success
-      redirect_to redirect_path, notice: "Le tampon de l'attestation a bien été ajouté. #{helpers.link_to("Prévisualiser l'attestation", preview_path)}"
+      redirect_to redirect_path, notice: "Le tampon de l’attestation a bien été ajouté. #{helpers.link_to("Prévisualiser l'attestation", preview_path)}"
     when :alert
       redirect_to redirect_path, alert: "Une erreur a empêché l'ajout du tampon. Réessayez dans quelques instants."
     end
