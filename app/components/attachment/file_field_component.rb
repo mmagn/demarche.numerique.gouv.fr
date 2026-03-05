@@ -45,7 +45,7 @@ class Attachment::FileFieldComponent < ApplicationComponent
     @attachments = if attachments
       Array(attachments).compact
     elsif attached_file.is_a?(ActiveStorage::Attached::Many)
-      attached_file.attachments
+      attached_file.attachments.to_a
     elsif attached_file.is_a?(ActiveStorage::Attached::One) && attached_file.attached?
       [attached_file.attachment]
     else

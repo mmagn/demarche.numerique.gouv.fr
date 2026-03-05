@@ -1,8 +1,8 @@
 /**
- * Trouve le container .attachment-multiple depuis un input
+ * Trouve le container attachment field depuis un input
  */
 function findContainer(input: HTMLInputElement): Element | null {
-  return input.closest('.attachment-multiple');
+  return input.closest('.attachment-field');
 }
 
 /**
