@@ -17,13 +17,8 @@
         <h2 class="fr-h4"><%= t('.for_self.self_title') %></h2>
       </legend>
 
-      <% if @dossier.france_connected_with_one_identity? %>
-        <div class="fr-px-1w">
-          <%= render Dsfr::AlertComponent.new(state: :info, title: nil, size: :sm, heading_level: :p, extra_class_names: 'fr-mb-2w') do |c| %>
-            <% c.with_body do %>
-              <p><%= t('.identity_locked_by_france_connect') %></p>
-            <% end %>
-          <% end %>
+        <div class="fr-fieldset__element fr-fieldset__element--short-text">
+          <%= render Dsfr::InputComponent.new(form: f, attribute: :mandataire_first_name, opts: { autocomplete: 'given-name', disabled: mandataire_identity_locked? }) %>
         </div>
 
         <div class="fr-fieldset__element fr-fieldset__element--short-text">
@@ -51,15 +46,11 @@
         </h2>
       </legend>
 
-      <% if @dossier.france_connected_with_one_identity? && !for_tiers? %>
-        <div class="fr-px-1w">
-          <%= render Dsfr::AlertComponent.new(state: :info, title: nil, size: :sm, heading_level: :p, extra_class_names: 'fr-mb-2w') do |c| %>
-            <% c.with_body do %>
-              <p><%= t('.identity_locked_by_france_connect') %></p>
-            <% end %>
-          <% end %>
-        </div>
-      <% end %>
+        <% if @dossier.france_connected_with_one_identity? && !for_tiers? %>
+          <div class="fr-highlight fr-text--sm">
+            <%= t('.identity_locked_by_france_connect') %>
+          </div>
+        <% end %>
 
       <% unless @dossier.procedure.no_gender? %>
         <div class="fr-fieldset__element fr-mb-0">
