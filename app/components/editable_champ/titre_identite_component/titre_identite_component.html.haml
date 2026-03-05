@@ -6,4 +6,4 @@
   = t('.allowed_formats', formats: allowed_formats.join(', '))
 
 - attachment = @champ.piece_justificative_file[0]
-= render Attachment::UniqueComponent.new(context: attachment_context, attachment:)
+= render Attachment::FileFieldComponent.new(context: attachment_context, attachments: attachment ? [attachment] : [], drop_zone: :integrated, max: 1)
