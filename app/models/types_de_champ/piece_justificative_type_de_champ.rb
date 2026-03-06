@@ -8,7 +8,7 @@ class TypesDeChamp::PieceJustificativeTypeDeChamp < TypesDeChamp::TypeDeChampBas
   def tags_for_template = [].freeze
 
   def champ_value_for_export(champ, path = :value)
-    if titre_identite_nature?
+    if titre_identite?
       champ.piece_justificative_file.attached? ? "présent" : "absent"
     else
       champ.piece_justificative_file.map { _1.filename.to_s }.join(', ')
@@ -22,7 +22,7 @@ class TypesDeChamp::PieceJustificativeTypeDeChamp < TypesDeChamp::TypeDeChampBas
     attachment = champ.piece_justificative_file.first
     return if attachment.nil?
     # API v1 should neither return attachments for titre identité
-    return if titre_identite_nature?
+    return if titre_identite?
 
     if attachment.virus_scanner.safe? || attachment.virus_scanner.pending?
       attachment.url
@@ -34,7 +34,7 @@ class TypesDeChamp::PieceJustificativeTypeDeChamp < TypesDeChamp::TypeDeChampBas
   def columns(procedure:, displayable: true, prefix: nil)
     cs = []
 
-    if !titre_identite_nature?
+    if !titre_identite?
       cs << Columns::AttachedManyColumn.new(
         procedure_id: procedure.id,
         stable_id:,
@@ -81,7 +81,7 @@ class TypesDeChamp::PieceJustificativeTypeDeChamp < TypesDeChamp::TypeDeChampBas
           mandatory: mandatory?
         )
       end
-    elsif titre_identite_nature?
+    elsif titre_identite?
       cs += [
         Columns::TitreIdentiteColumn.new(
           procedure_id: procedure.id,

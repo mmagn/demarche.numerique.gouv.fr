@@ -2,8 +2,8 @@
 
 describe BlobImageProcessorConcern do
   describe '#watermark_pending?' do
-    context 'with legacy TitreIdentiteChamp' do
-      let(:procedure) { create(:procedure, :published, types_de_champ_public: [{ type: :titre_identite }]) }
+    context 'with PieceJustificativeChamp with nature=TITRE_IDENTITE' do
+      let(:procedure) { create(:procedure, :published, types_de_champ_public: [{ type: :piece_justificative, nature: 'TITRE_IDENTITE' }]) }
       let(:dossier) { create(:dossier, :with_populated_champs, :en_construction, procedure:) }
       let(:champ) { dossier.champs.first }
 

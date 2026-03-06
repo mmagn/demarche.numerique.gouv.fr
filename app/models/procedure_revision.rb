@@ -505,7 +505,7 @@ class ProcedureRevision < ApplicationRecord
           from_type_de_champ.carte_optional_layers,
           to_type_de_champ.carte_optional_layers)
       end
-    elsif to_type_de_champ.piece_justificative_or_titre_identite?
+    elsif to_type_de_champ.piece_justificative?
       if from_type_de_champ.checksum_for_attachment(:piece_justificative_template) != to_type_de_champ.checksum_for_attachment(:piece_justificative_template)
         changes << ProcedureRevisionChange::UpdateChamp.new(from_type_de_champ,
           :piece_justificative_template,
@@ -519,7 +519,7 @@ class ProcedureRevision < ApplicationRecord
           to_type_de_champ.nature)
       end
 
-      if !(to_type_de_champ.titre_identite_nature? || from_type_de_champ.titre_identite_nature? || to_type_de_champ.RIB? || from_type_de_champ.RIB?)
+      if !(to_type_de_champ.titre_identite? || from_type_de_champ.titre_identite? || to_type_de_champ.RIB? || from_type_de_champ.RIB?)
         if from_type_de_champ.pj_limit_formats != to_type_de_champ.pj_limit_formats
           changes << ProcedureRevisionChange::UpdateChamp.new(from_type_de_champ,
             :pj_limit_formats,

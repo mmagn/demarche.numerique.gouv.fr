@@ -50,7 +50,7 @@ class TypeDeChamp < ApplicationRecord
     date: STANDARD,
     datetime: STANDARD,
     piece_justificative: STANDARD,
-    titre_identite: PIECES_JOINTES,
+
     checkbox: CHOICE,
     drop_down_list: CHOICE,
     multiple_drop_down_list: CHOICE,
@@ -93,7 +93,7 @@ class TypeDeChamp < ApplicationRecord
     date: 'date',
     datetime: 'datetime',
     piece_justificative: 'piece_justificative',
-    titre_identite: 'titre_identite',
+
     checkbox: 'checkbox',
     drop_down_list: 'drop_down_list',
     multiple_drop_down_list: 'multiple_drop_down_list',
@@ -120,7 +120,7 @@ class TypeDeChamp < ApplicationRecord
     justificatif_domicile: 'JUSTIFICATIF_DOMICILE',
   }
 
-  def titre_identite_nature?
+  def titre_identite?
     TITRE_IDENTITE?
   end
 
@@ -577,7 +577,7 @@ class TypeDeChamp < ApplicationRecord
       :enum
     when type_champs.fetch(:checkbox), type_champs.fetch(:yes_no)
       :boolean
-    when type_champs.fetch(:titre_identite), type_champs.fetch(:piece_justificative)
+    when type_champs.fetch(:piece_justificative)
       :attachments
     else
       :text
@@ -647,7 +647,6 @@ class TypeDeChamp < ApplicationRecord
     # logic (RNA, SIRET, etc.)
     case type_champ
     when type_champs.fetch(:carte),
-      type_champs.fetch(:titre_identite),
       type_champs.fetch(:rna)
       false
     else
@@ -728,7 +727,6 @@ class TypeDeChamp < ApplicationRecord
       :pj_format_families,
       :pj_auto_purge,
     ],
-    type_champs.fetch(:titre_identite) => [:old_pj, :skip_pj_validation, :skip_content_type_pj_validation],
     type_champs.fetch(:formatted) => [
       :formatted_mode, :numbers_accepted, :letters_accepted, :special_characters_accepted,
       :min_character_length, :max_character_length,
@@ -751,11 +749,11 @@ class TypeDeChamp < ApplicationRecord
   end
 
   def pj_auto_purge?
-    titre_identite_nature? || [true, '1'].include?(options[:pj_auto_purge])
+    titre_identite? || [true, '1'].include?(options[:pj_auto_purge])
   end
 
   def max_file_size_bytes
-    if titre_identite_nature?
+    if titre_identite?
       IDENTITY_FILE_MAX_SIZE
     else
       FILE_MAX_SIZE
@@ -763,7 +761,7 @@ class TypeDeChamp < ApplicationRecord
   end
 
   def allowed_content_types
-    if titre_identite_nature? || titre_identite?
+    if titre_identite?
       families_to_content_types(%w[image_scan])
     elsif RIB?
       families_to_content_types(%w[document_texte image_scan])
@@ -852,13 +850,6 @@ class TypeDeChamp < ApplicationRecord
 
   CHAMP_TYPE_TO_TYPE_CHAMP = type_champs.values.index_by { type_champ_to_champ_class_name(_1) }
 
-  def piece_justificative_or_titre_identite?
-    type_champ.in?([
-      TypeDeChamp.type_champs.fetch(:piece_justificative),
-      TypeDeChamp.type_champs.fetch(:titre_identite),
-    ])
-  end
-
   def any_drop_down_list?
     type_champ.in?([
       TypeDeChamp.type_champs.fetch(:drop_down_list),
@@ -895,7 +886,7 @@ class TypeDeChamp < ApplicationRecord
   end
 
   def remove_attachment
-    if !piece_justificative_or_titre_identite? && piece_justificative_template.attached?
+    if !piece_justificative? && piece_justificative_template.attached?
       piece_justificative_template.purge_later
     elsif !explication? && notice_explicative.attached?
       notice_explicative.purge_later
@@ -920,7 +911,7 @@ class TypeDeChamp < ApplicationRecord
   end
 
   def reset_pj_format_options_if_forced_nature
-    if titre_identite_nature? || RIB?
+    if titre_identite? || RIB?
       self.pj_limit_formats = nil
       self.pj_format_families = []
     end

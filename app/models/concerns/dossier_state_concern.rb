@@ -426,8 +426,15 @@ module DossierStateConcern
 
   def clear_titres_identite!
     champ_to_clear_stable_ids = champs.filter do |champ|
-      champ.class == Champs::TitreIdentiteChamp ||
-        (champ.piece_justificative? && champ.titre_identite_nature?)
+      # Use STI type to avoid querying type_de_champ for orphaned champs
+      next false unless champ.is_a?(Champs::PieceJustificativeChamp)
+
+      begin
+        champ.titre_identite?
+      rescue RuntimeError
+        # Champ has no type_de_champ in current revision (orphaned), skip it
+        false
+      end
     end.to_set(&:stable_id)
 
     champs.where(stable_id: champ_to_clear_stable_ids).find_each(&:clear)
