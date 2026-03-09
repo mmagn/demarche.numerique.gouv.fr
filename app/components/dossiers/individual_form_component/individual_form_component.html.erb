@@ -54,8 +54,14 @@
 
       <% unless @dossier.procedure.no_gender? %>
         <div class="fr-fieldset__element fr-mb-0">
-          <fieldset class="fr-fieldset">
-            <legend class="fr-fieldset__legend--regular fr-fieldset__legend">
+          <fieldset
+            class="fr-fieldset fr-fieldset--inline <%= 'fr-fieldset--error' if individual.object.errors.include?(:gender) %>"
+            aria-labelledby="gender-legend <%= 'individual_gender-error' if individual.object.errors.include?(:gender) %>"
+          >
+            <legend
+              class="fr-fieldset__legend--regular fr-fieldset__legend"
+              id="gender-legend"
+            >
               <%= t('activerecord.attributes.individual.gender') %>
               <%= render EditableChamp::AsteriskMandatoryComponent.new %>
             </legend>
@@ -85,6 +91,14 @@
                 </label>
               </div>
             </div>
+
+            <% if individual.object.errors.include?(:gender) %>
+              <div class="fr-fieldset__element">
+                <p class="fr-error-text" id="individual_gender-error">
+                  <%= individual.object.errors.full_messages_for(:gender).first %>
+                </p>
+              </div>
+            <% end %>
           </fieldset>
         </div>
       <% end %>
