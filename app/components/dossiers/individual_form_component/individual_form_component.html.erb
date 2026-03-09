@@ -135,24 +135,25 @@
     </div>
 
     <% if for_tiers? %>
-      <fieldset class="fr-fieldset">
-        <legend class="fr-fieldset__legend--regular fr-fieldset__legend">
-          <%= t('activerecord.attributes.individual.notification_method') %>
-          <%= render EditableChamp::AsteriskMandatoryComponent.new %>
-        </legend>
+      <div class="fr-checkbox-group <%= 'fr-checkbox-group--error' if individual.object.errors.include?(:notification_method) %>">
+        <%= individual.check_box :notification_method, {
+          id: "notification_method_checkbox",
+          checked: email_notifications?(individual),
+          "data-action" => "for-tiers#toggleEmailInput",
+          "data-for-tiers-target" => "notificationMethodCheckbox",
+          "aria-describedby" => individual.object.errors.include?(:notification_method) ? "individual_notification_method-error" : nil
+        }, 'email', 'no_notification' %>
 
-        <% Individual.notification_methods.each do |method, _| %>
-          <div class="fr-fieldset__element">
-            <div class="fr-radio-group">
-              <%= individual.radio_button :notification_method, method, required: true, id: "notification_method_#{method}", "data-action" => "for-tiers#toggleEmailInput", "data-for-tiers-target" => "notificationMethod", translate: "no" %>
+        <label class="fr-label" for="notification_method_checkbox">
+          <%= t('.for_tiers.notify_beneficiary') %>
+        </label>
 
-              <label class="fr-label" for="notification_method_<%= method %>">
-                <%= t("activerecord.attributes.individual.notification_methods.#{method}") %>
-              </label>
-            </div>
-          </div>
+        <% if individual.object.errors.include?(:notification_method) %>
+          <p class="fr-error-text" id="individual_notification_method-error">
+            <%= individual.object.errors.full_messages_for(:notification_method).first %>
+          </p>
         <% end %>
-      </fieldset>
+      </div>
       <div
         class="fr-fieldset__element fr-fieldset__element--short-text <%= 'hidden' unless email_notifications?(individual) %>"
         data-for-tiers-target="emailContainer"

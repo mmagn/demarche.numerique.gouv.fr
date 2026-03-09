@@ -70,7 +70,7 @@ describe 'Creating a new dossier:', js: true do
             fill_in('Nom', with: 'nom')
           end
 
-          find('label', text: 'Par adresse électronique').click
+          check('Informer le bénéficiaire par email du traitement de son dossier')
           fill_in('dossier_individual_attributes_email', with: 'prenom.nom@mail.com')
           within('.individual-infos') do
             find('label', text: 'Prénom').click # force focus out
@@ -101,12 +101,11 @@ describe 'Creating a new dossier:', js: true do
             fill_in('Nom', with: 'nom')
           end
 
-          find('label', text: 'Pas de notification').click
           within "#identite-form" do
             click_button('Continuer')
           end
 
-          expect(procedure.dossiers.last.individual.notification_method.empty?)
+          expect(procedure.dossiers.last.individual.notification_method).to eq('no_notification')
           expect(page).to have_current_path(brouillon_dossier_path(procedure.dossiers.last))
         end
       end
