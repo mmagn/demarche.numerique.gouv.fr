@@ -82,12 +82,12 @@ RSpec.describe Ami::CreateNotificationService do
       )
     end
 
-    it 'keeps state-based wording by default' do
-      payload = described_class.new(dossier:).create_notification_payload(send_date:)
+    it 'uses the same wording as the user notification email subject' do
+      payload = described_class.new(dossier:, trigger: :dossier_state_change, state: nil).create_notification_payload(send_date:)
 
       expect(payload).to include(
-        content_title: "Mise à jour de votre dossier n° #{dossier.id} pour la démarche #{dossier.procedure.libelle}",
-        content_body: "Le statut du dossier est maintenant En\u00a0instruction."
+        content_title: APPLICATION_NAME,
+        content_body: dossier.email_template_for(Dossier.states.fetch(:en_instruction)).subject_for_dossier(dossier)
       )
     end
 
@@ -98,8 +98,8 @@ RSpec.describe Ami::CreateNotificationService do
         payload = described_class.new(dossier:, trigger: :dossier_state_change, state: nil).create_notification_payload(send_date:)
 
         expect(payload).to include(
-          content_title: "Création de votre dossier n° #{dossier.id} pour la démarche #{dossier.procedure.libelle}",
-          content_body: "Votre dossier vient d'être créé.",
+          content_title: APPLICATION_NAME,
+          content_body: I18n.t("dossier_mailer.notify_new_draft.subject", libelle_demarche: dossier.procedure.libelle),
           item_generic_status: "new"
         )
       end
@@ -110,8 +110,8 @@ RSpec.describe Ami::CreateNotificationService do
         payload = described_class.new(dossier:, trigger: :messagerie_message, state: nil).create_notification_payload(send_date:)
 
         expect(payload).to include(
-          content_title: "Nouveau message pour votre dossier n° #{dossier.id} sur la démarche #{dossier.procedure.libelle}",
-          content_body: "Vous avez reçu un nouveau message dans la messagerie.",
+          content_title: APPLICATION_NAME,
+          content_body: I18n.t("dossier_mailer.notify_new_answer.subject", dossier_id: dossier.id, libelle_demarche: dossier.procedure.libelle),
           item_generic_status: "wip"
         )
       end

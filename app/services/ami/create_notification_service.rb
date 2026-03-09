@@ -88,22 +88,18 @@ module Ami
     end
 
     def content_title
-      if messagerie_message?
-        "Nouveau message pour votre dossier n°#{dossier.id} sur la démarche #{dossier.procedure.libelle}"
-      elsif dossier.brouillon?
-        "Création de votre dossier n°#{dossier.id} pour la démarche #{dossier.procedure.libelle}"
-      else
-        "Mise à jour de votre dossier n°#{dossier.id} pour la démarche #{dossier.procedure.libelle}"
-      end
+      return APPLICATION_NAME
     end
 
     def content_body
-      if messagerie_message?
-        "Vous avez reçu un nouveau message dans la messagerie."
-      elsif dossier.brouillon?
-        "Votre dossier vient d'être créé."
-      else
-        "Le statut du dossier est maintenant #{item_status_label}."
+      I18n.with_locale(dossier.user_locale) do
+        if messagerie_message?
+          I18n.t("dossier_mailer.notify_new_answer.subject", dossier_id: dossier.id, libelle_demarche: dossier.procedure.libelle)
+        elsif state == :brouillon
+          I18n.t("dossier_mailer.notify_new_draft.subject", libelle_demarche: dossier.procedure.libelle)
+        else
+          dossier.email_template_for(email_template_state).subject_for_dossier(dossier)
+        end
       end
     end
 
@@ -126,6 +122,14 @@ module Ami
 
     def messagerie_message?
       trigger == :messagerie_message
+    end
+
+    def email_template_state
+      if state == :repasser_en_instruction
+        DossierOperationLog.operations.fetch(:repasser_en_instruction)
+      else
+        Dossier.states.fetch(state)
+      end
     end
   end
 end
