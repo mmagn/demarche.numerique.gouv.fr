@@ -246,6 +246,21 @@ RSpec.describe DossierMailer, type: :mailer do
     end
   end
 
+  describe 'notify_near_deletion_for_tiers' do
+    let!(:dossier_for_tiers) { create(:dossier, :en_construction, :for_tiers_with_notification) }
+
+    subject { described_class.notify_near_deletion_for_tiers([dossier_for_tiers], dossier_for_tiers.individual.email) }
+
+    it 'verifies email subject, to, and body for correct inclusions for a for_tiers dossier' do
+      expect(subject.to).to eq([dossier_for_tiers.individual.email])
+      expect(subject.subject).to eq("Votre dossier rempli par le mandataire #{dossier_for_tiers.mandataire_first_name} #{dossier_for_tiers.mandataire_last_name} en votre nom va bientôt être supprimé")
+      expect(subject.body).to include("N° #{dossier_for_tiers.id} ")
+      expect(subject.body).to include(dossier_for_tiers.procedure.libelle)
+      expect(subject.body).to include(dossier_for_tiers.user.email)
+      expect(subject.body).to include(I18n.l(Expired::REMAINING_WEEKS_BEFORE_EXPIRATION.weeks.from_now.to_date, format: :long).to_s)
+    end
+  end
+
   describe '.notify_groupe_instructeur_changed_to_instructeur' do
     let(:dossier) { create(:dossier) }
     let(:instructeur) { create(:instructeur) }

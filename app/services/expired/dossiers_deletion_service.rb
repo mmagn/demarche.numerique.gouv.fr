@@ -101,6 +101,7 @@ class Expired::DossiersDeletionService < Expired::MailRateLimiter
 
   def send_expiration_notices(dossiers_close_to_expiration, close_to_expiration_flag)
     user_notifications = group_by_user_email(dossiers_close_to_expiration)
+    tiers_notifications = group_by_tiers_email(dossiers_close_to_expiration)
     administration_notifications = group_by_administration_email(dossiers_close_to_expiration, preference: :instant_email_dossier_expiration)
 
     dossier_ids = dossiers_close_to_expiration.pluck(:id)
@@ -112,6 +113,10 @@ class Expired::DossiersDeletionService < Expired::MailRateLimiter
 
     user_notifications.each do |(email, dossiers)|
       mail = DossierMailer.notify_near_deletion_to_user(dossiers, email)
+      send_with_delay(mail)
+    end
+    tiers_notifications.each do |(email, dossiers)|
+      mail = DossierMailer.notify_near_deletion_for_tiers(dossiers, email)
       send_with_delay(mail)
     end
     administration_notifications.each do |(email, dossiers)|
@@ -160,6 +165,18 @@ class Expired::DossiersDeletionService < Expired::MailRateLimiter
       .includes(:user, :procedure)
       .group_by(&:user)
       .map { |(user, dossiers)| [user.email, dossiers] }
+  end
+
+  def group_by_tiers_email(dossiers, notify_on_closed_procedures_to_user: false)
+    dossiers
+      .visible_by_user
+      .where(for_tiers: true)
+      .with_notifiable_procedure(notify_on_closed: notify_on_closed_procedures_to_user)
+      .joins(:individual)
+      .merge(Individual.with_email_notification)
+      .includes(:user, :procedure, :individual)
+      .group_by { |d| d.individual.email }
+      .map { |email, dossiers| [email, dossiers] }
   end
 
   def group_by_administration_email(dossiers, preference:)

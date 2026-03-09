@@ -141,6 +141,19 @@ class DossierMailer < ApplicationMailer
     end
   end
 
+  def notify_near_deletion_for_tiers(dossiers, to_email)
+    @state = dossiers.first.state
+    @subject = if dossiers.one?
+      default_i18n_subject(count: dossiers.size, mandataire: "#{dossiers.first.mandataire_first_name} #{dossiers.first.mandataire_last_name}")
+    else
+      default_i18n_subject(count: dossiers.size)
+    end
+    @dossiers = dossiers
+    @expiration_date = Expired::REMAINING_WEEKS_BEFORE_EXPIRATION.weeks.from_now
+
+    mail(to: to_email, subject: @subject)
+  end
+
   def notify_near_deletion_to_administration(dossiers, to_email)
     @state = dossiers.first.state
     @subject = default_i18n_subject(count: dossiers.size, state: @state)
