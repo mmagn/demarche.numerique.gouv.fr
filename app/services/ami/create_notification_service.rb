@@ -60,7 +60,8 @@ module Ami
         item_id: dossier.id.to_s,
         item_status_label: status_label,
         item_generic_status: item_generic_status,
-        item_canal: SOURCE,
+        item_external_url: dossier_url(dossier),
+        item_canal: ApplicationHelper::APP_HOST,
         send_date:,
       }
     end

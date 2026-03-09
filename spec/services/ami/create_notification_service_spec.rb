@@ -77,7 +77,7 @@ RSpec.describe Ami::CreateNotificationService do
         item_id: dossier.id.to_s,
         item_status_label: "En\u00a0instruction",
         item_generic_status: "wip",
-        item_canal: "demarche.numerique.gouv.fr",
+        item_canal: described_class::SOURCE,
         send_date:
       )
     end
