@@ -26,15 +26,16 @@ module Ami
       sans_suite: "closed",
     }.freeze
 
-    attr_reader :dossier, :state
+    attr_reader :dossier, :state, :trigger
 
-    def initialize(dossier:)
+    def initialize(dossier:, trigger: :dossier_state_change)
       @dossier = dossier
       @state = dossier.state.to_sym
+      @trigger = trigger.to_sym
     end
 
-    def self.call(dossier:)
-      new(dossier:).call
+    def self.call(dossier:, trigger: :dossier_state_change)
+      new(dossier:, trigger:).call
     end
 
     def call
@@ -58,15 +59,23 @@ module Ami
         content_body:,
         item_type: ITEM_TYPE,
         item_id: dossier.id.to_s,
-        item_status_label: status_label,
-        item_generic_status: item_generic_status,
-        item_external_url: dossier_url(dossier),
+        item_status_label:,
+        item_generic_status:,
+        item_external_url:,
         item_canal: ApplicationHelper::APP_HOST,
         send_date:,
       }
     end
 
     private
+
+    def item_external_url
+      if messagerie_message?
+        Rails.application.routes.url_helpers.messagerie_dossier_url(dossier)
+      else
+        Rails.application.routes.url_helpers.dossier_url(dossier)
+      end
+    end
 
     def eligible?
       not_eligible_reason.blank?
@@ -79,18 +88,22 @@ module Ami
     end
 
     def content_title
-      if dossier.brouillon?
-        "Création de votre dossier n° #{dossier.id} pour la démarche #{dossier.procedure.libelle}"
+      if messagerie_message?
+        "Nouveau message pour votre dossier n°#{dossier.id} sur la démarche #{dossier.procedure.libelle}"
+      elsif dossier.brouillon?
+        "Création de votre dossier n°#{dossier.id} pour la démarche #{dossier.procedure.libelle}"
       else
-        "Mise à jour de votre dossier n° #{dossier.id} pour la démarche #{dossier.procedure.libelle}"
+        "Mise à jour de votre dossier n°#{dossier.id} pour la démarche #{dossier.procedure.libelle}"
       end
     end
 
     def content_body
-      if dossier.brouillon?
+      if messagerie_message?
+        "Vous avez reçu un nouveau message dans la messagerie."
+      elsif dossier.brouillon?
         "Votre dossier vient d'être créé."
       else
-        "Le statut du dossier est maintenant #{status_label}."
+        "Le statut du dossier est maintenant #{item_status_label}."
       end
     end
 
@@ -102,13 +115,17 @@ module Ami
       }
     end
 
-    def status_label
+    def item_status_label
       user_state = state == :en_construction ? "depose" : dossier.state
       I18n.t("activerecord.attributes.dossier/state.#{user_state}")
     end
 
     def item_generic_status
       ITEM_GENERIC_STATUS_BY_STATE.fetch(state.to_sym, ITEM_GENERIC_STATUS_BY_STATE.fetch(state, "wip"))
+    end
+
+    def messagerie_message?
+      trigger == :messagerie_message
     end
   end
 end

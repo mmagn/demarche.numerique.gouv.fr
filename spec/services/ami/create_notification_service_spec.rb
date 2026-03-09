@@ -82,6 +82,15 @@ RSpec.describe Ami::CreateNotificationService do
       )
     end
 
+    it 'keeps state-based wording by default' do
+      payload = described_class.new(dossier:).create_notification_payload(send_date:)
+
+      expect(payload).to include(
+        content_title: "Mise à jour de votre dossier n° #{dossier.id} pour la démarche #{dossier.procedure.libelle}",
+        content_body: "Le statut du dossier est maintenant En\u00a0instruction."
+      )
+    end
+
     context 'when dossier is brouillon' do
       let(:dossier) { create(:dossier, :brouillon, :with_individual, procedure:, user:) }
 
@@ -92,6 +101,18 @@ RSpec.describe Ami::CreateNotificationService do
           content_title: "Création de votre dossier n° #{dossier.id} pour la démarche #{dossier.procedure.libelle}",
           content_body: "Votre dossier vient d'être créé.",
           item_generic_status: "new"
+        )
+      end
+    end
+
+    context 'when triggered by a messagerie message' do
+      it 'builds a messagerie-oriented payload' do
+        payload = described_class.new(dossier:, trigger: :messagerie_message, state: nil).create_notification_payload(send_date:)
+
+        expect(payload).to include(
+          content_title: "Nouveau message pour votre dossier n° #{dossier.id} sur la démarche #{dossier.procedure.libelle}",
+          content_body: "Vous avez reçu un nouveau message dans la messagerie.",
+          item_generic_status: "wip"
         )
       end
     end
