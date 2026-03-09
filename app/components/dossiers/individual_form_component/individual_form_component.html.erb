@@ -12,10 +12,17 @@
               **helpers.external_link_attributes) %>
       </p>
     </div>
-    <fieldset class="fr-fieldset mandataire-infos">
-      <legend class="fr-fieldset__legend--regular fr-fieldset__legend">
-        <h2 class="fr-h4"><%= t('.for_self.self_title') %></h2>
-      </legend>
+    <div class="border-grey fr-p-3w fr-mb-4w">
+      <fieldset class="fr-fieldset mandataire-infos fr-mb-0">
+        <legend class="fr-fieldset__legend fr-fieldset__legend--regular">
+          <h2 class="fr-h5"><%= t('.for_self.self_title') %></h2>
+        </legend>
+
+        <% if @dossier.france_connected_with_one_identity? %>
+          <div class="fr-highlight fr-text--sm">
+            <%= t('.identity_locked_by_france_connect') %>
+          </div>
+        <% end %>
 
         <div class="fr-fieldset__element fr-fieldset__element--short-text">
           <%= render Dsfr::InputComponent.new(form: f, attribute: :mandataire_first_name, opts: { autocomplete: 'given-name', disabled: mandataire_identity_locked? }) %>
@@ -35,16 +42,17 @@
   <% end %>
 
   <%= f.fields_for :individual, include_id: false do |individual| %>
-    <fieldset class="fr-fieldset fr-mb-0 individual-infos">
-      <legend class="fr-fieldset__legend--regular fr-fieldset__legend">
-        <h2 class="fr-h4">
-          <% if for_tiers? %>
-            <%= t('.for_tiers.beneficiaire_title') %>
-          <% else %>
-            <%= t('.for_self.self_title') %>
-          <% end %>
-        </h2>
-      </legend>
+    <div class="border-grey fr-p-3w fr-mb-4w">
+      <fieldset class="fr-fieldset individual-infos fr-mb-0">
+        <legend class="fr-fieldset__legend fr-fieldset__legend--regular">
+          <h2 class="fr-h5">
+            <% if for_tiers? %>
+              <%= t('.for_tiers.beneficiaire_title') %>
+            <% else %>
+              <%= t('.for_self.self_title') %>
+            <% end %>
+          </h2>
+        </legend>
 
         <% if @dossier.france_connected_with_one_identity? && !for_tiers? %>
           <div class="fr-highlight fr-text--sm">
@@ -52,8 +60,7 @@
           </div>
         <% end %>
 
-      <% unless @dossier.procedure.no_gender? %>
-        <div class="fr-fieldset__element fr-mb-0">
+        <% unless @dossier.procedure.no_gender? %>
           <fieldset
             class="fr-fieldset fr-fieldset--inline <%= 'fr-fieldset--error' if individual.object.errors.include?(:gender) %>"
             aria-labelledby="gender-legend <%= 'individual_gender-error' if individual.object.errors.include?(:gender) %>"
@@ -100,36 +107,32 @@
               </div>
             <% end %>
           </fieldset>
-        </div>
-      <% end %>
+        <% end %>
 
-      <div class="fr-fieldset__element fr-mb-0">
-        <div class="fr-fieldset width-100">
-          <div class="fr-fieldset__element fr-fieldset__element--short-text">
-            <% if for_tiers? %>
-              <%= render Dsfr::InputComponent.new(form: individual, attribute: :prenom) %>
-            <% else %>
-              <%= render Dsfr::InputComponent.new(form: individual, attribute: :prenom, opts: { autocomplete: 'given-name', disabled: identity_locked? }) %>
-            <% end %>
-          </div>
-
-          <div class="fr-fieldset__element fr-fieldset__element--short-text">
-            <% if for_tiers? %>
-              <%= render Dsfr::InputComponent.new(form: individual, attribute: :nom) %>
-            <% else %>
-              <%= render Dsfr::InputComponent.new(form: individual, attribute: :nom, opts: { autocomplete: 'family-name', disabled: identity_locked? }) %>
-            <% end %>
-          </div>
-
-          <% if @dossier.procedure.ask_birthday? %>
-            <div class="fr-fieldset__element">
-              <%= render Dsfr::InputComponent.new(form: individual, attribute: :birthdate, input_type: :date_field,
-                    opts: { placeholder: 'Format : AAAA-MM-JJ', max: Date.today.iso8601, min: "1900-01-01", autocomplete: 'bday' }) %>
-            </div>
+        <div class="fr-fieldset__element fr-fieldset__element--short-text">
+          <% if for_tiers? %>
+            <%= render Dsfr::InputComponent.new(form: individual, attribute: :prenom) %>
+          <% else %>
+            <%= render Dsfr::InputComponent.new(form: individual, attribute: :prenom, opts: { autocomplete: 'given-name', disabled: identity_locked? }) %>
           <% end %>
         </div>
-      </div>
-    </fieldset>
+
+        <div class="fr-fieldset__element fr-fieldset__element--short-text">
+          <% if for_tiers? %>
+            <%= render Dsfr::InputComponent.new(form: individual, attribute: :nom) %>
+          <% else %>
+            <%= render Dsfr::InputComponent.new(form: individual, attribute: :nom, opts: { autocomplete: 'family-name', disabled: identity_locked? }) %>
+          <% end %>
+        </div>
+
+        <% if @dossier.procedure.ask_birthday? %>
+          <div class="fr-fieldset__element">
+            <%= render Dsfr::InputComponent.new(form: individual, attribute: :birthdate, input_type: :date_field,
+                  opts: { placeholder: 'Format : AAAA-MM-JJ', max: Date.today.iso8601, min: "1900-01-01", autocomplete: 'bday' }) %>
+          </div>
+        <% end %>
+      </fieldset>
+    </div>
 
     <% if for_tiers? %>
       <fieldset class="fr-fieldset">
