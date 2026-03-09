@@ -70,23 +70,26 @@ describe 'The routing with rules', js: true do
     # add victor to littéraire groupe
     select_combobox('Emails', 'victor@gouv.fr', custom_value: true)
 
-    perform_enqueued_jobs { click_on 'Affecter' }
-    expect(page).to have_text("L’instructeur victor@gouv.fr a été ajouté")
+    perform_enqueued_jobs { find('button.fr-btn--primary', text: 'Ajouter').click }
+    expect(page).to have_text("victor@gouv.fr a été ajouté")
 
     victor = User.find_by(email: 'victor@gouv.fr').instructeur
 
     # add alain to littéraire groupe
     select_combobox('Emails', 'alain@gouv.fr', custom_value: true)
 
-    perform_enqueued_jobs { click_on 'Affecter' }
-    expect(page).to have_text("L’instructeur alain@gouv.fr a été ajouté")
+    perform_enqueued_jobs { find('button.fr-btn--primary', text: 'Ajouter').click }
+    expect(page).to have_text("alain@gouv.fr a été ajouté")
 
     alain = User.find_by(email: 'alain@gouv.fr').instructeur
 
     # add inactive groupe
-    visit ajout_admin_procedure_groupe_instructeurs_path(procedure)
-    fill_in 'Nouveau groupe', with: 'non visible car inactif'
-    click_on 'Ajouter'
+    visit admin_procedure_groupe_instructeurs_path(procedure)
+    click_on 'Ajouter un groupe'
+    within('#modal-add-groupe') do
+      fill_in 'Nouveau groupe', with: 'non visible car inactif'
+      click_on 'Ajouter'
+    end
     expect(page).to have_text('Le groupe d’instructeurs « non visible car inactif » a été créé. ')
     check("Groupe inactif", allow_label_click: true)
 
@@ -100,15 +103,15 @@ describe 'The routing with rules', js: true do
     # add marie to scientifique groupe
     select_combobox('Emails', 'marie@gouv.fr', custom_value: true)
 
-    perform_enqueued_jobs { click_on 'Affecter' }
-    expect(page).to have_text("L’instructeur marie@gouv.fr a été ajouté")
+    perform_enqueued_jobs { find('button.fr-btn--primary', text: 'Ajouter').click }
+    expect(page).to have_text("marie@gouv.fr a été ajouté")
 
     marie = User.find_by(email: 'marie@gouv.fr').instructeur
 
     # add superwoman to scientifique groupe
     select_combobox('Emails', 'alain@gouv.fr', custom_value: true)
-    perform_enqueued_jobs { click_on 'Affecter' }
-    expect(page).to have_text("L’instructeur alain@gouv.fr a été ajouté")
+    perform_enqueued_jobs { find('button.fr-btn--primary', text: 'Ajouter').click }
+    expect(page).to have_text("alain@gouv.fr a été ajouté")
 
     # add routing rules
     within('.target select') { select('Spécialité') }
@@ -131,9 +134,12 @@ describe 'The routing with rules', js: true do
     procedure.groupe_instructeurs.where(closed: false).each { |gi| wait_until { gi.reload.routing_rule.present? } }
 
     # add a group without routing rules
-    visit ajout_admin_procedure_groupe_instructeurs_path(procedure)
-    fill_in 'Nouveau groupe', with: 'artistique'
-    click_on 'Ajouter'
+    visit admin_procedure_groupe_instructeurs_path(procedure)
+    click_on 'Ajouter un groupe'
+    within('#modal-add-groupe') do
+      fill_in 'Nouveau groupe', with: 'artistique'
+      click_on 'Ajouter'
+    end
     expect(page).to have_text('Le groupe d’instructeurs « artistique » a été créé. ')
     expect(procedure.groupe_instructeurs.count).to eq(4)
 
