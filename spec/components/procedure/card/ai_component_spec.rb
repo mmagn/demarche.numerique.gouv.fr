@@ -136,7 +136,7 @@ RSpec.describe Procedure::Card::AiComponent, type: :component do
         it do
           render_inline(subject)
           expect(page).to have_css('.fr-badge--warning', text: 'À faire')
-          expect(page.all("a").map { it['href'] }).to include(simplify_admin_procedure_types_de_champ_path(procedure, rule: 'improve_structure'))
+          expect(page.all("a").map { it['href'] }).to include(new_simplify_admin_procedure_types_de_champ_path(procedure))
         end
       end
 
@@ -155,7 +155,7 @@ RSpec.describe Procedure::Card::AiComponent, type: :component do
         it do
           render_inline(subject)
           expect(page).to have_css('.fr-badge--warning', text: 'À faire')
-          expect(page.all("a").map { it['href'] }).to include(simplify_admin_procedure_types_de_champ_path(procedure, rule: LLM::Rule::SEQUENCE.last))
+          expect(page.all("a").map { it['href'] }).to include(new_simplify_admin_procedure_types_de_champ_path(procedure))
         end
       end
 
@@ -166,7 +166,7 @@ RSpec.describe Procedure::Card::AiComponent, type: :component do
         it do
           render_inline(subject)
           expect(page).to have_css('.fr-badge--success', text: 'Amélioré')
-          expect(page.all("a").map { it['href'] }).to include(simplify_admin_procedure_types_de_champ_path(procedure, rule: LLM::Rule::SEQUENCE.last))
+          expect(page.all("a").map { it['href'] }).to include(new_simplify_admin_procedure_types_de_champ_path(procedure))
         end
       end
 
@@ -185,10 +185,10 @@ RSpec.describe Procedure::Card::AiComponent, type: :component do
         let(:rule) { 'improve_types' }
         let(:state) { :failed }
 
-        it 'shows À faire badge and links to first rule (failed not considered finished)' do
+        it 'shows À faire badge and links to new_simplify (failed not considered finished)' do
           render_inline(subject)
           expect(page).to have_css('.fr-badge--warning', text: 'À faire')
-          expect(page.all("a").map { it['href'] }).to include(simplify_admin_procedure_types_de_champ_path(procedure, rule: 'improve_label'))
+          expect(page.all("a").map { it['href'] }).to include(new_simplify_admin_procedure_types_de_champ_path(procedure))
         end
       end
 
@@ -196,10 +196,10 @@ RSpec.describe Procedure::Card::AiComponent, type: :component do
         let(:rule) { 'improve_label' }
         let(:state) { :running }
 
-        it 'shows À faire badge and links to first rule (running not considered finished)' do
+        it 'shows À faire badge and links to new_simplify (running not considered finished)' do
           render_inline(subject)
           expect(page).to have_css('.fr-badge--warning', text: 'À faire')
-          expect(page.all("a").map { it['href'] }).to include(simplify_admin_procedure_types_de_champ_path(procedure, rule: 'improve_label'))
+          expect(page.all("a").map { it['href'] }).to include(new_simplify_admin_procedure_types_de_champ_path(procedure))
         end
       end
 
@@ -207,10 +207,10 @@ RSpec.describe Procedure::Card::AiComponent, type: :component do
         let(:rule) { LLM::Rule::SEQUENCE.last }
         let(:state) { :queued }
 
-        it 'shows À faire badge and links to first rule (queued not considered finished)' do
+        it 'shows À faire badge and links to new_simplify (queued not considered finished)' do
           render_inline(subject)
           expect(page).to have_css('.fr-badge--warning', text: 'À faire')
-          expect(page.all("a").map { it['href'] }).to include(simplify_admin_procedure_types_de_champ_path(procedure, rule: 'improve_label'))
+          expect(page.all("a").map { it['href'] }).to include(new_simplify_admin_procedure_types_de_champ_path(procedure))
         end
       end
     end
@@ -219,7 +219,7 @@ RSpec.describe Procedure::Card::AiComponent, type: :component do
       before { render_inline(subject) }
       it 'shows À faire badge' do
         expect(page).to have_css('.fr-badge--warning', text: 'À faire')
-        expect(page.all("a").map { it['href'] }).to include(simplify_admin_procedure_types_de_champ_path(procedure, rule: 'improve_label'))
+        expect(page.all("a").map { it['href'] }).to include(new_simplify_admin_procedure_types_de_champ_path(procedure))
       end
     end
   end

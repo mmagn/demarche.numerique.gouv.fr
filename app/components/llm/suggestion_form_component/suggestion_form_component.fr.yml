@@ -13,7 +13,7 @@ fr:
     accepted: 'Regénérer les suggestions'
     skipped: 'Regénérer les suggestions'
   summary:
-    title: À quoi servent ces suggestions ?
+    title: À quoi servent ces suggestions ?
     improve_label_html: |
       <p>Cette étape propose une mise à jour des libellés de champs détectés comme <strong>trop longs</strong>, en <strong>majuscules</strong>
       ou <strong>difficiles à comprendre</strong>.</p>
