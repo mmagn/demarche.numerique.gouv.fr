@@ -793,10 +793,29 @@ Rails.application.routes.draw do
         end
 
         collection do
-          get 'simplify/:rule', action: :simplify, as: :simplify, constraints: { rule: /#{LLMRuleSuggestion.rules.keys.join('|')}/ }
-          get 'simplify/poll/:rule', action: :poll_simplify, as: :poll_simplify, constraints: { rule: /#{LLMRuleSuggestion.rules.keys.join('|')}/ }
-          post 'accept_simplification/:llm_suggestion_rule_id', action: :accept_simplification, as: :accept_simplification
-          post 'simplify/enqueue/:rule', action: :enqueue_simplify, as: :enqueue_simplify, constraints: { rule: /#{LLMRuleSuggestion.rules.keys.join('|')}/ }
+          # Entry point for Simpliscore workflow
+          get 'simplify/new', action: :new_simplify, as: :new_simplify
+
+          # Routes with explicit tunnel_id
+          get 'simplify/:tunnel_id/:rule',
+            action: :simplify,
+            as: :simplify,
+            constraints: { rule: /#{LLMRuleSuggestion.rules.keys.join('|')}/ }
+
+          get 'simplify/:tunnel_id/:rule/poll',
+            action: :poll_simplify,
+            as: :poll_simplify,
+            constraints: { rule: /#{LLMRuleSuggestion.rules.keys.join('|')}/ }
+
+          post 'simplify/:tunnel_id/:rule/enqueue',
+            action: :enqueue_simplify,
+            as: :enqueue_simplify,
+            constraints: { rule: /#{LLMRuleSuggestion.rules.keys.join('|')}/ }
+
+          post 'simplify/:tunnel_id/:rule/accept/:id',
+            action: :accept_simplification,
+            as: :accept_simplification,
+            constraints: { rule: /#{LLMRuleSuggestion.rules.keys.join('|')}/ }
         end
       end
 

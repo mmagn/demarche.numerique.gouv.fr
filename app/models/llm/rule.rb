@@ -81,6 +81,7 @@ module LLM
     end
 
     def self.next_rule(current_rule)
+      return SEQUENCE.first if current_rule.nil?
       new(current_rule).next_rule
     end
 
