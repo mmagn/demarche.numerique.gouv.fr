@@ -22,6 +22,10 @@ export class ForTiersController extends ApplicationController {
   declare emailContainerTarget: HTMLElement;
   declare emailInputTarget: HTMLInputElement;
 
+  connect() {
+    this.toggleEmailInput();
+  }
+
   toggleEmailInput() {
     const isEmailSelected = this.notificationMethodCheckboxTarget.checked;
 
