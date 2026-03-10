@@ -6,16 +6,6 @@ module Ami
 
     ITEM_TYPE = "dossier"
 
-    AMI_NOTIFICATIONS_ENABLED_STATES = [
-      :brouillon,
-      :en_construction,
-      :en_instruction,
-      :accepte,
-      :refuse,
-      :sans_suite,
-      :repasser_en_instruction,
-    ].freeze
-
     ITEM_GENERIC_STATUS_BY_STATE = {
       brouillon: "new",
       en_construction: "wip",
@@ -83,8 +73,6 @@ module Ami
 
     def not_eligible_reason
       return ":ami_notifications feature flag disabled" unless dossier.procedure.feature_enabled?(:ami_notifications)
-
-      return "state: #{state} not eligible" unless AMI_NOTIFICATIONS_ENABLED_STATES.include?(state)
     end
 
     def content_title
