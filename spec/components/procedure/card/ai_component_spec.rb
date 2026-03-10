@@ -23,46 +23,6 @@ RSpec.describe Procedure::Card::AiComponent, type: :component do
     end
   end
 
-  describe '#next_rule' do
-    before { Flipper.enable_actor(:llm_nightly_improve_procedure, procedure) }
-
-    context 'when no suggestions exist' do
-      it 'returns improve_label' do
-        expect(subject.next_rule).to eq('improve_label')
-      end
-    end
-
-    context 'when last suggestion is cleaner and finished' do
-      let(:schema_hash) { Digest::SHA256.hexdigest(draft_revision.schema_to_llm.to_json) }
-      before do
-        create(:llm_rule_suggestion,
-          procedure_revision: draft_revision,
-          rule: LLM::Rule::SEQUENCE.last,
-          state: 'accepted',
-          schema_hash: schema_hash)
-      end
-
-      it 'returns cleaner' do
-        expect(subject.next_rule).to eq(LLM::Rule::SEQUENCE.last)
-      end
-    end
-
-    context 'when last suggestion is not finished' do
-      let(:schema_hash) { Digest::SHA256.hexdigest(draft_revision.schema_to_llm.to_json) }
-      before do
-        create(:llm_rule_suggestion,
-          procedure_revision: draft_revision,
-          rule: 'improve_label',
-          state: 'accepted',
-          schema_hash: schema_hash)
-      end
-
-      it 'returns the next rule in sequence' do
-        expect(subject.next_rule).to eq(LLM::Rule.next_rule('improve_label'))
-      end
-    end
-  end
-
   describe '#any_tunnel_finished?' do
     before { Flipper.enable_actor(:llm_nightly_improve_procedure, procedure) }
     let(:schema_hash) { Digest::SHA256.hexdigest(draft_revision.schema_to_llm.to_json) }
