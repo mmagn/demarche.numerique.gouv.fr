@@ -480,7 +480,7 @@ fr:
       dossiers:
         archived_dossier: "Votre dossier sera conservé %{duree_conservation_dossiers_dans_ds} mois supplémentaire"
         identite:
-          legend: 'Ce dossier est : '
+          legend: 'Ce dossier est'
           identity_siret: Identifier votre établissement
           civility: Civilité
           first_name: Prénom

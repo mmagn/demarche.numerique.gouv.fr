@@ -476,7 +476,7 @@ en:
       dossiers:
         archived_dossier: "Your file will be kept %{duree_conservation_dossiers_dans_ds} more months"
         identite:
-          legend: 'This file is:'
+          legend: 'This file is'
           identity_siret: Identify your establishment
           civility: Civility
           first_name: First Name
