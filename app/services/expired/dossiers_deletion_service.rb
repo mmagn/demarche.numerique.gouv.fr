@@ -128,14 +128,18 @@ class Expired::DossiersDeletionService < Expired::MailRateLimiter
   def delete_expired_and_notify(dossiers_to_remove, notify_on_closed_procedures_to_user: false)
     user_notifications = group_by_user_email(dossiers_to_remove, notify_on_closed_procedures_to_user: notify_on_closed_procedures_to_user)
       .map { |(email, dossiers)| [email, dossiers.map(&:id)] }
+    tiers_notifications = group_by_tiers_email(dossiers_to_remove, notify_on_closed_procedures_to_user: notify_on_closed_procedures_to_user)
+      .map { |(email, dossiers)| [email, dossiers.map(&:id)] }
     administration_notifications = group_by_administration_email(dossiers_to_remove, preference: :instant_email_dossier_expired)
       .map { |(email, dossiers)| [email, dossiers.map(&:id)] }
 
     hidden_dossier_ids = []
+
     dossiers_to_remove.find_each do |dossier|
       dossier.hide_and_keep_track!(:automatic, :expired)
       hidden_dossier_ids << dossier.id
     end
+
     user_notifications.each do |(email, dossier_ids)|
       dossier_ids = dossier_ids.intersection(hidden_dossier_ids)
       if dossier_ids.present?
@@ -146,6 +150,18 @@ class Expired::DossiersDeletionService < Expired::MailRateLimiter
         send_with_delay(mail)
       end
     end
+
+    tiers_notifications.each do |(email, dossier_ids)|
+      dossier_ids = dossier_ids.intersection(hidden_dossier_ids)
+      if dossier_ids.present?
+        mail = DossierMailer.notify_automatic_deletion_for_tiers(
+          Dossier.where(id: dossier_ids).to_a,
+          email
+        )
+        send_with_delay(mail)
+      end
+    end
+
     administration_notifications.each do |(email, dossier_ids)|
       dossier_ids = dossier_ids.intersection(hidden_dossier_ids)
       if dossier_ids.present?

@@ -305,6 +305,7 @@ describe Expired::DossiersDeletionService do
 
     before do
       allow(DossierMailer).to receive(:notify_automatic_deletion_to_user).and_call_original
+      allow(DossierMailer).to receive(:notify_automatic_deletion_for_tiers).and_call_original
       allow(DossierMailer).to receive(:notify_automatic_deletion_to_administration).and_call_original
     end
 
@@ -401,6 +402,22 @@ describe Expired::DossiersDeletionService do
       it "does not send a notification email to the instructeur" do
         expect(DossierMailer).to have_received(:notify_automatic_deletion_to_user).once
         expect(DossierMailer).not_to have_received(:notify_automatic_deletion_to_administration).with([dossier], instructeur.user.email)
+      end
+    end
+
+    context 'when the dossier is for tiers' do
+      let(:procedure) { create(:procedure, :published, :for_individual) }
+      let!(:dossier_for_tiers_with_notif) { create(:dossier, :en_construction, :for_tiers_with_notification, procedure:, en_construction_close_to_expiration_notice_sent_at: (warning_period + 1.day).ago) }
+      let!(:dossier_for_tiers_without_notif) { create(:dossier, :en_construction, :for_tiers_without_notification, procedure:, en_construction_close_to_expiration_notice_sent_at: (warning_period + 1.day).ago) }
+      let!(:dossier_not_for_tiers) { create(:dossier, :en_construction, procedure:, en_construction_close_to_expiration_notice_sent_at: (warning_period + 1.day).ago) }
+
+      before do
+        service.delete_expired_en_construction_and_notify
+      end
+
+      it do
+        expect(DossierMailer).to have_received(:notify_automatic_deletion_for_tiers).once
+        expect(DossierMailer).to have_received(:notify_automatic_deletion_for_tiers).with(match_array([dossier_for_tiers_with_notif]), dossier_for_tiers_with_notif.individual.email)
       end
     end
   end
@@ -587,6 +604,7 @@ describe Expired::DossiersDeletionService do
 
     before do
       allow(DossierMailer).to receive(:notify_automatic_deletion_to_user).and_call_original
+      allow(DossierMailer).to receive(:notify_automatic_deletion_for_tiers).and_call_original
       allow(DossierMailer).to receive(:notify_automatic_deletion_to_administration).and_call_original
     end
 
@@ -704,6 +722,22 @@ describe Expired::DossiersDeletionService do
       it "does not send a notification email to the instructeur" do
         expect(DossierMailer).to have_received(:notify_automatic_deletion_to_user).once
         expect(DossierMailer).not_to have_received(:notify_automatic_deletion_to_administration).with([dossier], instructeur.user.email)
+      end
+    end
+
+    context 'when the dossier is for tiers' do
+      let(:procedure) { create(:procedure, :published, :for_individual) }
+      let!(:dossier_for_tiers_with_notif) { create(:dossier, :accepte, :for_tiers_with_notification, procedure:, termine_close_to_expiration_notice_sent_at: (warning_period + 1.day).ago) }
+      let!(:dossier_for_tiers_without_notif) { create(:dossier, :accepte, :for_tiers_without_notification, procedure:, termine_close_to_expiration_notice_sent_at: (warning_period + 1.day).ago) }
+      let!(:dossier_not_for_tiers) { create(:dossier, :accepte, procedure:, termine_close_to_expiration_notice_sent_at: (warning_period + 1.day).ago) }
+
+      before do
+        service.delete_expired_termine_and_notify
+      end
+
+      it do
+        expect(DossierMailer).to have_received(:notify_automatic_deletion_for_tiers).once
+        expect(DossierMailer).to have_received(:notify_automatic_deletion_for_tiers).with(match_array([dossier_for_tiers_with_notif]), dossier_for_tiers_with_notif.individual.email)
       end
     end
   end
