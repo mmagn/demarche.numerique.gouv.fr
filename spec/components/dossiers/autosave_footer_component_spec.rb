@@ -13,6 +13,24 @@ RSpec.describe Dossiers::AutosaveFooterComponent, type: :component do
     it 'displays brouillon explanation' do
       expect(component).to have_text("Enregistrement automatique du dossier")
     end
+
+    it 'renders server error template with contact link' do
+      template = component.css('template[data-autosave-status-target="serverErrorTemplate"]').first
+      expect(template.inner_html).to include('contactez-nous')
+      expect(template.inner_html).to include('data-error-id')
+    end
+
+    it 'renders auth error template with reconnection link to current page' do
+      template = component.css('template[data-autosave-status-target="authErrorTemplate"]').first
+      # in component spec request.path is empty but in real world,
+      # it stores after signin path, and redirects to sign in page
+      expect(template.inner_html).to have_link("", text: 'vous reconnecter')
+    end
+
+    it 'renders network error template' do
+      template = component.css('template[data-autosave-status-target="networkErrorTemplate"]').first
+      expect(template.inner_html).to include('connexion Internet')
+    end
   end
 
   context 'when editing fork and can pass en construction' do
@@ -21,6 +39,11 @@ RSpec.describe Dossiers::AutosaveFooterComponent, type: :component do
     it 'displays en construction explanation' do
       expect(component).to have_text("Enregistrement automatique des modifications")
     end
+
+    it 'renders error templates with modifications wording' do
+      template = component.css('template[data-autosave-status-target="serverErrorTemplate"]').first
+      expect(template.inner_html).to include('les modifications')
+    end
   end
 
   context 'when showing annotations' do
@@ -28,6 +51,11 @@ RSpec.describe Dossiers::AutosaveFooterComponent, type: :component do
 
     it 'displays annotations explanation' do
       expect(component).to have_text("Enregistrement automatique des annotations")
+    end
+
+    it 'renders error templates with annotations wording' do
+      template = component.css('template[data-autosave-status-target="serverErrorTemplate"]').first
+      expect(template.inner_html).to include('les annotations')
     end
   end
 end
