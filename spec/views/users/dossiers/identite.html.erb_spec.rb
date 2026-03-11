@@ -25,13 +25,18 @@ describe 'users/dossiers/identite', type: :view do
       # not show identity form until a choice is made'
       expect(rendered).not_to have_text("Votre identité")
     end
+
+    it 'shows a disabled continue button' do
+      expect(rendered).to have_button("Continuer", disabled: true)
+    end
   end
 
   context 'when procedure has for_tiers_enabled and identity already set' do
     let(:procedure) { create(:simple_procedure, :for_individual) }
     let(:dossier) { create(:dossier, :with_service, :with_individual, state: Dossier.states.fetch(:brouillon), procedure: procedure, identity_updated_at: Time.current) }
 
-    it 'shows the identity form' do
+    it 'hides the continue button group' do
+      expect(rendered).to have_css('#identite-buttons-group.hidden')
       expect(rendered).to have_css('form#identite-form')
 
       expect(rendered).to have_checked_field("radio-self-manage")

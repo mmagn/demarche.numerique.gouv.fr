@@ -45,6 +45,16 @@
           </div>
         </div>
 
+        <div
+          id="identite-buttons-group"
+          class="<%= class_names("fr-fieldset__element fr-mt-2w", "hidden" => identity_form_active) %>"
+        >
+          <div class="fr-btns-group fr-btns-group--inline">
+            <%= link_to t('views.users.dossiers.identite.back'), commencer_path(path: @dossier.procedure.path), class: "fr-btn fr-btn--secondary" %>
+            <%= f.submit t('views.users.dossiers.identite.continue'), class: "fr-btn", disabled: true %>
+          </div>
+        </div>
+
         <%# autosubmit button to ATs: %>
         <%= f.submit t('views.users.dossiers.identite.continue'), class: 'hidden' %>
       </fieldset>
