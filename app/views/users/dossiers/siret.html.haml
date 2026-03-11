@@ -24,4 +24,6 @@
         %p.fr-text--sm= t('views.users.dossiers.identite.siret_help_html',
                           annuaire_link: link_to('annuaire-entreprises.data.gouv.fr', annuaire_link, title: new_tab_suffix(t('views.users.dossiers.identite.annuaire_link_title')), **external_link_attributes))
 
-    = f.submit t('views.users.dossiers.identite.continue'), class: "fr-btn", data: { disable_with: t('views.users.dossiers.identite.siret_loading') }
+    .fr-btns-group.fr-btns-group--inline
+      = link_to t('views.users.dossiers.identite.back'), commencer_path(path: @dossier.procedure.path), class: "fr-btn fr-btn--secondary"
+      = f.submit t('views.users.dossiers.identite.continue'), class: "fr-btn", data: { disable_with: t('views.users.dossiers.identite.siret_loading') }
