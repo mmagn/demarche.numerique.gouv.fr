@@ -85,7 +85,8 @@ export class AutosaveStatusController extends ApplicationController {
       const errorIdElement =
         content.querySelector<HTMLElement>('[data-error-id]');
       if (errorIdElement) {
-        errorIdElement.textContent = `(code erreur : ${eventId})`;
+        const format = errorIdElement.dataset.errorFormat ?? '(%{id})';
+        errorIdElement.textContent = format.replace('%{id}', eventId);
       }
     }
 

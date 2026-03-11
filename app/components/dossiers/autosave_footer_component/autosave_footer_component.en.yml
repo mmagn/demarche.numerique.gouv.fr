@@ -1,5 +1,6 @@
 ---
 en:
+  error_code_format: "(error\u00a0code: %{id})"
   brouillon:
     explanation: File is automatically saved.
     confirmation_html: File successfully saved.

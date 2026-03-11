@@ -22,7 +22,7 @@
 
   <template data-autosave-status-target="serverErrorTemplate">
     <%= t(".#{context}.error_server_html") %>
-    <small class="fr-text-mention--grey" data-error-id></small>
+    <small class="fr-text-mention--grey" data-error-id data-error-format="<%= t('.error_code_format') %>"></small>
   </template>
 
   <template data-autosave-status-target="authErrorTemplate">

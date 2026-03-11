@@ -1,5 +1,6 @@
 ---
 fr:
+  error_code_format: "(code\u00A0erreur\u00A0: %{id})"
   brouillon:
     explanation: Enregistrement automatique du dossier
     confirmation_html: 'Brouillon du dossier enregistré'
