@@ -642,7 +642,7 @@ describe 'The user', js: true do
       expect(page).to have_field('texte obligatoire', with: 'a valid user input')
     end
 
-    scenario 'autosave redirects to sign-in after being disconnected' do
+    scenario 'autosave shows reconnection link after being disconnected' do
       log_in(user, simple_procedure)
       fill_individual
 
@@ -651,10 +651,11 @@ describe 'The user', js: true do
       logout(:user)
       fill_in('texte obligatoire', with: 'a valid user input')
 
-      # … they are redirected to the sign-in page.
-      expect(page).to have_current_path(new_user_session_path)
+      # … an auth error message appears with a reconnection link (instead of a redirect)
+      expect(page).to have_css('.autosave-status.failed', text: 'vous reconnecter')
+      click_link('vous reconnecter')
 
-      # After sign-in, they are redirected back to their brouillon
+      # The link points to the current page; Devise intercepts and redirects to sign-in
       sign_in_with(user.email, password)
       expect(page).to have_current_path(brouillon_dossier_path(user_dossier))
 

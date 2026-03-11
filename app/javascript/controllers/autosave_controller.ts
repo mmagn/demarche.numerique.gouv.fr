@@ -257,7 +257,8 @@ export class AutosaveController extends ApplicationController {
           form.dataset.turboMethod?.toUpperCase() || 'PATCH'
       },
       signal: this.#abortController.signal,
-      timeout: AUTOSAVE_TIMEOUT_DELAY
+      timeout: AUTOSAVE_TIMEOUT_DELAY,
+      handleAuth: false
     }).turbo();
   }
 
