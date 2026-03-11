@@ -1,0 +1,31 @@
+<div class="autosave" data-controller="autosave-status">
+  <p class="autosave-status fr-info-text fr-text--sm fr-m-0" data-autosave-status-target="idle">
+    <% if annotation? %>
+      <%= t('.annotations.explanation') %>
+    <% elsif dossier.en_construction? %>
+      <%= t('.en_construction.explanation') %>
+    <% else %>
+      <%= t('.brouillon.explanation') %>
+    <% end %>
+  </p>
+
+  <p class="autosave-status succeeded fr-valid-text fr-text--sm fr-m-0 fr-hidden" data-autosave-status-target="succeeded">
+    <% if annotation? %>
+      <%= t('.annotations.confirmation_html') %>
+    <% elsif dossier.en_construction? %>
+      <%= t('.en_construction.confirmation_html') %>
+    <% else %>
+      <%= t('.brouillon.confirmation_html') %>
+    <% end %>
+  </p>
+
+  <p class="autosave-status failed fr-error-text fr-text--sm fr-m-0 fr-hidden" tabindex="-1" role="alert" data-autosave-status-target="failed">
+    <% if annotation? %>
+      <%= t('.annotations.error_html') %>
+    <% elsif dossier.en_construction? %>
+      <%= t('.en_construction.error_html') %>
+    <% else %>
+      <%= t('.brouillon.error_html') %>
+    <% end %>
+  </p>
+</div>

@@ -1,12 +1,4 @@
-import {
-  addClass,
-  disable,
-  enable,
-  getConfig,
-  hasClass,
-  removeClass,
-  ResponseError
-} from '@utils';
+import { addClass, getConfig, removeClass, ResponseError } from '@utils';
 
 import { ApplicationController } from './application_controller';
 
@@ -16,16 +8,18 @@ const {
 const AUTOSAVE_STATUS_VISIBLE_DURATION = status_visible_duration;
 
 // This is a controller we attach to the status area in the main form. It
-// coordinates notifications and will dispatch `autosave:retry` event if user
-// decides to retry after an error.
+// coordinates autosave notifications.
 //
 export class AutosaveStatusController extends ApplicationController {
-  static targets = ['retryButton'];
+  static targets = ['idle', 'succeeded', 'failed'];
 
-  declare readonly retryButtonTarget: HTMLButtonElement;
+  declare readonly idleTarget: HTMLElement;
+  declare readonly succeededTarget: HTMLElement;
+  declare readonly failedTarget: HTMLElement;
+
+  private hasNotifiedError = false;
 
   connect(): void {
-    this.onGlobal('autosave:enqueue', () => this.didEnqueue());
     this.onGlobal('autosave:end', () => this.didSucceed());
     this.onGlobal<CustomEvent>('autosave:error', (event) =>
       this.didFail(event)
@@ -47,16 +41,8 @@ export class AutosaveStatusController extends ApplicationController {
     removeClass(autosave, 'debounced-added');
   }
 
-  onClickRetryButton() {
-    this.globalDispatch('autosave:retry');
-  }
-
-  private didEnqueue() {
-    disable(this.retryButtonTarget);
-  }
-
   private didSucceed() {
-    enable(this.retryButtonTarget);
+    this.hasNotifiedError = false;
     this.setState('succeeded');
     this.debounce(this.hideSucceededStatus, AUTOSAVE_STATUS_VISIBLE_DURATION);
   }
@@ -71,8 +57,12 @@ export class AutosaveStatusController extends ApplicationController {
       return;
     }
 
-    enable(this.retryButtonTarget);
     this.setState('failed');
+
+    if (!this.hasNotifiedError) {
+      this.hasNotifiedError = true;
+      this.failedTarget.focus();
+    }
 
     const shouldLogError = !error.response || error.response.status != 0; // ignore timeout errors
     if (shouldLogError) {
@@ -81,20 +71,13 @@ export class AutosaveStatusController extends ApplicationController {
   }
 
   private setState(state: 'succeeded' | 'failed' | 'idle') {
-    const autosave = this.element as HTMLDivElement;
-    if (autosave) {
-      // Re-apply the state even if already present, to get a nice animation
-      removeClass(autosave, 'autosave-state-idle');
-      removeClass(autosave, 'autosave-state-succeeded');
-      removeClass(autosave, 'autosave-state-failed');
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      autosave.offsetHeight; // flush animations
-      addClass(autosave, `autosave-state-${state}`);
-    }
+    this.idleTarget.classList.toggle('fr-hidden', state !== 'idle');
+    this.succeededTarget.classList.toggle('fr-hidden', state !== 'succeeded');
+    this.failedTarget.classList.toggle('fr-hidden', state !== 'failed');
   }
 
   private hideSucceededStatus() {
-    if (hasClass(this.element as HTMLElement, 'autosave-state-succeeded')) {
+    if (!this.succeededTarget.classList.contains('fr-hidden')) {
       this.setState('idle');
     }
   }

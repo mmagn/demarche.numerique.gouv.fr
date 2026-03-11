@@ -61,7 +61,7 @@ describe 'The user', js: true do
     fill_in('dossier_link', with: '123')
     find('.editable-champ-piece_justificative input[type=file]').attach_file(Rails.root + 'spec/fixtures/files/file.pdf')
 
-    expect(page).to have_css('span', text: 'Votre brouillon est automatiquement enregistré', visible: true)
+    expect(page).to have_css('p.autosave-status', text: 'Enregistrement automatique du dossier', visible: true)
     wait_for_autosave
 
     # check data on the dossier
@@ -718,29 +718,9 @@ describe 'The user', js: true do
       fill_individual
 
       expect(page).to have_no_button('Enregistrer le brouillon')
-      expect(page).to have_content('Votre brouillon est automatiquement enregistré')
+      expect(page).to have_content('Enregistrement automatique du dossier')
 
       fill_in('texte obligatoire', with: 'a valid user input')
-      wait_for_autosave
-      wait_until { champ_value_for('texte obligatoire') == 'a valid user input' }
-
-      visit current_path
-      expect(page).to have_field('texte obligatoire', with: 'a valid user input')
-    end
-
-    scenario 'retry on autosave error', :capybara_ignore_server_errors do
-      log_in(user, simple_procedure)
-      fill_individual
-
-      # Test autosave failure
-      allow_any_instance_of(Users::DossiersController).to receive(:update).and_raise("Server is busy")
-      fill_in('texte obligatoire', with: 'a valid user input')
-      blur
-      expect(page).to have_css('.autosave-state-failed')
-      expect(page).to have_button('Réessayer')
-      # Test that retrying after a failure works
-      allow_any_instance_of(Users::DossiersController).to receive(:update).and_call_original
-      click_on 'Réessayer'
       wait_for_autosave
       wait_until { champ_value_for('texte obligatoire') == 'a valid user input' }
 
