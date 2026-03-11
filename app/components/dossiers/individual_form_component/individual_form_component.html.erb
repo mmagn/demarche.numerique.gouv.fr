@@ -61,52 +61,54 @@
         <% end %>
 
         <% unless @dossier.procedure.no_gender? %>
-          <fieldset
-            class="fr-fieldset fr-fieldset--inline <%= 'fr-fieldset--error' if individual.object.errors.include?(:gender) %>"
-            aria-labelledby="gender-legend <%= 'individual_gender-error' if individual.object.errors.include?(:gender) %>"
-          >
-            <legend
-              class="fr-fieldset__legend--regular fr-fieldset__legend"
-              id="gender-legend"
+          <div class="fr-fieldset__element">
+            <fieldset
+              class="<%= class_names("fr-fieldset", "fr-fieldset--error" => individual.object.errors.include?(:gender)) %>"
+              aria-labelledby="<%= token_list("gender-legend", "individual_gender-error" => individual.object.errors.include?(:gender)) %>"
             >
-              <%= t('activerecord.attributes.individual.gender') %>
-              <%= render EditableChamp::AsteriskMandatoryComponent.new %>
-            </legend>
+              <legend
+                class="fr-fieldset__legend--regular fr-fieldset__legend"
+                id="gender-legend"
+              >
+                <%= t('activerecord.attributes.individual.gender') %>
+                <%= render EditableChamp::AsteriskMandatoryComponent.new %>
+              </legend>
 
-            <div class="fr-fieldset__element">
-              <div class="fr-radio-group">
-                <%= individual.radio_button :gender, Individual::GENDER_FEMALE, required: true, id: "identite_champ_radio_#{Individual::GENDER_FEMALE}", translate: "no", disabled: identity_locked? %>
+              <div class="fr-fieldset__element fr-fieldset__element--inline">
+                <div class="fr-radio-group">
+                  <%= individual.radio_button :gender, Individual::GENDER_FEMALE, required: true, id: "identite_champ_radio_#{Individual::GENDER_FEMALE}", translate: "no", disabled: identity_locked? %>
 
-                <label
-                  class="fr-label"
-                  for="identite_champ_radio_<%= Individual::GENDER_FEMALE %>"
-                >
-                  <%= Individual.human_attribute_name('gender.female') %>
-                </label>
+                  <label
+                    class="fr-label"
+                    for="identite_champ_radio_<%= Individual::GENDER_FEMALE %>"
+                  >
+                    <%= Individual.human_attribute_name('gender.female') %>
+                  </label>
+                </div>
               </div>
-            </div>
 
-            <div class="fr-fieldset__element">
-              <div class="fr-radio-group">
-                <%= individual.radio_button :gender, Individual::GENDER_MALE, required: true, id: "identite_champ_radio_#{Individual::GENDER_MALE}", translate: "no", disabled: identity_locked? %>
+              <div class="fr-fieldset__element fr-fieldset__element--inline">
+                <div class="fr-radio-group">
+                  <%= individual.radio_button :gender, Individual::GENDER_MALE, required: true, id: "identite_champ_radio_#{Individual::GENDER_MALE}", translate: "no", disabled: identity_locked? %>
 
-                <label
-                  class="fr-label"
-                  for="identite_champ_radio_<%= Individual::GENDER_MALE %>"
-                >
-                  <%= Individual.human_attribute_name('gender.male') %>
-                </label>
+                  <label
+                    class="fr-label"
+                    for="identite_champ_radio_<%= Individual::GENDER_MALE %>"
+                  >
+                    <%= Individual.human_attribute_name('gender.male') %>
+                  </label>
+                </div>
               </div>
-            </div>
 
-            <% if individual.object.errors.include?(:gender) %>
-              <div class="fr-fieldset__element">
-                <p class="fr-error-text" id="individual_gender-error">
-                  <%= individual.object.errors.full_messages_for(:gender).first %>
-                </p>
-              </div>
-            <% end %>
-          </fieldset>
+              <% if individual.object.errors.include?(:gender) %>
+                <div class="fr-fieldset__element">
+                  <p class="fr-error-text" id="individual_gender-error">
+                    <%= individual.object.errors.full_messages_for(:gender).first %>
+                  </p>
+                </div>
+              <% end %>
+            </fieldset>
+          </div>
         <% end %>
 
         <div class="fr-fieldset__element fr-fieldset__element--short-text">
