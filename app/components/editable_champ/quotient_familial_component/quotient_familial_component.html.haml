@@ -36,12 +36,16 @@
         %label.fr-label{ for: "#{@champ.stable_id}_incorrect", id: input_label_id(@champ, :incorrect) }
           = t('.external_champ.confirmation.false')
 
-  - if fc_data_incorrect?
+  - if render_data_incorrect_callout?
     .fr-callout.fr-callout--yellow-moutarde
       .fr-callout__text
         = t('.external_champ.incorrect_qf_data')
 
 - if render_piece_justificative_champ?
+  - if @champ.external_error?
+    = render Dsfr::NoticeComponent.new(closable: false, data_attributes: { "data-notice-name" => "donnees-qf-non-trouvees", class: 'fr-mb-1w'}) do |c|
+      - c.with_title do
+        = t('.piece_justificative_champ.data_not_found')
   = t('.piece_justificative_champ.libelle')
   = render EditableChamp::AsteriskMandatoryComponent.new
   = render Attachment::MultipleComponent.new(champ: @champ, attached_file: @champ.piece_justificative_file, form_object_name: @form.object_name, max: 1, aria_labelledby: labelledby_id)
