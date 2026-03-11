@@ -11,11 +11,21 @@ const AUTOSAVE_STATUS_VISIBLE_DURATION = status_visible_duration;
 // coordinates autosave notifications.
 //
 export class AutosaveStatusController extends ApplicationController {
-  static targets = ['idle', 'succeeded', 'failed'];
+  static targets = [
+    'idle',
+    'succeeded',
+    'failed',
+    'serverErrorTemplate',
+    'authErrorTemplate',
+    'networkErrorTemplate'
+  ];
 
   declare readonly idleTarget: HTMLElement;
   declare readonly succeededTarget: HTMLElement;
   declare readonly failedTarget: HTMLElement;
+  declare readonly serverErrorTemplateTarget: HTMLTemplateElement;
+  declare readonly authErrorTemplateTarget: HTMLTemplateElement;
+  declare readonly networkErrorTemplateTarget: HTMLTemplateElement;
 
   private hasNotifiedError = false;
 
@@ -49,25 +59,52 @@ export class AutosaveStatusController extends ApplicationController {
 
   private didFail(event: CustomEvent<{ error: ResponseError }>) {
     const error = event.detail.error;
+    const eventId = this.captureError(error);
 
-    if (error.response?.status == 401) {
-      // If we are unauthenticated, reload the page using a GET request.
-      // This will allow Devise to properly redirect us to sign-in, and then back to this page.
-      document.location.reload();
-      return;
-    }
-
+    this.renderErrorMessage(error, eventId);
     this.setState('failed');
 
     if (!this.hasNotifiedError) {
       this.hasNotifiedError = true;
       this.failedTarget.focus();
     }
+  }
 
-    const shouldLogError = !error.response || error.response.status != 0; // ignore timeout errors
-    if (shouldLogError) {
-      this.logError(error);
+  private captureError(error: ResponseError): string | undefined {
+    if (error.isNetworkError) return;
+
+    console.error(error);
+    return error.response.headers.get('X-Request-Id') ?? undefined;
+  }
+
+  private renderErrorMessage(error: ResponseError, eventId?: string) {
+    const template = this.templateForError(error);
+    const content = template.content.cloneNode(true) as DocumentFragment;
+
+    if (eventId) {
+      const errorIdElement =
+        content.querySelector<HTMLElement>('[data-error-id]');
+      if (errorIdElement) {
+        errorIdElement.textContent = `(code erreur : ${eventId})`;
+      }
     }
+
+    this.failedTarget.innerHTML = '';
+    this.failedTarget.appendChild(content);
+  }
+
+  private templateForError(error: ResponseError): HTMLTemplateElement {
+    if (error.isNetworkError) {
+      return this.networkErrorTemplateTarget;
+    } else if (this.isAuthError(error)) {
+      return this.authErrorTemplateTarget;
+    } else {
+      return this.serverErrorTemplateTarget;
+    }
+  }
+
+  private isAuthError(error: ResponseError): boolean {
+    return error.response.status == 401 || error.response.status == 403;
   }
 
   private setState(state: 'succeeded' | 'failed' | 'idle') {
@@ -79,13 +116,6 @@ export class AutosaveStatusController extends ApplicationController {
   private hideSucceededStatus() {
     if (!this.succeededTarget.classList.contains('fr-hidden')) {
       this.setState('idle');
-    }
-  }
-
-  private logError(error: ResponseError) {
-    if (error && error.message) {
-      console.error(error);
-      this.globalDispatch('sentry:capture-exception', error);
     }
   }
 }
