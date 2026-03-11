@@ -938,9 +938,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_13_120001) do
     t.string "schema_hash", null: false
     t.string "state", default: "pending", null: false
     t.jsonb "token_usage"
+    t.string "tunnel_id", limit: 6
     t.datetime "updated_at", null: false
     t.index ["procedure_revision_id", "schema_hash", "rule"], name: "index_llm_rule_suggestions_on_revision_schema_rule"
+    t.index ["procedure_revision_id", "tunnel_id"], name: "idx_on_procedure_revision_id_tunnel_id_b61e462711"
     t.index ["procedure_revision_id"], name: "index_llm_rule_suggestions_on_procedure_revision_id"
+    t.index ["tunnel_id"], name: "index_llm_rule_suggestions_on_tunnel_id"
   end
 
   create_table "maintenance_tasks_runs", force: :cascade do |t|
