@@ -1,4 +1,4 @@
-<div class="autosave" data-controller="autosave-status">
+<div class="autosave fr-mb-3v fr-mb-lg-0" data-controller="autosave-status">
   <p
     class="autosave-status fr-info-text fr-text--sm fr-m-0"
     data-autosave-status-target="idle"
@@ -22,7 +22,12 @@
 
   <template data-autosave-status-target="serverErrorTemplate">
     <%= t(".#{context}.error_server_html", contact_path:) %>
-    <small class="fr-text-mention--grey" data-error-id data-error-format="<%= t('.error_code_format') %>"></small>
+
+    <small
+      class="fr-text-mention--grey"
+      data-error-id
+      data-error-format="<%= t('.error_code_format') %>"
+    ></small>
   </template>
 
   <template data-autosave-status-target="authErrorTemplate">
