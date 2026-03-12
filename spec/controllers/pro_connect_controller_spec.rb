@@ -1,6 +1,16 @@
 # frozen_string_literal: true
 
 describe ProConnectController, type: :controller do
+  describe '#required' do
+    subject { get :required }
+    render_views
+
+    it 'renders the required template' do
+      subject
+      expect(response.body).to have_text("Connexion ProConnect")
+    end
+  end
+
   describe '#login' do
     let(:uri) { 'https://www.proconnect.gouv.fr' }
     let(:state) { 'state' }

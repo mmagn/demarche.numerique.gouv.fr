@@ -47,8 +47,9 @@ module Administrateurs
       return if @procedure.pro_connect_restriction_none?
       return if logged_in_with_pro_connect?
 
+      store_location_for(:user, request.fullpath)
       flash.alert = "Vous devez vous connecter par ProConnect pour accéder à cette démarche"
-      redirect_to new_user_session_path
+      redirect_to pro_connect_required_path
     end
 
     private

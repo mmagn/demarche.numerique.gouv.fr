@@ -209,6 +209,7 @@ Rails.application.routes.draw do
   get 'pro_connect' => 'pro_connect#index'
   get 'pro_connect/login' => 'pro_connect#login'
   get 'pro_connect/callback' => 'pro_connect#callback'
+  get 'pro_connect/required' => 'pro_connect#required'
 
   namespace :champs do
     post ':dossier_id/:stable_id/repetition', to: 'repetition#add', as: :repetition

@@ -644,10 +644,10 @@ describe Instructeurs::ProceduresController, type: :controller do
           procedure.update!(pro_connect_restriction: :instructeurs)
         end
 
-        it 'redirects to sign_in and sets a flash message' do
+        it 'redirects to pro_connect_required and sets a flash message' do
           subject
 
-          expect(response).to redirect_to(new_user_session_path)
+          expect(response).to redirect_to(pro_connect_required_path)
           expect(flash[:alert]).to eq("Vous devez vous connecter par ProConnect pour accéder à cette démarche")
         end
 
