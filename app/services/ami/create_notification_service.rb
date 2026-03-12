@@ -18,14 +18,14 @@ module Ami
 
     attr_reader :dossier, :state, :trigger
 
-    def initialize(dossier:, trigger: :dossier_state_change)
+    def initialize(dossier:, trigger:, state:)
       @dossier = dossier
-      @state = dossier.state.to_sym
+      @state = (state || dossier.state).to_sym
       @trigger = trigger.to_sym
     end
 
-    def self.call(dossier:, trigger: :dossier_state_change)
-      new(dossier:, trigger:).call
+    def self.call(dossier:, trigger: :dossier_state_change, state: nil)
+      new(dossier:, trigger:, state:).call
     end
 
     def call

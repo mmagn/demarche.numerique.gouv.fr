@@ -364,7 +364,7 @@ module DossierStateConcern
     if !disable_notification
       NotificationMailer.send_repasser_en_instruction_notification(self).deliver_later
       NotificationMailer.send_notification_for_tiers(self, repasser_en_instruction: true).deliver_later if self.for_tiers?
-      enqueue_ami_notification
+      enqueue_ami_notification(state: :repasser_en_instruction)
     end
 
     DossierNotification.destroy_notifications_by_dossier_and_type(self, :dossier_expirant)
@@ -452,7 +452,7 @@ module DossierStateConcern
     champs.where(id: champ_to_remove_ids, stream: Champ::MAIN_STREAM).destroy_all
   end
 
-  def enqueue_ami_notification
-    Ami::CreateNotificationService.call(dossier: self)
+  def enqueue_ami_notification(trigger: :dossier_state_change, state: nil)
+    Ami::CreateNotificationService.call(dossier: self, trigger:, state:)
   end
 end
