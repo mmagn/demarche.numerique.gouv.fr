@@ -53,8 +53,11 @@
           %caption= table_header
           %thead
             %tr
-              %th.fr-col-9{ scope: 'col' }
+              %th{ scope: 'col', class: any_custom_contact_information? ? 'fr-col-6' : 'fr-col-9' }
                 Groupes
+              - if any_custom_contact_information?
+                %th.fr-col-3{ scope: 'col' }
+                  = t('.table.contact_informations')
               %th.fr-col-1{ scope: 'col' }
                 Dossiers
               %th.fr-col-2.fr-cell--right{ scope: 'col' }
@@ -74,6 +77,13 @@
                     %p.fr-badge.fr-badge--warning.fr-badge--sm.fr-mt-1w règle invalide
                   - elsif gi.non_unique_rule?
                     %p.fr-badge.fr-badge--warning.fr-badge--sm.fr-mt-1w règle déjà attribuée à #{gi.groups_with_same_rule}
+
+                - if any_custom_contact_information?
+                  %td{ scope: 'col' }
+                    - if gi.contact_information.present?
+                      %p.fr-badge.fr-badge--success.fr-badge--sm= t('.table.custom').upcase
+                    - else
+                      %p.fr-badge.fr-badge--sm.fr-badge--no-icon= t('.table.not_custom').upcase
 
                 %td{ scope: 'col' }
                   %span.fr-mr-1w
