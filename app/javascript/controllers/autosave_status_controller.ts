@@ -20,12 +20,20 @@ export class AutosaveStatusController extends ApplicationController {
     'networkErrorTemplate'
   ];
 
+  static values = {
+    dossierId: Number,
+    contactPath: String
+  };
+
   declare readonly idleTarget: HTMLElement;
   declare readonly succeededTarget: HTMLElement;
   declare readonly failedTarget: HTMLElement;
   declare readonly serverErrorTemplateTarget: HTMLTemplateElement;
   declare readonly authErrorTemplateTarget: HTMLTemplateElement;
   declare readonly networkErrorTemplateTarget: HTMLTemplateElement;
+
+  declare dossierIdValue: number;
+  declare contactPathValue: string;
 
   private hasNotifiedError = false;
 
@@ -90,8 +98,25 @@ export class AutosaveStatusController extends ApplicationController {
       }
     }
 
+    if (template === this.serverErrorTemplateTarget) {
+      const link = content.querySelector<HTMLAnchorElement>('a');
+      if (link) {
+        link.href = this.buildContactUrl(eventId);
+      }
+    }
+
     this.failedTarget.innerHTML = '';
     this.failedTarget.appendChild(content);
+  }
+
+  private buildContactUrl(eventId?: string): string {
+    const url = new URL(this.contactPathValue, window.location.origin);
+    url.searchParams.set('dossier_id', String(this.dossierIdValue));
+    url.searchParams.set('origin', 'autosave');
+    if (eventId) {
+      url.searchParams.set('error_id', eventId);
+    }
+    return url.pathname + url.search;
   }
 
   private templateForError(error: ResponseError): HTMLTemplateElement {

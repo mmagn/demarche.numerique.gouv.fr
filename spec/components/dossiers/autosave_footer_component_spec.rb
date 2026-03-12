@@ -9,6 +9,12 @@ RSpec.describe Dossiers::AutosaveFooterComponent, type: :component do
   let(:annotation) { false }
   let(:owner) { create(:user) }
 
+  it 'renders data attributes for Stimulus values' do
+    div = component.css('.autosave').first
+    expect(div['data-autosave-status-dossier-id-value']).to eq(dossier.id.to_s)
+    expect(div['data-autosave-status-contact-path-value']).to eq('/contact')
+  end
+
   context 'when showing brouillon state (default state)' do
     it 'displays brouillon explanation' do
       expect(component).to have_text("Enregistrement automatique du dossier")
