@@ -1,0 +1,5 @@
+fr:
+  pro_connect:
+    required:
+      title: "Connexion ProConnect requise"
+      explanation: "Cette démarche nécessite une authentification via ProConnect. Seuls les agents disposant d’un compte ProConnect peuvent y accéder."

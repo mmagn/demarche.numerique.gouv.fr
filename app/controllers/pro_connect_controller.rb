@@ -16,6 +16,8 @@ class ProConnectController < ApplicationController
     redirect_to new_user_session_path, status: :moved_permanently
   end
 
+  def required; end
+
   def login
     uri, state, nonce = ProConnectService.authorization_uri
 

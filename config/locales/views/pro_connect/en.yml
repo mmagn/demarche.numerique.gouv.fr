@@ -1,0 +1,5 @@
+en:
+  pro_connect:
+    required:
+      title: "ProConnect login required"
+      explanation: "This procedure requires ProConnect authentication. Please sign in with ProConnect to access it."
