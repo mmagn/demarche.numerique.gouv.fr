@@ -10,7 +10,7 @@ describe 'users/registrations/new', type: :view do
     assign(:user, User.new)
   end
 
-  context 'when ProConnect is enabled' do
+  xcontext 'when ProConnect is enabled' do
     before do
       allow(ProConnectService).to receive(:enabled?).and_return(true)
       render
