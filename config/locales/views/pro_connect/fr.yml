@@ -3,3 +3,12 @@ fr:
     required:
       title: "Connexion ProConnect requise"
       explanation: "Cette démarche nécessite une authentification via ProConnect. Seuls les agents disposant d’un compte ProConnect peuvent y accéder."
+    index:
+      cta: Se connecter avec ProConnect
+      explanation: ProConnect est la solution proposée par l’État pour sécuriser et simplifier la connexion aux services en ligne
+      full_deploy_title: ProConnect est désormais entièrement déployé
+      full_deploy_body: Tous les ministères et opérateurs peuvent l’utiliser à ce jour
+      you_are_a_citizen: Vous êtes un particulier ?
+      citizen_page: Se connecter sur votre espace
+      whats_ds: '%{application_name}, la plateforme nationale de dématérialisation des démarches administratives'
+      pro_email: Adresse électronique professionnelle
