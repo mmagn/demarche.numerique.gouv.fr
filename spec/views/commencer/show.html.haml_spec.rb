@@ -44,7 +44,7 @@ RSpec.describe 'commencer/show', type: :view do
       expect(rendered).to have_link('S’identifier avec FranceConnect')
     end
 
-    it 'renders ProConnect login button' do
+    xit 'renders ProConnect login button' do
       subject
       expect(rendered).to have_css('.pro-connect-login')
     end

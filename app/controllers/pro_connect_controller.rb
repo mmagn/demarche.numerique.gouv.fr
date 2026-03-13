@@ -13,7 +13,6 @@ class ProConnectController < ApplicationController
   NONCE_COOKIE_NAME = :proConnect_nonce
 
   def index
-    redirect_to new_user_session_path, status: :moved_permanently
   end
 
   def required; end
