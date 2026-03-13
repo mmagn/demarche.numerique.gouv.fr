@@ -18,7 +18,7 @@ class Cron::TrustedDeviceTokenRenewalJob < Cron::CronJob
             renewal_token = instructeur.create_trusted_device_token
             InstructeurMailer.trusted_device_token_renewal(
               instructeur, renewal_token,
-              renewal_token.token_valid_until
+              1.week.from_now
             ).deliver_later
           end
         rescue StandardError => e
