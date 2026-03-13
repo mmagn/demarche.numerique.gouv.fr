@@ -26,6 +26,7 @@ class ImageProcessorJob < ApplicationJob
   discard_on ActiveRecord::InvalidForeignKey
 
   retry_on "Vips::Error", attempts: 3 # not as const because we don't load vips at load time
+  retry_on WatermarkService::Error, attempts: 3
 
   rescue_from ActiveStorage::PreviewError do |exception|
     retry_or_discard(exception)
