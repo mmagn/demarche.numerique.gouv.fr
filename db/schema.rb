@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_04_165525) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_13_120001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_buffercache"
   enable_extension "pg_stat_statements"
@@ -1363,6 +1363,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_04_165525) do
     t.index ["activated_at", "renewal_notified_at"], name: "idx_on_activated_at_renewal_notified_at_ca000bc08e"
     t.index ["instructeur_id"], name: "index_trusted_device_tokens_on_instructeur_id"
     t.index ["token"], name: "index_trusted_device_tokens_on_token", unique: true
+    t.check_constraint "instructeur_id IS NOT NULL", name: "trusted_device_tokens_instructeur_id_null"
   end
 
   create_table "types_de_champ", id: :serial, force: :cascade do |t|
