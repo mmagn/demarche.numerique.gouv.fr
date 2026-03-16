@@ -120,6 +120,19 @@ describe 'Invitations' do
 
       expect(page).to have_text('Le dossier est complet et correctement rempli')
     end
+
+    scenario 'autosave error disables invite buttons', js: true do
+      navigate_to_invited_dossier(invite)
+      expect(page).to have_current_path(brouillon_dossier_path(dossier))
+
+      # Disconnect the user to trigger an autosave error
+      logout(:user)
+      fill_in 'Texte obligatoire', with: 'some input'
+
+      expect(page).to have_css('.autosave-status.failed')
+      expect(page).to have_button('Vérifier le dossier', disabled: true)
+      expect(page).to have_button('Prévenir le titulaire de vos modifications', disabled: true)
+    end
   end
 
   context 'when the dossier is en_construction' do

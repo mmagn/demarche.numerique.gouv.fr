@@ -41,7 +41,9 @@ export class AutosaveSubmitController extends ApplicationController {
   private didFail() {
     this.#isSaving = false;
     this.#shouldSubmit = false;
-    this.enableButton();
+    if (isButtonElement(this.element)) {
+      this.element.disabled = true;
+    }
   }
 
   private disableButton() {
