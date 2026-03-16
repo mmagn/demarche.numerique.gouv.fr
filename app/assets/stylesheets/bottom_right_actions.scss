@@ -1,0 +1,55 @@
+.bottom-right-actions {
+  display: none;
+}
+
+@media (min-width: 62em) {
+  .bottom-right-actions {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 900;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-end;
+  }
+
+  .bottom-right-actions__item {
+    button {
+      border-radius: 99999px;
+      background-color: var(--background-alt-grey);
+      padding: 0;
+
+      &:hover {
+        background-color: var(--background-alt-grey-hover);
+      }
+
+      &:active {
+        background-color: var(--background-alt-grey-active);
+      }
+
+      &:focus,
+      &:focus-visible {
+        outline: 2px solid var(--background-action-high-blue-france);
+      }
+    }
+
+    .fr-icon::before {
+      --icon-size: 3rem;
+      color: var(--background-action-high-blue-france);
+
+      &:hover {
+        color: var(--background-action-high-blue-france-hover);
+      }
+
+      &:active {
+        color: var(--background-action-high-blue-france-active);
+      }
+
+      &:focus,
+      &:focus-visible {
+        outline: 2px solid var(--background-action-high-blue-france);
+      }
+    }
+  }
+}

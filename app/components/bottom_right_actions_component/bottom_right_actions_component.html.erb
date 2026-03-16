@@ -1,0 +1,29 @@
+<div class="bottom-right-actions" aria-label="Actions flottantes">
+  <div class="bottom-right-actions__item">
+    <button
+      type="button"
+      title="Retour en haut de page"
+    >
+      <span class="bottom-right-actions__label" aria-hidden="true">
+        <%= t('.scroll_to_top') %>
+      </span>
+
+      <button
+        type="button"
+        title="<%= t('.scroll_to_top') %>"
+        data-action="scroll-to-top#scrollToTop"
+      >
+        <span class="fr-icon fr-icon-arrow-up-circle-line"></span>
+      </button>
+    </div>
+  <% end %>
+
+  <div class="bottom-right-actions__item">
+    <button
+      type="button"
+      title="Chat"
+    >
+      <span class="fr-icon fr-icon-question-fill"></span>
+    </button>
+  </div>
+</div>
