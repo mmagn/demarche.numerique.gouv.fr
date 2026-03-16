@@ -21,13 +21,15 @@ describe BottomRightActionsComponent, type: :component do
   end
 
   it "renders a fixed actions wrapper with two items" do
-    expect(rendered_component).to have_css(".bottom-right-actions")
+    expect(rendered_component).to have_css(".bottom-right-actions[data-controller='scroll-to-top']")
     expect(rendered_component).to have_css(".bottom-right-actions__item", count: 2)
     expect(rendered_component).to have_css(".bottom-right-actions__item > button", count: 2)
   end
 
-  it "renders a back-to-top action with the expected icon" do
-    expect(rendered_component).to have_css(".bottom-right-actions__item button[title='Retour en haut de page']")
+  it "renders a scroll-to-top action with the expected icon" do
+    expect(rendered_component).to have_css(".bottom-right-actions__item button[aria-label='Retour en haut de page']")
+    expect(rendered_component).to have_css(".bottom-right-actions__item[data-scroll-to-top-target='scrollToTop']")
+    expect(rendered_component).to have_css(".bottom-right-actions__item button[data-action='scroll-to-top#scrollToTop']")
     expect(rendered_component).to have_css(".bottom-right-actions__item .fr-icon-arrow-up-circle-line")
   end
 

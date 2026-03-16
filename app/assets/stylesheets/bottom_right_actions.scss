@@ -27,11 +27,6 @@
       &:active {
         background-color: var(--background-alt-grey-active);
       }
-
-      &:focus,
-      &:focus-visible {
-        outline: 2px solid var(--background-action-high-blue-france);
-      }
     }
 
     .fr-icon::before {
@@ -44,11 +39,6 @@
 
       &:active {
         color: var(--background-action-high-blue-france-active);
-      }
-
-      &:focus,
-      &:focus-visible {
-        outline: 2px solid var(--background-action-high-blue-france);
       }
     }
   }

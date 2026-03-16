@@ -1,8 +1,17 @@
-<div class="bottom-right-actions" aria-label="Actions flottantes">
-  <div class="bottom-right-actions__item">
+<div
+  class="bottom-right-actions"
+  aria-label="Actions flottantes"
+  data-controller="scroll-to-top"
+  data-scroll-to-top-threshold-value="300"
+>
+  <div
+    class="bottom-right-actions__item hidden"
+    data-scroll-to-top-target="scrollToTop"
+  >
     <button
       type="button"
       title="Retour en haut de page"
+      data-action="scroll-to-top#scrollToTop"
     >
       <span class="bottom-right-actions__label" aria-hidden="true">
         <%= t('.scroll_to_top') %>
