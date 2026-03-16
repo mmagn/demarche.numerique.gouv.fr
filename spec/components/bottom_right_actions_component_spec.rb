@@ -22,17 +22,17 @@ describe BottomRightActionsComponent, type: :component do
 
   it "renders a fixed actions wrapper with two items" do
     expect(rendered_component).to have_css(".bottom-right-actions")
-    expect(rendered_component).to have_css(".bottom-right-actions_item", count: 2)
     expect(rendered_component).to have_css(".bottom-right-actions__item", count: 2)
+    expect(rendered_component).to have_css(".bottom-right-actions__item > button", count: 2)
   end
 
-  it "renders a back-to-top action with the expected icon and label" do
-    expect(rendered_component).to have_css("button.bottom-right-actions__item.fr-icon-arrow-up-circle-line")
-    expect(rendered_component).to have_text("Retour en haut de page")
+  it "renders a back-to-top action with the expected icon" do
+    expect(rendered_component).to have_css(".bottom-right-actions__item button[title='Retour en haut de page']")
+    expect(rendered_component).to have_css(".bottom-right-actions__item .fr-icon-arrow-up-circle-line")
   end
 
-  it "renders a chat action with the expected icon and label" do
-    expect(rendered_component).to have_css("button.bottom-right-actions__item.fr-icon-question-fill")
-    expect(rendered_component).to have_text("Chat")
+  it "renders a chat action with open-chat onclick hook" do
+    expect(rendered_component).to have_css(".bottom-right-actions__item button[aria-label='Une question ?'][onclick=\"window.$crisp?.push(['do', 'chat:open'])\"]")
+    expect(rendered_component).to have_css(".bottom-right-actions__item .fr-icon-question-fill")
   end
 end
