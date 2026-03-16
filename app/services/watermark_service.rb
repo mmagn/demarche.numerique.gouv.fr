@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class WatermarkService
+  class Error < StandardError; end
+
   POINTSIZE = 20
   ANGLE = 45
   FILL_COLOR = [0, 0, 0]
@@ -17,15 +19,19 @@ class WatermarkService
 
     image = Vips::Image.new_from_file(file.to_path, access: :sequential)
     watermarked = apply_watermark(image)
+    watermarked = watermarked.flatten if File.extname(output.to_path).downcase.in?(['.jpg', '.jpeg'])
     watermarked.write_to_file(output.to_path)
 
     output
+  rescue Vips::Error => e
+    raise Error, e.message, e.backtrace
   end
 
   private
 
   def apply_watermark(image)
-    image = image.addalpha unless image.has_alpha?
+    image = image.colourspace(:srgb)
+    image = image.bandjoin(255) unless image.has_alpha?
 
     overlay = build_watermark_overlay(image.width, image.height)
     image.composite(overlay, :over)

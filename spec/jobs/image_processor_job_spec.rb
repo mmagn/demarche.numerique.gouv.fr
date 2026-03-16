@@ -263,5 +263,19 @@ describe ImageProcessorJob, :external_deps, type: :job do
         }.not_to raise_error
       end
     end
+
+    context 'when watermark service raises an error' do
+      before do
+        allow(blob).to receive(:watermark_pending?).and_return(true)
+        allow(watermark_service).to receive(:process)
+          .and_raise(WatermarkService::Error.new('addalpha not found'))
+      end
+
+      it 're-enqueues the job for retry' do
+        expect {
+          described_class.perform_now(blob)
+        }.to have_enqueued_job(described_class).with(blob)
+      end
+    end
   end
 end
