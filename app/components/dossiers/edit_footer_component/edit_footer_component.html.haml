@@ -4,7 +4,7 @@
       .flex.align-baseline.justify-between.no-flex-md
         = render Dossiers::AutosaveFooterComponent.new(dossier: @dossier, annotation: annotation?, owner: owner?)
 
-        %ul.fr-btns-group.fr-btns-group--inline-lg
+        %ul.fr-btns-group.fr-btns-group--inline-lg.flex-no-shrink
 
           - if show_for_user?
             - if show_submit?
