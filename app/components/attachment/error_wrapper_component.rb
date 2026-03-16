@@ -6,6 +6,6 @@ class Attachment::ErrorWrapperComponent < ApplicationComponent
   end
 
   def call
-    tag.div(class: class_names('fr-messages-group': true, 'hidden': true, 'fr-mt-2w': @with_top_margin), aria: { live: 'assertive' }, data: { 'attachment-error': true })
+    tag.div(class: class_names('fr-messages-group': true, 'hidden': true, 'fr-mt-2w': @with_top_margin), aria: { live: 'assertive' }, data: { 'attachment-error': true, 'turbo-force': 'browser' })
   end
 end
