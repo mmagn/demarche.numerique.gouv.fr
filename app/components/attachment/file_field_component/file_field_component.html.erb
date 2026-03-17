@@ -50,6 +50,13 @@
   <%# Error wrapper %>
   <%= render Attachment::ErrorWrapperComponent.new(with_top_margin: !show_uploader?) %>
 
+  <%# Progress bars container — preserved during turbo morph %>
+  <div
+    id="<%= progress_container_id %>"
+    data-turbo-force="browser"
+    data-progress-container
+  ></div>
+
   <%# Existing files %>
   <% if @attachments.any? %>
     <% if show_as_list? %>
