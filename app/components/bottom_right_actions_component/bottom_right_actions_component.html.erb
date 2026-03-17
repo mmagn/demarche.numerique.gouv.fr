@@ -1,4 +1,4 @@
-<div
+<nav
   class="bottom-right-actions"
   aria-label="<%= t('.floating_actions_aria_label') %>"
   data-controller="scroll-to-top"
@@ -15,7 +15,7 @@
 
       <button
         type="button"
-        title="<%= t('.scroll_to_top') %>"
+        aria-label="<%= t('.scroll_to_top') %>"
         data-action="scroll-to-top#scrollToTop"
       >
         <span class="fr-icon fr-icon-arrow-up-circle-line"></span>
@@ -31,11 +31,11 @@
 
       <button
         type="button"
-        title="<%= t('.need_help') %>"
+        aria-label="<%= t('.need_help') %>"
         onclick="window.$crisp?.push(['do', 'chat:open'])"
       >
         <span class="fr-icon fr-icon-question-fill"></span>
       </button>
     </div>
   <% end %>
-</div>
+</nav>
