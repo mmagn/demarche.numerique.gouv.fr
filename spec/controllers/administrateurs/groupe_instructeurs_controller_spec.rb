@@ -1291,11 +1291,13 @@ describe Administrateurs::GroupeInstructeursController, type: :controller do
     context 'with v2 attestation template' do
       before do
         create(:attestation_template, :v2, procedure:, state: :published, kind: 'acceptation')
+        allow(WeasyprintService).to receive(:generate_pdf).and_return('PDF_DATA')
       end
 
       it 'returns a PDF' do
         subject
         expect(response).to have_http_status(:ok)
+        expect(WeasyprintService).to have_received(:generate_pdf)
       end
     end
   end
