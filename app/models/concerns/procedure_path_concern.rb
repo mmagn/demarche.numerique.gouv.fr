@@ -40,6 +40,11 @@ module ProcedurePathConcern
   def claim_path!(administrateur, new_path)
     return if new_path.blank?
 
+    if new_path.to_s.strip.end_with?("-")
+      errors.add(:path, :must_end_with_alpha_numeric)
+      raise ActiveRecord::RecordInvalid, self
+    end
+
     other_procedure = other_procedure_with_path(new_path)
     if other_procedure.present?
       if !administrateur.owns?(other_procedure)

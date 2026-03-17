@@ -319,6 +319,7 @@ module Administrateurs
 
     def check_path
       path = publish_params[:path]
+      @path_must_end_with_alpha_numeric = path.present? && !path.match?(/[a-z0-9]\z/)
       @path_available = @procedure.path_available?(path)
       @other_procedure = @procedure.other_procedure_with_path(path)
 

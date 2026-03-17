@@ -73,6 +73,7 @@ fr:
         back_to_procedure: 'Annuler et revenir à la page de la démarche'
         submit: Publier
       check_path:
+        path_must_end_with_alpha_numeric: Le lien doit se terminer par une lettre ou un chiffre.
         path_not_available:
           owner: Cette url est identique à celle d’une autre de vos démarches publiées. Si vous publiez cette démarche, le lien ne pointera plus sur l’ancienne démarche.
           not_owner: Cette url est identique à celle d’une autre démarche, vous devez la modifier afin de pouvoir publier votre démarche.

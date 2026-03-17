@@ -133,6 +133,15 @@ describe ProcedurePathConcern do
       end
     end
 
+    context "when the path ends with a hyphen" do
+      let(:path_to_claim) { "ma-demarche-" }
+
+      it "does not assign and adds must_end_with_alpha_numeric error" do
+        expect { subject }.to raise_error(ActiveRecord::RecordInvalid)
+        expect(procedure.errors[:path]).to include(I18n.t("activerecord.errors.models.procedure.attributes.path.must_end_with_alpha_numeric"))
+      end
+    end
+
     context "when trying to claim the last procedure_path of another procedure" do
       let!(:procedure_2) { create(:procedure) }
 

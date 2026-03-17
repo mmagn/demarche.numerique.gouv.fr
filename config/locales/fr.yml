@@ -760,6 +760,7 @@ fr:
               taken: est déjà utilisé par une démarche. Vous ne pouvez pas l’utiliser car il appartient à un autre administrateur.
               invalid: n’est pas valide. Il doit comporter au moins 3 caractères, au plus 200 caractères et seuls les caractères a-z, 0-9, '_' et '-' sont autorisés.
               last_path: ne peut pas être utilisé car c’est le dernier lien de la démarche.
+              must_end_with_alpha_numeric: doit se terminer par une lettre ou un chiffre.
         procedure_revision:
           attributes:
             ineligibilite_rules:
