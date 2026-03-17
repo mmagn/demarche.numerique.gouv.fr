@@ -89,7 +89,7 @@ describe 'Piece justificative drag and drop', js: true do
       fill_individual
 
       within find('.editable-champ', text: 'RIB') do
-        expect(page).to have_text('Formats acceptés : .pdf, .docx, .odt, .doc, .txt, .rtf, .jpeg, .png')
+        expect(page).to have_text('Formats acceptés : .pdf, .doc, .docx, .jpg, .jpeg, .png')
       end
     end
   end
