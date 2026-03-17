@@ -334,7 +334,7 @@ module Administrateurs
     end
 
     def update_path
-      new_path = params[:path]
+      new_path = publish_params[:path]
       other_procedure = @procedure.other_procedure_with_path(new_path)
 
       if other_procedure.present? && !current_administrateur.owns?(other_procedure)

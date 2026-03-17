@@ -1354,7 +1354,7 @@ describe Administrateurs::ProceduresController, type: :controller do
   describe 'PATCH #update_path' do
     let(:procedure) { create(:procedure, administrateur: admin) }
 
-    subject(:perform_request) { patch :update_path, params: { procedure_id: procedure.id, path: path } }
+    subject(:perform_request) { patch :update_path, params: { procedure_id: procedure.id, procedure: { path: path } } }
 
     context 'when path is not used' do
       let(:path) { "ma-demarche" }
