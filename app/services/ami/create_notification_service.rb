@@ -72,6 +72,7 @@ module Ami
     end
 
     def not_eligible_reason
+      return "missing AMI configuration" unless Ami::Client.new.configured?
       return ":ami_notifications feature flag disabled" unless dossier.procedure.feature_enabled?(:ami_notifications)
     end
 

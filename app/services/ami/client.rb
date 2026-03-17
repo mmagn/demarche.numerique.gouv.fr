@@ -16,6 +16,10 @@ module Ami
       handle_result(result)
     end
 
+    def configured?
+      api_url.present? && api_user.present? && api_password.present?
+    end
+
     private
 
     def api_url = ENV.fetch("AMI_API_URL", nil)

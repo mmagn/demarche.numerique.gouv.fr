@@ -13,6 +13,7 @@ RSpec.describe Ami::CreateNotificationService do
 
     before do
       clear_enqueued_jobs
+      allow_any_instance_of(Ami::Client).to receive(:configured?).and_return(true)
       allow_any_instance_of(Procedure).to receive(:feature_enabled?).with(:ami_notifications).and_return(true)
       allow(Ami::RecipientFcHash).to receive(:call).and_return("abc123")
     end
