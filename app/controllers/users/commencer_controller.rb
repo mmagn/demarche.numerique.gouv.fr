@@ -142,6 +142,7 @@ module Users
     def set_prefilled_dossier_ownership
       @prefilled_dossier.update!(user: current_user)
       DossierMailer.with(dossier: @prefilled_dossier).notify_new_draft.deliver_later
+      Ami::CreateNotificationService.call(dossier: @prefilled_dossier)
     end
 
     # The prefilled dossier is owned by another user: raise an exception
