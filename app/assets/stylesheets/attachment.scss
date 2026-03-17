@@ -75,6 +75,14 @@
   .fr-download {
     margin-bottom: 0.5rem;
   }
+
+  li + li {
+    margin-top: 0.5rem;
+  }
+}
+
+.attachment-row:last-child {
+  margin-bottom: 0 !important;
 }
 
 // Legacy support
@@ -95,6 +103,13 @@ ul[data-file-input-reset-target='fileList'] {
       border-color 0.2s,
       border-style 0.2s,
       background-color 0.2s;
+
+    @media (max-width: 48em) {
+      border: none;
+      background-color: transparent;
+      text-align: left;
+      padding: 0 !important;
+    }
   }
   .fr-hr-or {
     max-width: 90px;
