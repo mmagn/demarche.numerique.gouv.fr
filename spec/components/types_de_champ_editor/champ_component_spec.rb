@@ -208,7 +208,7 @@ describe TypesDeChampEditor::ChampComponent, type: :component do
       end
 
       it 'displays accepted formats with plain extensions in bold' do
-        expect(page).to have_css('strong', text: '.jpeg, .png')
+        expect(page).to have_css('strong', text: '.jpg, .jpeg, .png')
         expect(page).to have_css('strong', text: 'taille maximale de 20 Mo')
         expect(page).not_to have_text('image / scan')
       end

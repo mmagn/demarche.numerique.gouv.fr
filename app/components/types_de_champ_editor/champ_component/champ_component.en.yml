@@ -24,7 +24,7 @@ en:
   identity_formats:
     title: "ACCEPTED FORMATS"
     desc_html: "The user may upload an identity card (front side only), passport, residence permit or another identity document."
-    rule_html: "Accepted formats for this document are only <strong>.jpeg, .png</strong> with a <strong>maximum size of 20 MB</strong>."
+    rule_html: "Accepted formats for this document are only <strong>.jpg, .jpeg, .png</strong> with a <strong>maximum size of 20 MB</strong>."
   identity_deletion:
     title: "ATTACHMENT DELETION"
     desc_html: "As part of GDPR, the identity document will be <strong>watermarked</strong> and <strong>automatically deleted once the file is processed</strong> (accepted, refused or closed)."

@@ -140,7 +140,7 @@ FORMAT_FAMILY_EXAMPLES = {
 }.freeze
 
 NATURE_DISPLAY_FORMATS = {
-  TITRE_IDENTITE: '.jpeg, .png',
+  TITRE_IDENTITE: '.jpg, .jpeg, .png',
   RIB: '.pdf, .doc, .docx, .jpg, .jpeg, .png',
 }.freeze
 
