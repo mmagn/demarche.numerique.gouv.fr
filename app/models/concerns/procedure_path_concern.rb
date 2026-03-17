@@ -38,9 +38,11 @@ module ProcedurePathConcern
   end
 
   def claim_path!(administrateur, new_path)
+    new_path = new_path.strip
+
     return if new_path.blank?
 
-    if new_path.to_s.strip.end_with?("-")
+    if !new_path.match?(/[a-z0-9]\z/)
       errors.add(:path, :must_end_with_alpha_numeric)
       raise ActiveRecord::RecordInvalid, self
     end

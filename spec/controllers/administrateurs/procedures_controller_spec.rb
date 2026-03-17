@@ -1396,7 +1396,7 @@ describe Administrateurs::ProceduresController, type: :controller do
     end
 
     context 'when path is invalid' do
-      let(:path) { 'Invalid Path!' }
+      let(:path) { 'Invalid Path' }
 
       it 'fails to update the path' do
         perform_request
