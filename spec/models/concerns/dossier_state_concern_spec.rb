@@ -246,6 +246,19 @@ RSpec.describe DossierStateConcern do
 
     before { allow(ClamavService).to receive(:safe_file?).and_return(true) }
 
+    context 'when legacy TitreIdentiteChamp' do
+      let(:procedure) { create(:procedure, types_de_champ_public: [{ type: :titre_identite }]) }
+      let(:dossier) { create(:dossier, :en_instruction, :followed, procedure:) }
+      let(:instructeur) { dossier.followers_instructeurs.first }
+      let(:champ) { dossier.champs.first }
+
+      it 'destroys champ on accepter' do
+        champ.piece_justificative_file.attach(file)
+        dossier.accepter!(instructeur: instructeur, motivation: 'ok')
+        expect(champ.reload.piece_justificative_file.attached?).to be false
+      end
+    end
+
     context 'when nature is TITRE_IDENTITE' do
       let(:procedure) { create(:procedure, types_de_champ_public: [{ type: :piece_justificative, nature: 'TITRE_IDENTITE' }]) }
       let(:dossier) { create(:dossier, :en_instruction, :followed, procedure:) }
