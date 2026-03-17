@@ -7,6 +7,7 @@ describe 'layouts/procedure_context', type: :view do
   before do
     allow(view).to receive(:instructeur_signed_in?).and_return(false)
     allow(view).to receive(:administrateur_signed_in?).and_return(false)
+    allow(view).to receive(:chatbot_disabled_page?).and_return(false)
     allow(view).to receive(:localization_enabled?).and_return(false)
     allow(view).to receive(:extra_query_params).and_return({})
   end
