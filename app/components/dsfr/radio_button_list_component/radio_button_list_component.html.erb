@@ -1,9 +1,12 @@
 <fieldset
   class="<%= class_names("fr-fieldset": true, "fr-fieldset--error": error?) %>"
-  aria-labelledby="radio-hint-element-legend radio-hint-element-messages"
-  <%= error? ? ' role="group"' : "" %>
+  aria-labelledby="<%= legend_id %> <%= messages_id %>"
+  <%= error? ? 'role="group"' : "" %>
 >
-  <legend class="<%= class_names("fr-fieldset__legend" => true, "fr-fieldset__legend--regular" => @regular_legend) %>">
+  <legend
+    class="<%= class_names("fr-fieldset__legend" => true, "fr-fieldset__legend--regular" => @regular_legend) %>"
+    id="<%= legend_id %>"
+  >
     <%= content %>
   </legend>
 
@@ -43,7 +46,7 @@
     </div>
   <% end %>
 
-  <div class="fr-messages-group" aria-live="assertive">
+  <div class="fr-messages-group" id="<%= messages_id %>" aria-live="polite">
     <% if error? %>
       <p class="fr-message fr-message--error"><%= error %></p>
     <% end %>
