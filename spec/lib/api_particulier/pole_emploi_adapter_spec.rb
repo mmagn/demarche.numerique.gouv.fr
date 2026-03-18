@@ -3,7 +3,7 @@
 describe APIParticulier::PoleEmploiAdapter do
   let(:adapter) { described_class.new(api_particulier_token, identifiant, requested_sources) }
 
-  before { stub_const('API_PARTICULIER_URL', 'https://particulier.api.gouv.fr/api') }
+  before { stub_const('API_PARTICULIER_URL', 'https://particulier.api.gouv.fr') }
 
   describe '#to_params' do
     let(:api_particulier_token) { '06fd8675601267d2988cbbdef56ecb0de1d45223' }

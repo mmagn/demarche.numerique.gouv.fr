@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: get
-    uri: https://particulier.api.gouv.fr/api/v2/avis-imposition?numeroFiscal=2097699999077&referenceAvis=2097699999077
+    uri: https://particulier.api.gouv.fr/v2/avis-imposition?numeroFiscal=2097699999077&referenceAvis=2097699999077
     body:
       encoding: US-ASCII
       string: ''

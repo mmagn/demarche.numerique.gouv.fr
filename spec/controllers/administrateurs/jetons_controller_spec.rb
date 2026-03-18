@@ -81,7 +81,7 @@ describe Administrateurs::JetonsController, type: :controller do
 
   context 'API Particulier' do
     before do
-      stub_const("API_PARTICULIER_URL", "https://particulier.api.gouv.fr/api")
+      stub_const("API_PARTICULIER_URL", "https://particulier.api.gouv.fr")
 
       sign_in(admin.user)
     end
