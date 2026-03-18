@@ -29,7 +29,7 @@ class ApplicationController < ActionController::Base
 
   helper_method :multiple_devise_profile_connect?, :instructeur_signed_in?, :current_instructeur, :current_expert, :expert_signed_in?,
     :administrateur_signed_in?, :current_administrateur, :current_account, :localization_enabled?, :set_locale, :current_expert_not_instructeur?,
-    :gestionnaire_signed_in?, :current_gestionnaire, :extra_query_params
+    :gestionnaire_signed_in?, :current_gestionnaire, :extra_query_params, :chatbot_disabled_page?
 
   before_action do
     Current.request_id = request.uuid
