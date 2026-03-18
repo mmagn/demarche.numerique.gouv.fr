@@ -6,6 +6,10 @@ fr:
   found:
     one: trouvé
     other: trouvés
+  table:
+    contact_informations: Informations de contact
+    custom: Personnalisé
+    not_custom: Non personnalisé
   add_groupe_modal:
     title: Ajouter un groupe
     label: Nouveau groupe

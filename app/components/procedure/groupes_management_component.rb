@@ -26,4 +26,8 @@ class Procedure::GroupesManagementComponent < ApplicationComponent
       end
     end
   end
+
+  def any_custom_contact_information?
+    @procedure.groupe_instructeurs.joins(:contact_information).exists?
+  end
 end
