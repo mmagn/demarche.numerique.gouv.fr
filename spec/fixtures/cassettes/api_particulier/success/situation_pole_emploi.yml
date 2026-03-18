@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: get
-    uri: https://particulier.api.gouv.fr/api/v2/situations-pole-emploi?identifiant=georges_moustaki_77
+    uri: https://particulier.api.gouv.fr/v2/situations-pole-emploi?identifiant=georges_moustaki_77
     body:
       encoding: US-ASCII
       string: ''

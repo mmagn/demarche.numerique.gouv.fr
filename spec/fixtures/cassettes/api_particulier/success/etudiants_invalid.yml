@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: get
-    uri: https://particulier.api.gouv.fr/api/v2/etudiants?ine=090601811AB
+    uri: https://particulier.api.gouv.fr/v2/etudiants?ine=090601811AB
     body:
       encoding: US-ASCII
       string: ''

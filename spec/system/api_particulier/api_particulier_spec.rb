@@ -40,7 +40,7 @@ describe 'fetch API Particulier Data', js: true do
   end
 
   before do
-    stub_const('API_PARTICULIER_URL', 'https://particulier.api.gouv.fr/api')
+    stub_const('API_PARTICULIER_URL', 'https://particulier.api.gouv.fr')
     Flipper.enable(:api_particulier)
   end
 

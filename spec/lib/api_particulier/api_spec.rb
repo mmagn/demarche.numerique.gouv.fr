@@ -4,7 +4,7 @@ describe APIParticulier::API do
   let(:token) { "d7e9c9f4c3ca00caadde31f50fd4521a" }
   let(:api) { APIParticulier::API.new(token) }
 
-  before { stub_const("API_PARTICULIER_URL", "https://particulier.api.gouv.fr/api") }
+  before { stub_const("API_PARTICULIER_URL", "https://particulier.api.gouv.fr") }
 
   describe "scopes" do
     subject { api.scopes }

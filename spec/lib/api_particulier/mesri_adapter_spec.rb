@@ -3,7 +3,7 @@
 describe APIParticulier::MesriAdapter do
   let(:adapter) { described_class.new(api_particulier_token, ine, requested_sources) }
 
-  before { stub_const('API_PARTICULIER_URL', 'https://particulier.api.gouv.fr/api') }
+  before { stub_const('API_PARTICULIER_URL', 'https://particulier.api.gouv.fr') }
 
   describe '#to_params' do
     let(:api_particulier_token) { 'c6d23f3900b8fb4b3586c4804c051af79062f54b' }
