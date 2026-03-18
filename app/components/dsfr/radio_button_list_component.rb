@@ -20,6 +20,10 @@ class Dsfr::RadioButtonListComponent < ApplicationComponent
     @error.present?
   end
 
+  def disabled?
+    @buttons.all? { _1[:disabled] }
+  end
+
   def each_button
     @buttons.each.with_index do |button, index|
       yield(*button.values_at(:label, :value, :hint, :tooltip), **button.merge!(index:).except(:label, :value, :hint, :tooltip))

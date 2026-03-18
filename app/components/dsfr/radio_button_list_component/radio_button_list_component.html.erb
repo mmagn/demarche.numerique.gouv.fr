@@ -1,7 +1,12 @@
 <fieldset
   class="<%= class_names("fr-fieldset": true, "fr-fieldset--error": error?) %>"
   aria-labelledby="<%= legend_id %> <%= messages_id %>"
-  <%= error? ? 'role="group"' : "" %>
+  <% if disabled? %>
+    disabled="disabled"
+  <% end %>
+  <% if error? %>
+    role="group"
+  <% end %>
 >
   <legend
     class="<%= class_names("fr-fieldset__legend" => true, "fr-fieldset__legend--regular" => @regular_legend) %>"
