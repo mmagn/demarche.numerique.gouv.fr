@@ -64,7 +64,7 @@ describe 'Creating a new dossier:', js: true do
 
         before do
           find('label', text: "Pour vous").click
-          find("label[for='identite_champ_radio_#{Individual::GENDER_FEMALE}']").click
+          find('label', text: 'Madame').click
           fill_in('Prénom', with: 'prenom')
           fill_in('Nom', with: 'nom')
         end

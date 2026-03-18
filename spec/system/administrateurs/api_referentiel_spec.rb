@@ -573,6 +573,7 @@ describe 'Referentiel API:' do
     # start a dossier
     visit commencer_path(procedure.path)
     click_on("Commencer la démarche")
+    find('label', text: "Pour vous").click
     expect(page).to have_content("Votre identité")
     fill_in("Prénom", with: "Jeanne")
     fill_in("Nom", with: "Dupont")

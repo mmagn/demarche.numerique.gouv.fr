@@ -169,6 +169,7 @@ describe 'Prefilling a dossier (with a POST request):', js: true do
 
           expect(page).to have_current_path identite_dossier_path(procedure.dossiers.last)
 
+          find('label', text: "Pour vous").click
           within('.individual-infos') do
             expect(page).to have_field('Prénom', with: "Prénom from FC", disabled: true)
             expect(page).to have_field('Nom', with: "Nom from FC", disabled: true)
