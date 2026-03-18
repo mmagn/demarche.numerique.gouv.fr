@@ -3,7 +3,7 @@
 class APIParticulier::API
   include APIParticulier::Error
 
-  INTROSPECT_RESOURCE_NAME = "introspect"
+  INTROSPECT_RESOURCE_NAME = "api/introspect"
   COMPOSITION_FAMILIALE_RESOURCE_NAME = "v2/composition-familiale"
   AVIS_IMPOSITION_RESOURCE_NAME = "v2/avis-imposition"
   SITUATION_POLE_EMPLOI_RESOURCE_NAME = "v2/situations-pole-emploi"
