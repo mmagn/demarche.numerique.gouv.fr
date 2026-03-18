@@ -77,6 +77,7 @@ describe 'linked dropdown lists', js: true do
     expect(page).to have_current_path(commencer_path(path: procedure.path))
     click_on 'Commencer la démarche'
 
+    find('label', text: "Pour vous").click
     expect(page).to have_content("Votre identité")
     expect(page).to have_current_path(identite_dossier_path(user_dossier))
   end
