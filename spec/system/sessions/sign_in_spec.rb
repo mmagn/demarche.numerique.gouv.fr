@@ -43,7 +43,7 @@ describe 'Signin in:' do
     expect(user.reload.access_locked?).to be true
   end
 
-  context 'when visiting a procedure' do
+  context 'when visiting a procedure', js: true do
     let(:procedure) { create :simple_procedure, :with_service }
 
     before do
@@ -61,6 +61,7 @@ describe 'Signin in:' do
 
       expect(page).to have_current_path identite_dossier_path(user.reload.dossiers.last)
       expect(page).to have_content(procedure.libelle)
+      find('label', text: 'Pour vous').click
       expect(page).to have_content "Votre identité"
     end
   end

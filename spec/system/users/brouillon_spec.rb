@@ -671,6 +671,7 @@ describe 'The user', js: true do
     visit "/commencer/#{procedure.path}"
     click_on 'Commencer la démarche'
 
+    find('label', text: 'Pour vous').click
     expect(page).to have_content("Votre identité")
     expect(page).to have_current_path(identite_dossier_path(user_dossier))
   end
