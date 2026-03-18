@@ -428,6 +428,16 @@
         }
       }
 
+      .repetition-row-title {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+
+        strong {
+          flex-shrink: 0;
+        }
+      }
+
       .repetition-toggle-all {
         display: none;
 
