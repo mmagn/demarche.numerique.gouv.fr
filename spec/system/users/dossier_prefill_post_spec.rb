@@ -127,41 +127,74 @@ describe 'Prefilling a dossier (with a POST request):', js: true do
       end
 
       context 'when the user signs up with FranceConnect' do
-        it_behaves_like "the user has got a prefilled dossier, owned by themselves" do
-          let(:user) { User.last }
-          let(:user_info) do
-            {
-              'sub' => 'blablabla',
-              'given_name' => 'titi',
-              'family_name' => 'toto',
-              'birthdate' => '20150821',
-              'birthplace' => '1234',
-              'birthcountry' => '12345',
-              'gender' => 'M',
-              'email' => 'EMAIL_from_fc@test.com',
-            }
+        include EtablissementHelper
+
+        let(:user) { User.last }
+        let(:user_info) do
+          {
+            'sub' => 'blablabla',
+            'given_name' => 'Prénom from FC',
+            'family_name' => 'Nom from FC',
+            'birthdate' => '20150821',
+            'birthplace' => '1234',
+            'birthcountry' => '12345',
+            'gender' => 'M',
+            'email' => 'EMAIL_from_fc@test.com',
+          }
+        end
+
+        before do
+          state, nonce = ['state', 'nonce']
+
+          allow(FranceConnectService).to receive(:authorization_uri)
+            .and_return([
+              france_connect_callback_path(code: "c0d3", state:),
+              state, nonce,
+            ])
+
+          allow(FranceConnectService).to receive(:retrieve_user_informations).and_return([user_info, 'id_token'])
+
+          page.find('.fr-connect').click
+          expect(page).to have_content("Choisissez votre adresse électronique de contact pour finaliser votre connexion")
+
+          find('label', text: /Oui, utiliser .* comme adresse électronique de contact/).click
+
+          click_on 'Valider'
+          expect(page).to have_content('Vous avez un dossier prérempli')
+          find('.fr-btn.fr-mb-2w', text: 'Poursuivre mon dossier prérempli', wait: 10).click
+        end
+
+        it "prefills dossier champs but not identity" do
+          expect(dossier.user).to eq(user)
+
+          expect(page).to have_current_path identite_dossier_path(procedure.dossiers.last)
+
+          within('.individual-infos') do
+            expect(page).to have_field('Prénom', with: "Prénom from FC", disabled: true)
+            expect(page).to have_field('Nom', with: "Nom from FC", disabled: true)
+          end
+          within "#identite-form" do
+            click_on 'Continuer'
           end
 
-          before do
-            state, nonce = ['state', 'nonce']
-
-            allow(FranceConnectService).to receive(:authorization_uri)
-              .and_return([
-                france_connect_callback_path(code: "c0d3", state:),
-                state, nonce,
-              ])
-
-            allow(FranceConnectService).to receive(:retrieve_user_informations).and_return([user_info, 'id_token'])
-
-            page.find('.fr-connect').click
-            expect(page).to have_content("Choisissez votre adresse électronique de contact pour finaliser votre connexion")
-
-            find('label', text: /Oui, utiliser .* comme adresse électronique de contact/).click
-
-            click_on 'Valider'
-            expect(page).to have_content('Vous avez un dossier prérempli')
-            find('.fr-btn.fr-mb-2w', text: 'Poursuivre mon dossier prérempli', wait: 10).click
-          end
+          expect(page).to have_current_path(brouillon_dossier_path(dossier))
+          expect(page).to have_field(type_de_champ_text.libelle, with: text_value)
+          expect(page).to have_field(type_de_champ_phone.libelle, with: phone_value)
+          expect(page).to have_css('label', text: type_de_champ_phone.libelle)
+          expect(page).to have_field(type_de_champ_siret.libelle, with: pretty_siret(siret_value))
+          expect(page).to have_css('legend', text: type_de_champ_repetition.libelle)
+          expect(page).to have_field(text_repetition_libelle, with: text_repetition_value)
+          expect(page).to have_field(integer_repetition_libelle, with: integer_repetition_value)
+          expect(page).to have_field(type_de_champ_datetime.libelle, with: datetime_value)
+          expect(page).to have_css('legend', text: type_de_champ_multiple_drop_down_list.libelle)
+          expect(page).to have_content(multiple_drop_down_list_values.first)
+          expect(page).to have_content(multiple_drop_down_list_values.last)
+          expect(page).to have_field("Le département de l’EPCI", with: epci_value.first)
+          expect(page).to have_selector("option[value='#{epci_value.last}'][selected]")
+          expect(page).to have_field(type_de_champ_dossier_link.libelle, with: dossier_link_value)
+          expect(page).to have_field(type_de_champ_commune.libelle, with: commune_libelle)
+          expect(page).to have_content(address_value.last)
+          expect(page).to have_text("Recherche en cours pour le SIRET #{pretty_siret(siret_value)}")
         end
       end
     end

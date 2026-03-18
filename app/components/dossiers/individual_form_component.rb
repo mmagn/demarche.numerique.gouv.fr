@@ -14,4 +14,12 @@ class Dossiers::IndividualFormComponent < ApplicationComponent
   def can_personal_data_be_transmitted?
     @dossier.has_france_connect_type_de_champ? && current_user.france_connected_with_one_identity?
   end
+
+  def identity_locked?
+    !for_tiers? && @dossier.france_connected_with_one_identity?
+  end
+
+  def mandataire_identity_locked?
+    @dossier.france_connected_with_one_identity?
+  end
 end

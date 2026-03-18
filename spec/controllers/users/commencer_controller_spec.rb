@@ -203,6 +203,22 @@ describe Users::CommencerController, type: :controller do
             expect(Ami::CreateNotificationService).to have_received(:call).with(dossier:)
           end
         end
+
+        context 'when the dossier does not have an owner yet and user is france connected' do
+          let(:newly_authenticated_user) { create(:user, :with_fci) }
+          let(:dossier) { create(:dossier, :prefilled, user: nil, procedure: published_procedure, individual: build(:individual, nom: 'Prefilled', prenom: 'Jean', gender: 'M.')) }
+
+          before { sign_in newly_authenticated_user }
+
+          it 'overwrites prefilled identity with FranceConnect data' do
+            subject
+            dossier.reload
+            fc_info = newly_authenticated_user.france_connect_informations.first
+            expect(dossier.individual.nom).to eq(fc_info.family_name)
+            expect(dossier.individual.prenom).to eq(fc_info.given_name)
+            expect(dossier.individual.gender).to eq(Individual::GENDER_FEMALE)
+          end
+        end
       end
     end
 
