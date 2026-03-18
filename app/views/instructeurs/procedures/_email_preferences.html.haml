@@ -25,7 +25,7 @@
               extra_class_names: 'fr-toggle',
               opt: { "hide-target_target": "source" })
 
-            .fr-notice.fr-notice--info.fr-mt-1w{ class: class_names("fr-hidden" => instant_email_new_message), data: { "hide-target_target": "toHide" } }
+            .fr-notice.fr-notice--info.fr-mt-1w{ class: class_names("fr-hidden" => !instant_email_new_message), data: { "hide-target_target": "toHide" } }
               .fr-container
                 .fr-notice__body
                   %p
