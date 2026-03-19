@@ -43,6 +43,23 @@ describe 'users/procedure_footer', type: :view do
     end
   end
 
+  describe '#france_service_link' do
+    let(:france_service_link_text) { I18n.t('users.procedure_footer.support_links.france_service.title') }
+
+    context "when procedure belongs to Ministère de l’Intérieur" do
+      it { is_expected.to have_link(france_service_link_text) }
+    end
+
+    context "when procedure does not belong to Ministère de l’Intérieur" do
+      before do
+        mi_zone = create(:zone, acronym: 'MI', labels: [{ designated_on: Time.zone.today, name: "Ministère de l’Intérieur" }])
+        dossier.procedure.zones << mi_zone
+      end
+
+      it { is_expected.not_to have_link(france_service_link_text) }
+    end
+  end
+
   describe '#lien_dpo' do
     context "when there is not lien_dpo" do
       before { dossier.procedure.update(lien_dpo: nil) }
