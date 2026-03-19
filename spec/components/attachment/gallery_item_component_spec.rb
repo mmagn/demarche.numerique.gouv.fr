@@ -135,6 +135,17 @@ RSpec.describe Attachment::GalleryItemComponent, type: :component do
     end
   end
 
+  context "when attachment is from a sans_suite dossier attestation (orphaned)" do
+    let(:attachment) { dossier.attestation.pdf }
+
+    before { dossier.update_column(:state, :sans_suite) }
+
+    it "renders without error" do
+      expect(subject).to have_link(filename)
+      expect(subject).to have_css('.fr-text--sm', text: 'Attestation')
+    end
+  end
+
   context "when attachment is from an avis" do
     context 'from an instructeur' do
       let(:avis) { create(:avis, :with_introduction, dossier: dossier) }
