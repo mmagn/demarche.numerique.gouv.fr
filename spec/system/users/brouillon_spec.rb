@@ -58,7 +58,9 @@ describe 'The user', js: true do
     # wait_until { champ_for('annuaire_education').external_id == "0030323K" }
 
     fill_in('dossier_link', with: '123')
-    find('.editable-champ-piece_justificative input[type=file]').attach_file(Rails.root + 'spec/fixtures/files/file.pdf')
+    within("##{champ_for('piece_justificative').input_group_id}") do
+      find('input[type=file]').attach_file(Rails.root + 'spec/fixtures/files/file.pdf')
+    end
 
     expect(page).to have_css('p.autosave-status', text: 'Enregistrement automatique du dossier', visible: true)
     wait_for_autosave
