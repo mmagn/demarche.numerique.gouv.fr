@@ -1,13 +1,16 @@
 # frozen_string_literal: true
 
 class ProcedurePath < ApplicationRecord
+  PATH_REGEX = /\A[a-z0-9\-_]{2,199}[a-z0-9]\z/
+  PATH_HTML_PATTERN = '[a-z0-9\-_]{2,199}[a-z0-9]'
+
   belongs_to :procedure
 
   before_destroy :ensure_one_path, :ensure_is_customized
 
   normalizes :path, with: -> path { path.strip.downcase }
 
-  validates :path, presence: true, format: { with: /\A[a-z0-9_\-]{3,200}\z/ }, uniqueness: true
+  validates :path, presence: true, format: { with: PATH_REGEX }, uniqueness: true
 
   def ensure_one_path
     return if procedure.procedure_paths.count > 1 || destroyed_by_association

@@ -28,7 +28,7 @@
                           placeholder: t('activerecord.attributes.procedure.procedure_path_placeholder'),
                           required: true,
                           class: 'unstyled flex-1',
-                          pattern: '[a-z0-9.\-_]{2,199}[a-z0-9]',
+                          pattern: ProcedurePath::PATH_HTML_PATTERN,
                           autocomplete: 'off',
                           data: { controller: 'turbo-input', turbo_input_url_value: admin_procedure_check_path_path })
     #check_path
