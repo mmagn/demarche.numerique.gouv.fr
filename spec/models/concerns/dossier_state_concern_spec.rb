@@ -249,6 +249,19 @@ RSpec.describe DossierStateConcern do
       expect(dossier.champs.filter { _1.stable_id.in?([93, 98]) && _1.blank? }.size).to eq(2)
     end
 
+    context "when dossier has an attestation from a previous acceptation" do
+      let!(:attestation) { create(:attestation, dossier:) }
+
+      it "destroys the attestation" do
+        expect(dossier.attestation).to be_present
+
+        dossier.classer_sans_suite!(motivation: 'test')
+        dossier.reload
+
+        expect(dossier.attestation).to be_nil
+      end
+    end
+
     context "when dossier has attente_avis notification" do
       let(:instructeur) { create(:instructeur) }
       let!(:notification) { create(:dossier_notification, dossier:, instructeur:, notification_type: :attente_avis) }

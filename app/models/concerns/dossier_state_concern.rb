@@ -300,6 +300,7 @@ module DossierStateConcern
       .classer_sans_suite(motivation: motivation, instructeur: instructeur)
       .processed_at
     self.expired_at = expiration_date
+    attestation&.destroy
 
     save!
 
