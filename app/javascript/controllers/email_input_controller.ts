@@ -42,7 +42,7 @@ export class EmailInputController extends ApplicationController {
     if (data?.success) {
       const suggestion = data.suggestions?.at(0);
       if (suggestion) {
-        this.suggestionTarget.innerHTML = suggestion;
+        this.suggestionTarget.textContent = suggestion;
         show(this.ariaRegionTarget);
         this.ariaRegionTarget.focus();
       }
@@ -51,8 +51,8 @@ export class EmailInputController extends ApplicationController {
 
   accept() {
     hide(this.ariaRegionTarget);
-    this.inputTarget.value = this.suggestionTarget.innerHTML;
-    this.suggestionTarget.innerHTML = '';
+    this.inputTarget.value = this.suggestionTarget.textContent ?? '';
+    this.suggestionTarget.textContent = '';
     const nextTarget = document.querySelector<HTMLElement>(
       '[data-email-input-target="next"]'
     );
@@ -63,7 +63,7 @@ export class EmailInputController extends ApplicationController {
 
   discard() {
     hide(this.ariaRegionTarget);
-    this.suggestionTarget.innerHTML = '';
+    this.suggestionTarget.textContent = '';
     const nextTarget = document.querySelector<HTMLElement>(
       '[data-email-input-target="next"]'
     );

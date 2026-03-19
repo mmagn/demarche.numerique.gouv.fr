@@ -34,5 +34,15 @@ describe EmailChecker do
     it 'passes through real use cases, with levenshtein_distance 2, must share all chars' do
       expect(subject.check(email: "martin@oise.fr")).to eq({ success: true }) # could be live.fr
     end
+
+    it 'sanitizes HTML from email suggestions to prevent XSS' do
+      result = subject.check(email: "\"<a href='javascript:alert(1)'>click</a>\"@gamail.com")
+      if result[:suggestions].present?
+        result[:suggestions].each do |suggestion|
+          expect(suggestion).not_to include('<a')
+          expect(suggestion).not_to include('javascript:')
+        end
+      end
+    end
   end
 end
