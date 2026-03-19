@@ -319,6 +319,7 @@ module Administrateurs
 
     def check_path
       path = publish_params[:path]
+      @path_must_end_with_alpha_numeric = path.present? && !path.match?(/[a-z0-9]\z/)
       @path_available = @procedure.path_available?(path)
       @other_procedure = @procedure.other_procedure_with_path(path)
 
@@ -333,7 +334,7 @@ module Administrateurs
     end
 
     def update_path
-      new_path = params[:path]
+      new_path = publish_params[:path]
       other_procedure = @procedure.other_procedure_with_path(new_path)
 
       if other_procedure.present? && !current_administrateur.owns?(other_procedure)

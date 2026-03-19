@@ -1310,6 +1310,16 @@ describe Administrateurs::ProceduresController, type: :controller do
       end
     end
 
+    context 'when path ends with a hyphen' do
+      let(:path) { 'ma-demarche-' }
+
+      it 'shows path_must_end_with_alpha_numeric error' do
+        perform_request
+        is_expected.to have_http_status(:success)
+        expect(response.body).to include('Le lien doit se terminer par une lettre ou un chiffre.')
+      end
+    end
+
     context 'when path is used' do
       context "by same admin" do
         let(:procedure_path) { build(:procedure_path, path: "plop") }
@@ -1344,7 +1354,7 @@ describe Administrateurs::ProceduresController, type: :controller do
   describe 'PATCH #update_path' do
     let(:procedure) { create(:procedure, administrateur: admin) }
 
-    subject(:perform_request) { patch :update_path, params: { procedure_id: procedure.id, path: path } }
+    subject(:perform_request) { patch :update_path, params: { procedure_id: procedure.id, procedure: { path: path } } }
 
     context 'when path is not used' do
       let(:path) { "ma-demarche" }
@@ -1386,7 +1396,7 @@ describe Administrateurs::ProceduresController, type: :controller do
     end
 
     context 'when path is invalid' do
-      let(:path) { 'Invalid Path!' }
+      let(:path) { 'Invalid Path' }
 
       it 'fails to update the path' do
         perform_request
@@ -1517,6 +1527,17 @@ describe Administrateurs::ProceduresController, type: :controller do
         it {
           expect { perform_request }.not_to change { procedure.reload.updated_at }
           expect(flash[:alert]).to have_content "Le champ « Lien public » n’est pas valide"
+        }
+      end
+
+      context 'procedure path ends with a hyphen' do
+        let(:lien_site_web) { 'http://mon-site.gouv.fr' }
+        let(:path) { 'ma-demarche-' }
+
+        it {
+          expect { perform_request }.not_to change { procedure.reload.updated_at }
+          expect(response).to redirect_to(admin_procedure_publication_path(procedure.id))
+          expect(flash[:alert].to_s).to include("doit se terminer par une lettre ou un chiffre")
         }
       end
 

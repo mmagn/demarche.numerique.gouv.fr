@@ -73,6 +73,7 @@ en:
         back_to_procedure: 'Cancel and return to the procedure page'
         submit: Publish
       check_path:
+        path_must_end_with_alpha_numeric: The link must end with a letter or number.
         path_not_available:
           owner: This URL is identical to another of your published procedures. If you publish this procedure, the URL will no longer point to the old procedure.
           not_owner: This URL is identical to another procedure, you must modify it.
