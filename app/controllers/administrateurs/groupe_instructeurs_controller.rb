@@ -333,7 +333,7 @@ module Administrateurs
         still_assigned = instructeur.groupe_instructeurs.where(procedure:).any?
 
         GroupeInstructeurMailer
-          .notify_removed_instructeur_from_all_groupes(procedure, removed_from_groupes, instructeur, current_administrateur.email, still_assigned)
+          .notify_removed_instructeur_from_many_groupes(procedure, removed_from_groupes, instructeur, current_administrateur.email, still_assigned)
           .deliver_later
 
         if still_assigned
@@ -427,7 +427,7 @@ module Administrateurs
           removed_groupes_by_instructeur.each do |instructeur, removed_from_groupes|
             still_assigned = instructeur.groupe_instructeurs.where(procedure:).any?
             GroupeInstructeurMailer
-              .notify_removed_instructeur_from_all_groupes(procedure, removed_from_groupes, instructeur, current_administrateur.email, still_assigned)
+              .notify_removed_instructeur_from_many_groupes(procedure, removed_from_groupes, instructeur, current_administrateur.email, still_assigned)
               .deliver_later
           end
 
