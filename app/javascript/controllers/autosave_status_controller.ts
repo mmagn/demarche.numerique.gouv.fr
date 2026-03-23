@@ -82,7 +82,7 @@ export class AutosaveStatusController extends ApplicationController {
     if (error.isNetworkError) return;
 
     console.error(error);
-    return error.response.headers.get('X-Request-Id') ?? undefined;
+    return error.response?.headers.get('X-Request-Id') ?? undefined;
   }
 
   private renderErrorMessage(error: ResponseError, eventId?: string) {
@@ -130,7 +130,7 @@ export class AutosaveStatusController extends ApplicationController {
   }
 
   private isAuthError(error: ResponseError): boolean {
-    return error.response.status == 401 || error.response.status == 403;
+    return error.response?.status == 401 || error.response?.status == 403;
   }
 
   private setState(state: 'succeeded' | 'failed' | 'idle') {
