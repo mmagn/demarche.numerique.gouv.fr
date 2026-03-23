@@ -218,7 +218,7 @@ describe 'Piece justificative drag and drop', js: true do
   end
 
   context 'multiple files management' do
-    let(:types_de_champ_public) { [{ type: :piece_justificative, libelle: 'Documents' }] }
+    let(:types_de_champ_public) { [{ type: :piece_justificative, libelle: 'Documents' }, { type: :piece_justificative, libelle: 'Données géo', pj_limit_formats: '1', pj_format_families: ['donnees'] }] }
     let(:procedure) { create(:procedure, :published, :for_individual, types_de_champ_public:) }
     let(:dossier) { user.dossiers.last }
 
@@ -264,6 +264,13 @@ describe 'Piece justificative drag and drop', js: true do
         expect(page).to have_text('white.png')
         expect(page).to have_text('black.png')
         expect(page).not_to have_text('file.pdf')
+      end
+
+      # Upload KML on the donnees-restricted champ (browsers don't reliably map .kml to its MIME type)
+      within find('.editable-champ', text: 'Données géo') do
+        attach_file('Données géo', Rails.root.join('spec/fixtures/files/sample.kml'))
+        expect(page).to have_no_selector('.fr-message--error', wait: 3)
+        expect(page).to have_text('sample.kml', wait: 5)
       end
     end
   end
