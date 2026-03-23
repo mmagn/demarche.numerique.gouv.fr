@@ -253,6 +253,13 @@ input[type='radio'] {
   }
 }
 
+// Variante pour afficher en flex à partir de md.
+.unhidden-flex-md {
+  @media (min-width: 48em) {
+    display: flex !important;
+  }
+}
+
 // we add fr-message--warning as only error/valid/exists
 .fr-message--warning::before {
   flex: 0 0 auto;
