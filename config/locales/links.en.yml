@@ -76,3 +76,7 @@ en:
       contact:
         label: Contact
       display_params: Display params
+    main_navigation:
+      doc:
+        label: Documentation
+        user_title: User documentation

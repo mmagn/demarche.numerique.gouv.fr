@@ -29,6 +29,7 @@ CALENDLY_URL = "https://calendly.com/demarches-simplifiees/accompagnement-admini
 
 DOC_URL = ENV.fetch("DOC_URL", "https://doc.demarches-simplifiees.fr")
 DOC_NOUVEAUTES_URL = [DOC_URL, "nouveautes"].join("/")
+USAGER_TUTORIAL_URL = [DOC_URL, "tutoriels", "tutoriel-usager"].join("/")
 DEMO_VIDEO_URL = [DOC_URL, "#consultez-notre-demonstration-en-ligne-pour-decouvrir-notre-outil-en-cliquant-ici"].join("/")
 ADMINISTRATEUR_TUTORIAL_URL = [DOC_URL, "tutoriels", "tutoriel-administrateur"].join("/")
 INSTRUCTEUR_TUTORIAL_URL = [DOC_URL, "tutoriels", "tutoriel-accompagnateur"].join("/")

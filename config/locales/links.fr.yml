@@ -87,3 +87,7 @@ fr:
       contact:
         label: Nous contacter
       display_params: Paramètres d’affichage
+    main_navigation:
+      doc:
+        label: Documentation
+        user_title: Documentation usager
