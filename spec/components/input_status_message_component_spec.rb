@@ -149,6 +149,22 @@ RSpec.describe Dsfr::InputStatusMessageComponent, type: :component do
       let(:errors_on_attribute) { false }
       let(:error_full_messages) { [] }
 
+      context "when the champ has direct validation errors (external_error with code_404)" do
+        let(:form) { instance_double(ActionView::Helpers::FormBuilder, object_name: "dossier[champs_public_attributes]", object: champ) }
+        let(:champ_component) { EditableChamp::SiretComponent.new(form:, champ:) }
+
+        before do
+          champ.update_columns(external_id: '80879023200025', external_state: 'external_error')
+          champ.errors.add(:value, :code_404)
+        end
+
+        it "renders the error message with error styling, not valid styling" do
+          expect(subject).to have_css(".fr-message--error")
+          expect(subject).not_to have_css(".fr-message--valid")
+          expect(subject).to have_text("Résultat introuvable. Vérifiez vos informations.")
+        end
+      end
+
       context "when etablissement is non-diffusible (diffusable_commercialement: false)" do
         before do
           etablissement = create(:etablissement, :non_diffusable, entreprise_raison_sociale: "SECRET EI", entreprise_forme_juridique: "Entrepreneur individuel")
