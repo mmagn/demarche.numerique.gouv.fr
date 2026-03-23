@@ -9,7 +9,7 @@
   = form_for dossier, url: brouillon_dossier_url(dossier), method: :patch, html: { id: 'dossier-edit-form', class: 'form', multipart: true, novalidate: 'novalidate', data: { controller: 'prevent-submit-on-enter' } } do |f|
 
     = render Dossiers::ErrorsFullMessagesComponent.new(dossier:)
-    %header.mb-6
+    %header.fr-mb-12v
       .fr-highlight
         %p.fr-text--sm
           %strong
