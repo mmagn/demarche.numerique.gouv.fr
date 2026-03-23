@@ -32,7 +32,7 @@ module Dsfr
         # When the object is a Champ, errors can be stored as nested errors on the dossier
         # or directly on the champ object
         if object.is_a?(Champ)
-          dossier_errors_for_champ.any?
+          dossier_errors_for_champ.any? || errors.any?
         else
           errors.has_key?(attribute_or_rich_body)
         end
