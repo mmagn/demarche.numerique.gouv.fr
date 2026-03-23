@@ -422,7 +422,17 @@ describe Procedure do
           </a>
         MSG
         let(:procedure) { build(:procedure, monavis_embed: monavis_jedonnemonavis) }
-        it { is_expected.to eq(["Le code MonAvis contient un lien pointant vers un domaine invalide"]) }
+        it { is_expected.to include("Le code MonAvis contient un lien pointant vers un domaine invalide") }
+      end
+
+      context 'rejects a link to an arbitrary domain containing monavis as a substring (regex bypass)' do
+        malicious_embed = <<-MSG
+          <a href="https://evil.com/phishing?ref=monavis&nd_source=button&key=abc123">
+            <img src="https://monavis.numerique.gouv.fr/monavis-static/bouton-bleu.png" alt="avis" />
+          </a>
+        MSG
+        let(:procedure) { build(:procedure, monavis_embed: malicious_embed) }
+        it { is_expected.to be_present }
       end
 
       context 'when YWH-PGM5381-46 pentester won' do
