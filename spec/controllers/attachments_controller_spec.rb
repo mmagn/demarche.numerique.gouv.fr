@@ -77,9 +77,11 @@ describe AttachmentsController, type: :controller do
       context 'and dossier en_construction is owned by user' do
         let(:dossier) { create(:dossier, :en_construction, :with_populated_champs, user:, procedure:) }
 
-        it 'removes the attachment' do
+        it 'removes the attachment and renders the footer with enabled submit button' do
           is_expected.to have_http_status(200)
           expect(user_buffer_champ.piece_justificative_file.attached?).to be(false)
+          expect(response.body).to include('Déposer les modifications')
+          expect(response.body).not_to include('disabled')
         end
       end
 
