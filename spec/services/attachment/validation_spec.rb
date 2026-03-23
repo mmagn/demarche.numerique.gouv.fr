@@ -48,6 +48,31 @@ RSpec.describe Attachment::Validation do
         expect(accept).not_to include('application/pdf')
       end
     end
+
+    context 'with donnees format family (KML, GPX)' do
+      let(:types_de_champ_public) { [{ type: :piece_justificative, libelle: 'Données géo', pj_limit_formats: '1', pj_format_families: ['donnees'] }] }
+
+      it 'includes both mime types and file extensions for browser compatibility' do
+        accept = validation.accept_attribute
+
+        expect(accept).to include('application/vnd.google-earth.kml+xml')
+        expect(accept).to include('.kml')
+        expect(accept).to include('application/gpx+xml')
+        expect(accept).to include('.gpx')
+      end
+    end
+
+    context 'with standard piece_justificative (all formats)' do
+      let(:types_de_champ_public) { [{ type: :piece_justificative, libelle: 'Document' }] }
+
+      it 'includes file extensions alongside mime types' do
+        accept = validation.accept_attribute
+
+        expect(accept).to include('application/pdf')
+        expect(accept).to include('.pdf')
+        expect(accept).to include('.kml')
+      end
+    end
   end
 
   describe '#max_file_size' do
