@@ -171,7 +171,7 @@ class Dossier < ApplicationRecord
   after_destroy_commit :log_destroy
 
   accepts_nested_attributes_for :champs
-  accepts_nested_attributes_for :individual
+  accepts_nested_attributes_for :individual, update_only: true
 
   include AASM
 
@@ -464,6 +464,10 @@ class Dossier < ApplicationRecord
 
   delegate :siret, :siren, to: :etablissement, allow_nil: true
   delegate :france_connected_with_one_identity?, to: :user, allow_nil: true
+
+  def identity_from_fc?
+    user&.can_prefill_from_fc?(with_gender: !procedure.no_gender?)
+  end
 
   after_save :send_web_hook
   after_save :update_expired_at, if: :brouillon?

@@ -23,6 +23,18 @@ RSpec.describe Dossiers::IndividualFormComponent, type: :component do
       end
     end
 
+    context "for self, when France Connect did not provide all identity fields" do
+      let(:user) { create(:user, france_connect_informations: [build(:france_connect_information, family_name: nil)]) }
+
+      it "all identity fields are editable" do
+        subject
+        expect(page).to have_field("Prénom", disabled: false)
+        expect(page).to have_field("Nom", disabled: false)
+        expect(page).not_to have_css("input[name='dossier[individual_attributes][gender]'][disabled]")
+        expect(page).not_to have_text("par FranceConnect et ne peuvent pas être modifiées")
+      end
+    end
+
     context "for tiers" do
       let(:dossier) { create(:dossier, :for_tiers_without_notification, procedure:, user:) }
 
