@@ -326,7 +326,15 @@ module Instructeurs
 
         handle_pending_response_flag(@commentaire)
 
-        redirect_to messagerie_instructeur_dossier_path(procedure, dossier, statut: statut)
+        respond_to do |format|
+          format.turbo_stream do
+            @dossier = dossier
+            @connected_user = current_instructeur
+            @form_url = commentaire_instructeur_dossier_path(procedure, dossier, statut: statut)
+            render template: 'shared/dossiers/create_commentaire'
+          end
+          format.html { redirect_to messagerie_instructeur_dossier_path(procedure, dossier, statut: statut) }
+        end
       else
         @commentaire.piece_jointe.purge.reload # only allowed here, sync action
         flash.alert = @commentaire.errors.full_messages

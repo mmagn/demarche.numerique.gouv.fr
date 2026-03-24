@@ -1,0 +1,10 @@
+= turbo_stream.update 'commentaire-list' do
+  = render Dossiers::CommentaireListComponent.new(dossier: @dossier, connected_user: @connected_user)
+
+= turbo_stream.replace 'commentaire-form' do
+  %div#commentaire-form{ data: { controller: 'hide-target', turbo_force: 'server' } }
+    %button#commentaire-new-btn.fr-btn.fr-icon-add-line.fr-btn--icon-left.fr-mb-2w.width-100-for-xs{ type: 'button', data: { 'hide-target-target': 'source', 'hide-target-hide-source': 'true' } } Nouveau message
+    %div#commentaire-form-body.fr-hidden{ data: { 'hide-target-target': 'toHide' } }
+      .fr-grid-row
+        .fr-col-12.fr-col-offset-md-2.fr-col-md-8
+          = render partial: "shared/dossiers/messages/form", locals: { commentaire: Commentaire.new, form_url: @form_url, dossier: @dossier, connected_user: @connected_user }
