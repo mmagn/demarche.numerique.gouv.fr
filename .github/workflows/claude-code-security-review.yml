@@ -1,8 +1,8 @@
 name: Claude Code Security Review
 
 on:
-  pull_request_review:
-    types: [submitted]
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: read
@@ -10,21 +10,36 @@ permissions:
 
 jobs:
   security-review:
-    if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     steps:
+      - name: Check PR approval status
+        id: approval
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          APPROVED=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/reviews \
+            --jq '[.[] | select(.state == "APPROVED")] | length')
+          if [ "$APPROVED" -eq 0 ]; then
+            echo "PR not yet approved, skipping security review"
+            echo "approved=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "PR approved, running security review"
+            echo "approved=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/checkout@v4
+        if: steps.approval.outputs.approved == 'true'
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 2
 
       - uses: anthropics/claude-code-security-review@main
+        if: steps.approval.outputs.approved == 'true'
         id: scan
         with:
           claude-api-key: ${{ secrets.CLAUDE_API_KEY }}
 
       - name: Fail if security findings
-        if: steps.scan.outputs.findings-count > 0
+        if: steps.approval.outputs.approved == 'true' && steps.scan.outputs.findings-count > 0
         run: |
           echo "::error::Security review found ${{ steps.scan.outputs.findings-count }} finding(s). Review the comments on this PR."
           exit 1
