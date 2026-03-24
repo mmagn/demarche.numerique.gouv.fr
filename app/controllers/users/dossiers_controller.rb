@@ -155,7 +155,9 @@ module Users
       @no_description = true
 
       respond_to do |format|
-        format.html
+        format.html do
+          @dossier.prefill_individual_from_france_connect if @dossier.identity_from_fc?
+        end
         format.turbo_stream do
           @dossier.assign_for_tiers(params.dig(:dossier, :for_tiers) == 'true')
         end
@@ -488,11 +490,11 @@ module Users
     private
 
     def identity_locked?(dossier)
-      dossier.france_connected_with_one_identity?
+      dossier.identity_from_fc?
     end
 
     def mandataire_identity_locked?(dossier)
-      dossier.for_tiers? && dossier.france_connected_with_one_identity?
+      dossier.for_tiers? && dossier.identity_from_fc?
     end
 
     # if the status tab is filled, then this tab
