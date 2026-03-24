@@ -337,8 +337,18 @@ module Instructeurs
         end
       else
         @commentaire.piece_jointe.purge.reload # only allowed here, sync action
-        flash.alert = @commentaire.errors.full_messages
-        render :messagerie
+        respond_to do |format|
+          format.turbo_stream do
+            @dossier = dossier
+            @connected_user = current_instructeur
+            @form_url = commentaire_instructeur_dossier_path(procedure, dossier, statut: statut)
+            render template: 'shared/dossiers/create_commentaire', status: :unprocessable_entity
+          end
+          format.html do
+            flash.alert = @commentaire.errors.full_messages
+            render :messagerie, status: :unprocessable_entity
+          end
+        end
       end
     end
 
