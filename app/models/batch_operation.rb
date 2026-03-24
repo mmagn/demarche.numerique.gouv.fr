@@ -84,7 +84,8 @@ class BatchOperation < ApplicationRecord
   end
 
   def enqueue_all
-    dossiers_safe_scope # later in batch .
+    touch(:run_at)
+    dossiers_safe_scope
       .map { |dossier| BatchOperationProcessOneJob.perform_later(self, dossier) }
   end
 
@@ -138,13 +139,24 @@ class BatchOperation < ApplicationRecord
 
   def track_processed_dossier(success, dossier)
     dossiers.delete(dossier)
-    touch(:run_at) if called_for_first_time?
-    touch(:finished_at)
 
     if success
       dossier_operation(dossier).done!
     else
       dossier_operation(dossier).fail!
+    end
+  end
+
+  def finalize_if_complete!
+    return if dossiers.exists?
+
+    updated_rows = self.class
+      .where(id:, finished_at: nil)
+      .update_all(finished_at: Time.current, updated_at: Time.current)
+
+    if updated_rows == 1
+      # we are the worker what the "win" the finished state
+      after_all_processed
     end
   end
 
@@ -162,10 +174,6 @@ class BatchOperation < ApplicationRecord
         instance
       end
     end
-  end
-
-  def called_for_first_time?
-    run_at.nil?
   end
 
   def total_count
