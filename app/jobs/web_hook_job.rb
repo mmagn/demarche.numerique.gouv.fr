@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'resolv'
 require 'addressable/uri'
 
 class WebHookJob < ApplicationJob
@@ -10,13 +9,6 @@ class WebHookJob < ApplicationJob
 
   def perform(procedure_id, dossier_id, state, updated_at)
     procedure = Procedure.find(procedure_id)
-
-    if unsafe_url?(procedure.web_hook_url)
-      Sentry.set_tags(procedure: procedure_id, dossier: dossier_id)
-      Sentry.set_extras(web_hook_url: procedure.web_hook_url)
-      Sentry.capture_message("Webhook SSRF blocked: #{procedure.web_hook_url} resolves to a private IP")
-      return
-    end
 
     body = {
       procedure_id: procedure_id,
@@ -29,25 +21,17 @@ class WebHookJob < ApplicationJob
 
     if !response.success?
       Sentry.set_tags(procedure: procedure_id, dossier: dossier_id)
-      Sentry.set_extras(web_hook_url: procedure.web_hook_url)
+      Sentry.set_extras(web_hook_url: sanitized_url(procedure.web_hook_url))
       Sentry.capture_message("Webhook error code: #{response.code} (#{response.return_message}) // Response: #{response.body}")
     end
   end
 
   private
 
-  def unsafe_url?(url)
-    return true if url.blank?
-
+  def sanitized_url(url)
     uri = Addressable::URI.parse(url)
-    host = uri&.host
-    return true if host.blank?
-
-    addresses = Resolv.getaddresses(host)
-    return true if addresses.empty?
-
-    addresses.any? { NoPrivateIPURLValidator.private_ip?(_1) }
-  rescue Addressable::URI::InvalidURIError, Resolv::ResolvError
-    true
+    "#{uri.scheme}://#{uri.host}#{uri.path}"
+  rescue Addressable::URI::InvalidURIError
+    '(invalid URL)'
   end
 end

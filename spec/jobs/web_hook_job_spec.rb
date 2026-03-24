@@ -15,54 +15,31 @@ describe WebHookJob, type: :job do
     end
 
     context 'with error on webhook' do
-      it 'raises' do
+      it 'reports to Sentry with sanitized URL' do
+        allow(Sentry).to receive(:set_tags)
+        allow(Sentry).to receive(:set_extras)
         allow(Sentry).to receive(:capture_message)
         stub_request(:post, web_hook_url).to_return(status: 500, body: "error")
 
         job.perform_now
+
+        expect(Sentry).to have_received(:set_extras).with(web_hook_url: "https://domaine.fr/callback_url")
         expect(Sentry).to have_received(:capture_message)
       end
     end
 
-    context 'SSRF protection' do
-      context 'when webhook URL resolves to a private IP' do
-        let(:web_hook_url) { "https://domaine.fr/callback_url" }
+    context 'when webhook URL contains query params' do
+      let(:web_hook_url) { "https://domaine.fr/callback_url?token=secret123" }
 
-        it 'does not make the HTTP request when DNS resolves to a private IP' do
-          stub = stub_request(:post, web_hook_url).to_return(status: 200, body: "success")
-          allow(Resolv).to receive(:getaddresses).with('domaine.fr').and_return(['10.0.0.1'])
+      it 'strips query params from Sentry logs' do
+        allow(Sentry).to receive(:set_tags)
+        allow(Sentry).to receive(:set_extras)
+        allow(Sentry).to receive(:capture_message)
+        stub_request(:post, web_hook_url).to_return(status: 500, body: "error")
 
-          job.perform_now
-          expect(stub).not_to have_been_requested
-        end
+        job.perform_now
 
-        it 'does not make the HTTP request when DNS resolves to localhost' do
-          stub = stub_request(:post, web_hook_url).to_return(status: 200, body: "success")
-          allow(Resolv).to receive(:getaddresses).with('domaine.fr').and_return(['127.0.0.1'])
-
-          job.perform_now
-          expect(stub).not_to have_been_requested
-        end
-
-        it 'does not make the HTTP request when DNS resolves to link-local' do
-          stub = stub_request(:post, web_hook_url).to_return(status: 200, body: "success")
-          allow(Resolv).to receive(:getaddresses).with('domaine.fr').and_return(['169.254.169.254'])
-
-          job.perform_now
-          expect(stub).not_to have_been_requested
-        end
-      end
-
-      context 'when webhook URL resolves to a public IP' do
-        let(:web_hook_url) { "https://domaine.fr/callback_url" }
-
-        it 'makes the HTTP request normally' do
-          stub = stub_request(:post, web_hook_url).to_return(status: 200, body: "success")
-          allow(Resolv).to receive(:getaddresses).with('domaine.fr').and_return(['93.184.216.34'])
-
-          job.perform_now
-          expect(stub).to have_been_requested
-        end
+        expect(Sentry).to have_received(:set_extras).with(web_hook_url: "https://domaine.fr/callback_url")
       end
     end
   end
