@@ -17,7 +17,7 @@
       <%= render Attachment::ProgressComponent.new(attachment:, ignore_antivirus: true, ignore_watermark: true) %>
     <% end %>
 
-    <% if user_can_destroy? %>
+    <% if user_can_destroy? && attachment.persisted? %>
       <p class="fr-mb-0">
         <%= render NestedForms::OwnedButtonComponent.new(formaction: destroy_attachment_path, http_method: :delete, opt: {class: "fr-btn fr-btn--tertiary fr-btn--sm", title: t(".delete_file_title", filename: attachment.filename)}) do %>
           <span class="fr-icon--sm fr-icon-delete-line fr-mr-1w"></span>
