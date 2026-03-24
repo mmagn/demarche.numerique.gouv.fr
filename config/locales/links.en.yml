@@ -80,3 +80,4 @@ en:
       doc:
         label: Documentation
         user_title: User documentation
+        admin_title: Administrator documentation

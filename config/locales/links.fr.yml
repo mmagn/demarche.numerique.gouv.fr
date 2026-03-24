@@ -91,3 +91,4 @@ fr:
       doc:
         label: Documentation
         user_title: Documentation usager
+        admin_title: Documentation administrateur
