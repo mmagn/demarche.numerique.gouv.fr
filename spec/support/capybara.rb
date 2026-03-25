@@ -78,7 +78,7 @@ RSpec.configure do |config|
       headless: ENV['NO_HEADLESS'].blank?,
       locale: Rails.application.config.i18n.default_locale,
       downloadsPath: Capybara.save_path,
-      playwright_cli_executable_path: 'bun playwright',
+      playwright_cli_executable_path: 'bun --bun playwright',
     }
 
     driven_by(:playwright, options:)
