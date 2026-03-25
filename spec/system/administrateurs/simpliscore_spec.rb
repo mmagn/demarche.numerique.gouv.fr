@@ -110,20 +110,36 @@ describe 'As an administrateur I can use Simpliscore to improve my procedure', j
       expect(page).to have_content("Ce parcours d’amélioration de la qualité du formulaire est terminé.")
     end
   end
-  describe 'error handling' do
-    scenario 'shows error message and retry button when search fails' do
-      tunnel_id = SecureRandom.hex(3)
-      llm_rule_suggestion = create(:llm_rule_suggestion,
+  describe 'error handling and typography', :aggregate_failures do
+    scenario 'shows error state and correct French typography in a single session' do
+      schema_hash = Digest::SHA256.hexdigest(procedure.draft_revision.schema_to_llm.to_json)
+
+      # --- Error handling: failed search shows error message and retry button ---
+      error_tunnel_id = SecureRandom.hex(3)
+      create(:llm_rule_suggestion,
         procedure_revision: procedure.draft_revision,
-        tunnel_id:,
+        tunnel_id: error_tunnel_id,
         rule: 'improve_label',
         state: 'failed',
-        schema_hash: Digest::SHA256.hexdigest(procedure.draft_revision.schema_to_llm.to_json))
+        schema_hash:)
 
-      visit simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id:, rule: 'improve_label')
+      visit simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id: error_tunnel_id, rule: 'improve_label')
 
       expect(page).to have_content("La recherche de suggestions a échoué, veuillez réessayer.")
       expect(page).to have_button("Relancer la recherche de suggestions")
+
+      # --- Typography: correct French typography with space before exclamation mark ---
+      typo_tunnel_id = SecureRandom.hex(3)
+      create(:llm_rule_suggestion,
+        procedure_revision: procedure.draft_revision,
+        tunnel_id: typo_tunnel_id,
+        rule: 'improve_label',
+        state: 'completed',
+        schema_hash:)
+
+      visit simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id: typo_tunnel_id, rule: 'improve_label')
+
+      expect(page).to have_content("qualité !")
     end
   end
 
@@ -211,81 +227,59 @@ describe 'As an administrateur I can use Simpliscore to improve my procedure', j
     end
   end
 
-  describe 'typography' do
-    scenario 'uses correct French typography with space before exclamation mark' do
-      tunnel_id = SecureRandom.hex(3)
+  describe 'button wording' do
+    scenario 'shows correct wording for intermediate and last steps', :aggregate_failures do
+      schema_hash = Digest::SHA256.hexdigest(procedure.draft_revision.schema_to_llm.to_json)
+
+      # --- First 3 steps: "poursuivre" wording ---
+      tunnel_id_1 = SecureRandom.hex(3)
       llm_rule_suggestion = create(:llm_rule_suggestion,
         procedure_revision: procedure.draft_revision,
-        tunnel_id:,
+        tunnel_id: tunnel_id_1,
         rule: 'improve_label',
         state: 'completed',
-        schema_hash: Digest::SHA256.hexdigest(procedure.draft_revision.schema_to_llm.to_json))
+        schema_hash:)
 
-      visit simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id:, rule: 'improve_label')
+      create(:llm_rule_suggestion_item,
+        llm_rule_suggestion: llm_rule_suggestion,
+        stable_id: procedure.draft_revision.revision_types_de_champ_public.first.stable_id,
+        payload: { 'stable_id' => procedure.draft_revision.revision_types_de_champ_public.first.stable_id, 'libelle' => 'Nom' })
 
-      # No suggestions, should show "votre formulaire est déjà de qualité !"
-      expect(page).to have_content("qualité !")
-    end
-  end
+      visit simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id: tunnel_id_1, rule: 'improve_label')
 
-  describe 'button wording' do
-    context 'when on first 3 steps with suggestions' do
-      scenario 'shows "Appliquer les suggestions et poursuivre"' do
-        tunnel_id = SecureRandom.hex(3)
-        llm_rule_suggestion = create(:llm_rule_suggestion,
-          procedure_revision: procedure.draft_revision,
-          tunnel_id:,
-          rule: 'improve_label',
-          state: 'completed',
-          schema_hash: Digest::SHA256.hexdigest(procedure.draft_revision.schema_to_llm.to_json))
+      first('input[type="checkbox"][name*="verify_status"]').check(allow_label_click: true)
 
-        create(:llm_rule_suggestion_item,
-          llm_rule_suggestion: llm_rule_suggestion,
-          stable_id: procedure.draft_revision.revision_types_de_champ_public.first.stable_id,
-          payload: { 'stable_id' => procedure.draft_revision.revision_types_de_champ_public.first.stable_id, 'libelle' => 'Nom' })
+      expect(page).to have_button("Appliquer les suggestions et poursuivre")
+      expect(page).to have_button("Ignorer cette étape et poursuivre")
 
-        visit simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id:, rule: 'improve_label')
+      # --- Last step: "terminer" wording ---
+      tunnel_id_2 = SecureRandom.hex(3)
+      create(:llm_rule_suggestion,
+        procedure_revision: procedure.draft_revision,
+        tunnel_id: tunnel_id_2,
+        rule: 'improve_label',
+        state: 'accepted',
+        created_at: 2.days.ago,
+        schema_hash:)
 
-        # Accept the suggestion
-        first('input[type="checkbox"][name*="verify_status"]').check(allow_label_click: true)
+      llm_rule_suggestion_cleaner = create(:llm_rule_suggestion,
+        procedure_revision: procedure.draft_revision,
+        tunnel_id: tunnel_id_2,
+        rule: 'cleaner',
+        state: 'completed',
+        schema_hash:)
 
-        expect(page).to have_button("Appliquer les suggestions et poursuivre")
-        expect(page).to have_button("Ignorer cette étape et poursuivre")
-      end
-    end
+      create(:llm_rule_suggestion_item,
+        llm_rule_suggestion: llm_rule_suggestion_cleaner,
+        stable_id: procedure.draft_revision.revision_types_de_champ_public.first.stable_id,
+        payload: { 'stable_id' => procedure.draft_revision.revision_types_de_champ_public.first.stable_id, 'action' => 'delete' })
 
-    context 'when on last step with suggestions' do
-      scenario 'shows "Appliquer les suggestions et terminer"' do
-        # Complete first 3 steps
-        tunnel_id = SecureRandom.hex(3)
-        create(:llm_rule_suggestion,
-          procedure_revision: procedure.draft_revision,
-          tunnel_id:,
-          rule: 'improve_label',
-          state: 'accepted',
-          created_at: 2.days.ago,
-          schema_hash: Digest::SHA256.hexdigest(procedure.draft_revision.schema_to_llm.to_json))
+      visit simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id: tunnel_id_2, rule: 'cleaner')
 
-        llm_rule_suggestion_cleaner = create(:llm_rule_suggestion,
-          procedure_revision: procedure.draft_revision,
-          tunnel_id:,
-          rule: 'cleaner',
-          state: 'completed',
-          schema_hash: Digest::SHA256.hexdigest(procedure.draft_revision.schema_to_llm.to_json))
+      first('input[type="checkbox"][name*="verify_status"]').check(allow_label_click: true)
 
-        create(:llm_rule_suggestion_item,
-          llm_rule_suggestion: llm_rule_suggestion_cleaner,
-          stable_id: procedure.draft_revision.revision_types_de_champ_public.first.stable_id,
-          payload: { 'stable_id' => procedure.draft_revision.revision_types_de_champ_public.first.stable_id, 'action' => 'delete' })
-
-        visit simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id:, rule: 'cleaner')
-
-        # Accept the suggestion
-        first('input[type="checkbox"][name*="verify_status"]').check(allow_label_click: true)
-
-        expect(page).to have_button("Appliquer les suggestions et terminer")
-        expect(page).to have_button("Ignorer cette étape et terminer")
-      end
+      expect(page).to have_button("Appliquer les suggestions et terminer")
+      expect(page).to have_button("Ignorer cette étape et terminer")
     end
   end
 end
