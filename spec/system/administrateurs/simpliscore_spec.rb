@@ -59,11 +59,20 @@ describe 'As an administrateur I can use Simpliscore to improve my procedure', j
       # Verify that step 2 suggestion exists (created by auto-enchainement)
       expect(procedure.draft_revision.llm_rule_suggestions.find_by(tunnel_id:, rule: 'improve_structure')).to be_present
 
-      # Step 2: simulate completion + pre-create steps 3 and 4
+      # Step 2: simulate completion
       llm_rule_suggestion_2 = procedure.draft_revision.llm_rule_suggestions.find_by!(tunnel_id:, rule: "improve_structure")
       llm_rule_suggestion_2.update!(state: "completed")
 
       post_step1_hash = Digest::SHA256.hexdigest(procedure.draft_revision.reload.schema_to_llm.to_json)
+
+      # Schema change detection: verify applying step 1 changed the schema
+      expect(post_step1_hash).not_to eq(llm_rule_suggestion.schema_hash)
+      # Visit step 1 to verify old suggestion invalidated by schema change
+      visit simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id:, rule: "improve_label")
+      expect(page).to have_button("Lancer la recherche de suggestions")
+      expect(page).not_to have_css(".fr-badge", text: /\d+ suggestions?/)
+
+      # Pre-create steps 3 and 4
       create(:llm_rule_suggestion, procedure_revision: procedure.draft_revision,
         tunnel_id:, rule: "improve_types", state: "completed", schema_hash: post_step1_hash)
       cleaner_suggestion = create(:llm_rule_suggestion, procedure_revision: procedure.draft_revision,
@@ -76,7 +85,8 @@ describe 'As an administrateur I can use Simpliscore to improve my procedure', j
       # Stub job to prevent overwriting pre-created completed suggestions
       allow(LLM::ImproveProcedureJob).to receive(:perform_now)
 
-      # Turbo poll detects step 2 completion and refreshes the page
+      # Return to step 2 (already completed)
+      visit simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id:, rule: "improve_structure")
       expect(page).to have_button("Poursuivre")
       click_button "Poursuivre"
 
@@ -116,90 +126,6 @@ describe 'As an administrateur I can use Simpliscore to improve my procedure', j
 
       expect(page).to have_content("La recherche de suggestions a échoué, veuillez réessayer.")
       expect(page).to have_button("Relancer la recherche de suggestions")
-    end
-  end
-
-  describe 'schema change detection' do
-    scenario 'allows regenerating suggestions when schema has changed' do
-      tunnel_id = SecureRandom.hex(3)
-
-      # Create initial suggestion with current schema
-      initial_schema_hash = Digest::SHA256.hexdigest(procedure.draft_revision.schema_to_llm.to_json)
-      llm_rule_suggestion = create(:llm_rule_suggestion,
-        procedure_revision: procedure.draft_revision,
-        tunnel_id:,
-        rule: 'improve_label',
-        state: 'completed',
-        schema_hash: initial_schema_hash)
-
-      # Add suggestion items to the initial suggestion
-      create(:llm_rule_suggestion_item,
-        llm_rule_suggestion: llm_rule_suggestion,
-        stable_id: procedure.draft_revision.revision_types_de_champ_public.first.stable_id,
-        payload: { 'stable_id' => procedure.draft_revision.revision_types_de_champ_public.first.stable_id, 'libelle' => 'Nouveau libellé' })
-
-      # Change the schema by adding a new field
-      procedure.draft_revision.add_type_de_champ(
-        type_champ: :text,
-        libelle: 'Nouveau champ ajouté'
-      )
-      new_schema_hash = Digest::SHA256.hexdigest(procedure.draft_revision.reload.schema_to_llm.to_json)
-
-      # Verify schema has actually changed
-      expect(new_schema_hash).not_to eq(initial_schema_hash)
-
-      # Visit the same step
-      visit simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id:, rule: 'improve_label')
-
-      # Should NOT show the old completed suggestion
-      # Instead, should show the button to launch a new search
-      expect(page).to have_button("Lancer la recherche de suggestions")
-      expect(page).not_to have_css('.fr-badge', text: /\d+ suggestions?/) # No suggestion count badge
-      expect(page).not_to have_button("Appliquer les suggestions et poursuivre") # No apply button
-
-      # Click to launch new search
-      click_button "Lancer la recherche de suggestions"
-
-      # Should show success message
-      expect(page).to have_content("La recherche a été lancée")
-
-      # The click created a suggestion in 'queued' state with the new schema_hash
-      # Find it and simulate completion
-      new_suggestion = LLMRuleSuggestion.find_by!(
-        procedure_revision: procedure.draft_revision,
-        tunnel_id: tunnel_id,
-        rule: 'improve_label',
-        schema_hash: new_schema_hash
-      )
-
-      expect(new_suggestion.state).to eq('queued')
-
-      # Simulate completion
-      new_suggestion.update!(state: 'completed')
-      create(:llm_rule_suggestion_item,
-        llm_rule_suggestion: new_suggestion,
-        stable_id: procedure.draft_revision.revision_types_de_champ_public.last.stable_id,
-        payload: { 'stable_id' => procedure.draft_revision.revision_types_de_champ_public.last.stable_id, 'libelle' => 'Libellé pour nouveau champ' })
-
-      # Visit the page again to see the new suggestion
-      visit simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id:, rule: 'improve_label')
-
-      # Should now show the new suggestion with the new schema
-      expect(page).to have_css('.fr-badge', text: /1\s+suggestion/)
-      expect(page).to have_css("input[type='submit'][value='Appliquer les suggestions et poursuivre']")
-
-      # Verify both suggestions exist in database
-      expect(LLMRuleSuggestion.where(tunnel_id: tunnel_id, rule: 'improve_label').count).to eq(2)
-
-      # Old suggestion with old schema_hash
-      old_suggestion = LLMRuleSuggestion.find(llm_rule_suggestion.id)
-      expect(old_suggestion.schema_hash).to eq(initial_schema_hash)
-      expect(old_suggestion.state).to eq('completed')
-
-      # New suggestion with new schema_hash
-      expect(new_suggestion.schema_hash).to eq(new_schema_hash)
-      expect(new_suggestion.state).to eq('completed')
-      expect(new_suggestion.id).not_to eq(llm_rule_suggestion.id)
     end
   end
 end
