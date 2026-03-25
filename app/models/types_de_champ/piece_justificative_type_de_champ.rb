@@ -21,6 +21,8 @@ class TypesDeChamp::PieceJustificativeTypeDeChamp < TypesDeChamp::TypeDeChampBas
     # API v1 don't support multiple PJ
     attachment = champ.piece_justificative_file.first
     return if attachment.nil?
+    # API v1 should neither return attachments for titre identité
+    return if titre_identite_nature?
 
     if attachment.virus_scanner.safe? || attachment.virus_scanner.pending?
       attachment.url
@@ -30,8 +32,10 @@ class TypesDeChamp::PieceJustificativeTypeDeChamp < TypesDeChamp::TypeDeChampBas
   def champ_blank?(champ) = champ.piece_justificative_file.blank?
 
   def columns(procedure:, displayable: true, prefix: nil)
-    cs = [
-      Columns::AttachedManyColumn.new(
+    cs = []
+
+    if !titre_identite_nature?
+      cs << Columns::AttachedManyColumn.new(
         procedure_id: procedure.id,
         stable_id:,
         tdc_type: type_champ,
@@ -40,8 +44,8 @@ class TypesDeChamp::PieceJustificativeTypeDeChamp < TypesDeChamp::TypeDeChampBas
         displayable: false,
         filterable: false,
         mandatory: mandatory?
-      ),
-    ]
+      )
+    end
 
     if RIB?
       cs += [
