@@ -117,7 +117,29 @@ module SystemHelpers
         expect(option).to be_visible
         sleep 0.1 # wait for any animation to complete
         option.click
+        option.send_keys(:escape) if attached?(option)
       end
+    end
+  end
+
+  def attached?(node)
+    node.text # or any method that touches the node
+    true
+  rescue Capybara::Playwright::Node::StaleReferenceError
+    false
+  end
+
+  def select_autocomplete(libelle, value)
+    label = find('label', text: libelle)
+    scroll_to(label)
+    label.click
+
+    within '[role="listbox"]' do
+      option = find('[role="option"]', text: value)
+      expect(option).to be_visible
+      sleep 0.1 # wait for any animation to complete
+      option.click
+      option.send_keys(:escape)
     end
   end
 
