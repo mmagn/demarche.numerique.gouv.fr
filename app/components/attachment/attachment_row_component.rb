@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-# Displays a persisted attachment: filename/download link, antivirus status, delete button.
+# Displays an attachment: filename/download link, antivirus status, delete button.
+# Handles both persisted and unpersisted attachments (e.g. after validation error).
 # Read-only display component (no file input).
 class Attachment::AttachmentRowComponent < ApplicationComponent
   attr_reader :attachment, :context

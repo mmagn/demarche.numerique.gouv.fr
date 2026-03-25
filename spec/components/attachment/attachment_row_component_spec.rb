@@ -86,9 +86,11 @@ RSpec.describe Attachment::AttachmentRowComponent, type: :component do
       Attachment::Context.new(attached_file: attachment.record.piece_jointe)
     end
 
-    it 'renders without crashing and hides the server Delete button (we should later add a JS delete button)' do
+    it 'renders a JS remove button instead of the server delete button' do
+      expect(attachment).not_to be_persisted
       expect(subject).to have_content("test.txt")
-      expect(subject).not_to have_selector('[title^="Supprimer le fichier"]')
+      expect(subject).not_to have_selector('input[name="_method"][value="delete"]')
+      expect(subject).to have_selector('button[data-action="element-remove#remove"]')
     end
   end
 
