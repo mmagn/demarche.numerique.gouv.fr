@@ -35,10 +35,16 @@
 <% else %>
   <li class="flex flex-gap-2 fr-mb-1w" data-controller="element-remove">
     <% if user_can_destroy? %>
-      <button type="button" class="fr-btn fr-btn--tertiary fr-btn--sm fr-icon-delete-line" title="<%= t(".delete_file_title", filename: attachment.filename) %>" data-action="element-remove#remove">
+      <button
+        type="button"
+        class="fr-btn fr-btn--tertiary fr-btn--sm fr-icon-delete-line"
+        title="<%= t(".delete_file_title", filename: attachment.filename) %>"
+        data-action="element-remove#remove"
+      >
         <%= t('.delete_file') %>
       </button>
     <% end %>
+
     <span><%= attachment.filename %></span>
   </li>
 <% end %>
