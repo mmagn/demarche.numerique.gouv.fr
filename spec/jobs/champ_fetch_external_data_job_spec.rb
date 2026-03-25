@@ -46,9 +46,18 @@ RSpec.describe ChampFetchExternalDataJob, type: :job do
     end
 
     context 'when a retryable error occurs' do
-      it 'tries 5 times and the final state is external_error' do
-        assert_performed_jobs 5 do
-          described_class.perform_later(champ, external_id) rescue StandardError
+      it 'retries then transitions to external_error after max attempts' do
+        described_class.perform_later(champ, external_id)
+
+        # Drain the queue iteratively without recursive inline execution.
+        # The non-block form of perform_enqueued_jobs (flush mode) performs
+        # currently-enqueued jobs one pass at a time. Each retry_on just
+        # enqueues the next attempt without executing it inline, avoiding
+        # the cascade that causes hangs with Rails 7.2.3+.
+        5.times do
+          perform_enqueued_jobs(only: ChampFetchExternalDataJob)
+        rescue StandardError
+          # After 5 RetryableFetchError retries, the exhaust block raises err.cause
         end
 
         champ.reload
