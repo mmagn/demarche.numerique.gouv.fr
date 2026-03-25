@@ -51,6 +51,19 @@ describe PiecesJustificativesService do
       end
     end
 
+    context 'with a titre_identite champ' do
+      # Regression test: after T20260303MigrateTitreIdentiteToPieceJustificativeTask,
+      # titre_identite champs have type_champ='piece_justificative' and nature='TITRE_IDENTITE'.
+      # They must not appear in zip exports for security reasons.
+      let(:procedure) { create(:procedure, types_de_champ_public: [{ type: :piece_justificative, nature: :TITRE_IDENTITE }]) }
+
+      before { attach_file_to_champ(pj_champ(dossier)) }
+
+      it 'does not include titre_identite file in the export' do
+        expect(subject).to be_empty
+      end
+    end
+
     context 'with a repetition' do
       let(:first_champ) { champ_for_update(repetition(dossier).rows.first.first) }
       let(:second_champ) { champ_for_update(repetition(dossier).rows.second.first) }
