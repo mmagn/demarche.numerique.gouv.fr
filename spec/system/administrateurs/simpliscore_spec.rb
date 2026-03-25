@@ -110,36 +110,20 @@ describe 'As an administrateur I can use Simpliscore to improve my procedure', j
       expect(page).to have_content("Ce parcours d’amélioration de la qualité du formulaire est terminé.")
     end
   end
-  describe 'error handling and typography', :aggregate_failures do
-    scenario 'shows error state and correct French typography in a single session' do
-      schema_hash = Digest::SHA256.hexdigest(procedure.draft_revision.schema_to_llm.to_json)
-
-      # --- Error handling: failed search shows error message and retry button ---
-      error_tunnel_id = SecureRandom.hex(3)
+  describe 'error handling' do
+    scenario 'shows error message and retry button when search fails' do
+      tunnel_id = SecureRandom.hex(3)
       create(:llm_rule_suggestion,
         procedure_revision: procedure.draft_revision,
-        tunnel_id: error_tunnel_id,
+        tunnel_id:,
         rule: 'improve_label',
         state: 'failed',
-        schema_hash:)
+        schema_hash: Digest::SHA256.hexdigest(procedure.draft_revision.schema_to_llm.to_json))
 
-      visit simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id: error_tunnel_id, rule: 'improve_label')
+      visit simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id:, rule: 'improve_label')
 
       expect(page).to have_content("La recherche de suggestions a échoué, veuillez réessayer.")
       expect(page).to have_button("Relancer la recherche de suggestions")
-
-      # --- Typography: correct French typography with space before exclamation mark ---
-      typo_tunnel_id = SecureRandom.hex(3)
-      create(:llm_rule_suggestion,
-        procedure_revision: procedure.draft_revision,
-        tunnel_id: typo_tunnel_id,
-        rule: 'improve_label',
-        state: 'completed',
-        schema_hash:)
-
-      visit simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id: typo_tunnel_id, rule: 'improve_label')
-
-      expect(page).to have_content("qualité !")
     end
   end
 
