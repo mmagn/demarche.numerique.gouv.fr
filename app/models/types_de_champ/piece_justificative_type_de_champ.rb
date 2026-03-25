@@ -21,6 +21,8 @@ class TypesDeChamp::PieceJustificativeTypeDeChamp < TypesDeChamp::TypeDeChampBas
     # API v1 don't support multiple PJ
     attachment = champ.piece_justificative_file.first
     return if attachment.nil?
+    # API v1 should neither return attachments for titre identité
+    return if titre_identite_nature?
 
     if attachment.virus_scanner.safe? || attachment.virus_scanner.pending?
       attachment.url
