@@ -2,9 +2,9 @@
   = link_to admin_procedure_experts_path(@procedure), class: 'fr-tile fr-enlarge-link' do
     .fr-tile__body.flex.column.align-center.justify-between
       - if configured?
-        %p.fr-badge.fr-badge--success Validé
+        %p.fr-badge.fr-badge--success= t('.configured')
       - else
-        %p.fr-badge.fr-badge--info À configurer
+        %p.fr-badge.fr-badge--info= t('.unconfigured')
       %div
         %h3.fr-h6.fr-mt-10v= t('.title')
         %p.fr-tile-subtitle= t('.subtitle')
