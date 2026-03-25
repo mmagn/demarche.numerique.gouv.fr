@@ -27,11 +27,13 @@ WEBINAIRE_URL = "https://app.livestorm.co/demarches-simplifiees"
 INSCRIPTION_WEBINAIRE_URL = "https://bbb-dinum-scalelite.visio.education.fr/playback/presentation/2.3/cbb6e43626fa1b67755d9fb05ecf5e7f3be50d48-1675342730585"
 CALENDLY_URL = "https://calendly.com/demarches-simplifiees/accompagnement-administrateur-demarches-simplifiees-fr"
 
-DOC_URL = ENV.fetch("DOC_URL", "https://doc.demarches-simplifiees.fr")
+DOC_URL = ENV.fetch("DOC_URL", "https://doc.demarche.numerique.gouv.fr")
 DOC_NOUVEAUTES_URL = [DOC_URL, "nouveautes"].join("/")
+USAGER_TUTORIAL_URL = [DOC_URL, "tutoriels", "tutoriel-usager"].join("/")
+EXPERT_TUTORIAL_URL = [DOC_URL, "tutoriels", "tutoriel-expert-invite"].join("/")
 DEMO_VIDEO_URL = [DOC_URL, "#consultez-notre-demonstration-en-ligne-pour-decouvrir-notre-outil-en-cliquant-ici"].join("/")
 ADMINISTRATEUR_TUTORIAL_URL = [DOC_URL, "tutoriels", "tutoriel-administrateur"].join("/")
-INSTRUCTEUR_TUTORIAL_URL = [DOC_URL, "tutoriels", "tutoriel-accompagnateur"].join("/")
+INSTRUCTEUR_TUTORIAL_URL = [DOC_URL, "tutoriels", "tutoriel-instructeur"].join("/")
 CADRE_JURIDIQUE_URL = [DOC_URL, "tutoriels/video-le-cadre-juridique"].join("/")
 LISTE_DES_DEMARCHES_URL = [DOC_URL, "listes-des-demarches"].join("/")
 CGU_URL = ENV.fetch("CGU_URL", [DOC_URL, "cgu"].join("/"))
