@@ -59,46 +59,34 @@ describe 'As an administrateur I can use Simpliscore to improve my procedure', j
       # Verify that step 2 suggestion exists (created by auto-enchainement)
       expect(procedure.draft_revision.llm_rule_suggestions.find_by(tunnel_id:, rule: 'improve_structure')).to be_present
 
-      # Step 2: improve_structure - simulate completion (no suggestions)
-      llm_rule_suggestion_2 = procedure.draft_revision.llm_rule_suggestions.find_by!(tunnel_id:, rule: 'improve_structure')
-      llm_rule_suggestion_2.update!(state: 'completed')
+      # Step 2: simulate completion + pre-create steps 3 and 4
+      llm_rule_suggestion_2 = procedure.draft_revision.llm_rule_suggestions.find_by!(tunnel_id:, rule: "improve_structure")
+      llm_rule_suggestion_2.update!(state: "completed")
 
-      visit simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id:, rule: 'improve_structure')
+      post_step1_hash = Digest::SHA256.hexdigest(procedure.draft_revision.reload.schema_to_llm.to_json)
+      create(:llm_rule_suggestion, procedure_revision: procedure.draft_revision,
+        tunnel_id:, rule: "improve_types", state: "completed", schema_hash: post_step1_hash)
+      create(:llm_rule_suggestion, procedure_revision: procedure.draft_revision,
+        tunnel_id:, rule: "cleaner", state: "completed", schema_hash: post_step1_hash)
 
-      # No suggestions - skip this step
+      # Stub job to prevent overwriting pre-created completed suggestions
+      allow(LLM::ImproveProcedureJob).to receive(:perform_now)
+
+      # Turbo poll detects step 2 completion and refreshes the page
       expect(page).to have_button("Poursuivre")
       click_button "Poursuivre"
 
-      # Auto-enchainement: Step 3 was created and search launched automatically
-      expect(page).to have_current_path(simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id:, rule: 'improve_types'))
+      # Step 3: already completed via pre-creation
+      expect(page).to have_current_path(simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id:, rule: "improve_types"))
       expect(page).to have_content("Bonne utilisation des types de champs")
-
-      # Step 3: improve_types - simulate completion (no suggestions)
-      llm_rule_suggestion_3 = procedure.draft_revision.llm_rule_suggestions.find_by!(tunnel_id:, rule: 'improve_types')
-      llm_rule_suggestion_3.update!(state: 'completed')
-
-      visit simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id:, rule: 'improve_types')
-
-      # No suggestions - skip this step
       expect(page).to have_button("Poursuivre")
       click_button "Poursuivre"
 
-      # Auto-enchainement: Step 4 (last step) was created and search launched automatically
-      expect(page).to have_current_path(simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id:, rule: 'cleaner'))
-      expect(page).to have_content(/demande unique d’information/i)
-
-      # Step 4: cleaner - simulate completion (no suggestions)
-      llm_rule_suggestion_4 = procedure.draft_revision.llm_rule_suggestions.find_by!(tunnel_id:, rule: 'cleaner')
-      llm_rule_suggestion_4.update!(state: 'completed')
-
-      visit simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id:, rule: 'cleaner')
-
-      # Should show success message (no suggestions)
+      # Step 4 (last step): already completed via pre-creation
+      expect(page).to have_current_path(simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id:, rule: "cleaner"))
       expect(page).to have_content(/Félicitations/)
       expect(page).to have_button("Poursuivre")
-
-      # Verify stepper is still shown (not finished until we click Poursuivre)
-      expect(page).to have_css('.fr-stepper')
+      expect(page).to have_css(".fr-stepper")
 
       # Click Poursuivre to finish the tunnel
       click_button "Poursuivre"
