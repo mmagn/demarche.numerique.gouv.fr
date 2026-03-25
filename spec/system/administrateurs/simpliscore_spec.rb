@@ -66,8 +66,12 @@ describe 'As an administrateur I can use Simpliscore to improve my procedure', j
       post_step1_hash = Digest::SHA256.hexdigest(procedure.draft_revision.reload.schema_to_llm.to_json)
       create(:llm_rule_suggestion, procedure_revision: procedure.draft_revision,
         tunnel_id:, rule: "improve_types", state: "completed", schema_hash: post_step1_hash)
-      create(:llm_rule_suggestion, procedure_revision: procedure.draft_revision,
+      cleaner_suggestion = create(:llm_rule_suggestion, procedure_revision: procedure.draft_revision,
         tunnel_id:, rule: "cleaner", state: "completed", schema_hash: post_step1_hash)
+      create(:llm_rule_suggestion_item,
+        llm_rule_suggestion: cleaner_suggestion,
+        stable_id: procedure.draft_revision.revision_types_de_champ_public.first.stable_id,
+        payload: { "stable_id" => procedure.draft_revision.revision_types_de_champ_public.first.stable_id, "action" => "delete" })
 
       # Stub job to prevent overwriting pre-created completed suggestions
       allow(LLM::ImproveProcedureJob).to receive(:perform_now)
@@ -82,14 +86,14 @@ describe 'As an administrateur I can use Simpliscore to improve my procedure', j
       expect(page).to have_button("Poursuivre")
       click_button "Poursuivre"
 
-      # Step 4 (last step): already completed via pre-creation
+      # Step 4 (last step): has suggestions — verify "terminer" wording
       expect(page).to have_current_path(simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id:, rule: "cleaner"))
-      expect(page).to have_content(/Félicitations/)
-      expect(page).to have_button("Poursuivre")
       expect(page).to have_css(".fr-stepper")
+      expect(page).to have_button("Ignorer cette étape et terminer")
+      expect(page).to have_css("input[type='submit'][value='Appliquer les suggestions et terminer']")
 
-      # Click Poursuivre to finish the tunnel
-      click_button "Poursuivre"
+      # Click skip to finish the tunnel (without checking checkbox to avoid schema change)
+      click_button "Ignorer cette étape et terminer"
 
       # After finishing the last step, we stay on cleaner to show the end-of-tunnel message
       expect(page).to have_current_path(simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id:, rule: 'cleaner'))
@@ -196,62 +200,6 @@ describe 'As an administrateur I can use Simpliscore to improve my procedure', j
       expect(new_suggestion.schema_hash).to eq(new_schema_hash)
       expect(new_suggestion.state).to eq('completed')
       expect(new_suggestion.id).not_to eq(llm_rule_suggestion.id)
-    end
-  end
-
-  describe 'button wording' do
-    scenario 'shows correct wording for intermediate and last steps', :aggregate_failures do
-      schema_hash = Digest::SHA256.hexdigest(procedure.draft_revision.schema_to_llm.to_json)
-
-      # --- First 3 steps: "poursuivre" wording ---
-      tunnel_id_1 = SecureRandom.hex(3)
-      llm_rule_suggestion = create(:llm_rule_suggestion,
-        procedure_revision: procedure.draft_revision,
-        tunnel_id: tunnel_id_1,
-        rule: 'improve_label',
-        state: 'completed',
-        schema_hash:)
-
-      create(:llm_rule_suggestion_item,
-        llm_rule_suggestion: llm_rule_suggestion,
-        stable_id: procedure.draft_revision.revision_types_de_champ_public.first.stable_id,
-        payload: { 'stable_id' => procedure.draft_revision.revision_types_de_champ_public.first.stable_id, 'libelle' => 'Nom' })
-
-      visit simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id: tunnel_id_1, rule: 'improve_label')
-
-      first('input[type="checkbox"][name*="verify_status"]').check(allow_label_click: true)
-
-      expect(page).to have_button("Appliquer les suggestions et poursuivre")
-      expect(page).to have_button("Ignorer cette étape et poursuivre")
-
-      # --- Last step: "terminer" wording ---
-      tunnel_id_2 = SecureRandom.hex(3)
-      create(:llm_rule_suggestion,
-        procedure_revision: procedure.draft_revision,
-        tunnel_id: tunnel_id_2,
-        rule: 'improve_label',
-        state: 'accepted',
-        created_at: 2.days.ago,
-        schema_hash:)
-
-      llm_rule_suggestion_cleaner = create(:llm_rule_suggestion,
-        procedure_revision: procedure.draft_revision,
-        tunnel_id: tunnel_id_2,
-        rule: 'cleaner',
-        state: 'completed',
-        schema_hash:)
-
-      create(:llm_rule_suggestion_item,
-        llm_rule_suggestion: llm_rule_suggestion_cleaner,
-        stable_id: procedure.draft_revision.revision_types_de_champ_public.first.stable_id,
-        payload: { 'stable_id' => procedure.draft_revision.revision_types_de_champ_public.first.stable_id, 'action' => 'delete' })
-
-      visit simplify_admin_procedure_types_de_champ_path(procedure, tunnel_id: tunnel_id_2, rule: 'cleaner')
-
-      first('input[type="checkbox"][name*="verify_status"]').check(allow_label_click: true)
-
-      expect(page).to have_button("Appliquer les suggestions et terminer")
-      expect(page).to have_button("Ignorer cette étape et terminer")
     end
   end
 end
