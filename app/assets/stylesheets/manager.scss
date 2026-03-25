@@ -1,5 +1,42 @@
 @import 'constants';
 
+/* DSFR utility classes inlined (DSFR not loaded in manager layout) */
+.fr-mt-2v {
+  margin-top: 0.5rem;
+}
+
+.fr-pl-16v {
+  padding-left: 4rem;
+}
+
+.fr-background-alt--blue-france {
+  background-color: #f5f5fe;
+}
+
+.fr-link {
+  color: #000091;
+  text-decoration: underline;
+}
+
+.fr-btn {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  min-height: 2.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #000091;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+
+  &--secondary {
+    background-color: transparent;
+    color: #000091;
+    box-shadow: inset 0 0 0 1px #000091;
+  }
+}
+
 .hidden {
   display: none;
 }
