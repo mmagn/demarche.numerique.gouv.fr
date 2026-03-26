@@ -2,7 +2,7 @@
   .fr-grid-row.fr-col-offset-md-2.fr-col-md-8
     .fr-col-12
 
-      %h1.text-center.mt-1= t('.choose_email_contact')
+      %h1.text-center.fr-mt-2v= t('.choose_email_contact')
 
       %p= t('.intro_html', email: @fci.email_france_connect)
 
@@ -51,7 +51,7 @@
               }
 
               = f.label :email, t('.alternative_email'), class: "fr-label"
-              %span.fr-hint-text.mb-1= t('activerecord.attributes.user.hints.email')
+              %span.fr-hint-text.fr-mb-2v= t('activerecord.attributes.user.hints.email')
               = f.email_field :email,
                 data: { action: "email-france-connect#triggerSubmitDisabled", email_france_connect_target: "emailInput" },
                 class: "fr-input"
