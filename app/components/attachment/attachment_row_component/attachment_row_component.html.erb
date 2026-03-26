@@ -37,6 +37,7 @@
     <% if @field_name.present? %>
       <%= hidden_field_tag @field_name, attachment.blob.signed_id %>
     <% end %>
+
     <% if user_can_destroy? %>
       <button
         type="button"
