@@ -9,9 +9,10 @@ class Attachment::AttachmentRowComponent < ApplicationComponent
   delegate :champ, :auto_attach_url, :direct_upload, :view_as, :user_can_destroy?,
            to: :context
 
-  def initialize(attachment:, context:)
+  def initialize(attachment:, context:, field_name: nil)
     @attachment = attachment
     @context = context
+    @field_name = field_name
   end
 
   def attachment_path(**args)
