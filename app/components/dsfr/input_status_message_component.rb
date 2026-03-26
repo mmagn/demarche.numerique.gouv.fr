@@ -32,7 +32,7 @@ module Dsfr
     end
 
     def referentiel_support_statut?
-      type_de_champ.referentiel? && !@champ.idle?
+      type_de_champ.referentiel? && (!@champ.idle? || type_de_champ.referentiel.blank?)
     end
 
     def pjs_statut?
@@ -68,7 +68,9 @@ module Dsfr
           { state: :info, text: dossier.text_summary }
         end
       when TypeDeChamp.type_champs[:referentiel]
-        if @champ.pending?
+        if type_de_champ.referentiel.blank?
+          { state: :error, text: t(".referentiel.not_configured") }
+        elsif @champ.pending?
           { state: :info, text: t(".referentiel.fetching") }
         elsif @champ.external_error?
           { state: :info, text: t(".referentiel.error", value: @champ.external_id) }
