@@ -410,6 +410,28 @@ describe ProcedureCloneConcern, type: :model do
         end
       end
 
+      context 'with a feature flag enabled by percentage of actors' do
+        before do
+          Flipper.enable_percentage_of_actors(:dossier_pdf_vide, 50)
+          Flipper.enable(:dossier_pdf_vide, procedure)
+        end
+
+        it 'should not clone actor gate for percentage-based feature' do
+          expect(Flipper.feature(:dossier_pdf_vide).actors_value).not_to include(subject.flipper_id)
+        end
+      end
+
+      context 'with a feature flag enabled by percentage of time' do
+        before do
+          Flipper.enable_percentage_of_time(:dossier_pdf_vide, 50)
+          Flipper.enable(:dossier_pdf_vide, procedure)
+        end
+
+        it 'should not clone actor gate for percentage-based feature' do
+          expect(Flipper.feature(:dossier_pdf_vide).actors_value).not_to include(subject.flipper_id)
+        end
+      end
+
       context 'with a feature flag disabled' do
         before do
           Flipper.disable(:dossier_pdf_vide, procedure)

@@ -132,7 +132,7 @@ module ProcedureCloneConcern
 
     Flipper.features.each do |feature|
       next if feature.enabled? # don't clone features globally enabled
-      next if feature.percentage_of_time_value > 0 # don't clone randomly enabled features
+      next if feature.percentage_of_time_value > 0 || feature.percentage_of_actors_value > 0 # don't clone percentage-based features
       next unless feature_enabled?(feature.key)
 
       Flipper.enable(feature.key, procedure)
