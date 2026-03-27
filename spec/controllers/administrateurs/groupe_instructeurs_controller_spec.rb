@@ -1272,7 +1272,7 @@ describe Administrateurs::GroupeInstructeursController, type: :controller do
     let!(:other_instructeur) { create(:instructeur) }
 
     before do
-      allow(GroupeInstructeurMailer).to receive(:notify_removed_instructeur_from_all_groupes)
+      allow(GroupeInstructeurMailer).to receive(:notify_removed_instructeur_from_many_groupes)
         .and_return(double(deliver_later: true))
       procedure.groupe_instructeurs.active.each do |gi|
         gi.add_instructeurs(emails: [instructeur_to_remove.email, other_instructeur.email])

@@ -41,14 +41,14 @@ RSpec.describe GroupeInstructeurMailer, type: :mailer do
     end
   end
 
-  describe '#notify_removed_instructeur_from_all_groupes' do
+  describe '#notify_removed_instructeur_from_many_groupes' do
     let(:procedure) { create(:procedure) }
     let(:groupe_instructeur_1) { create(:groupe_instructeur, procedure: procedure, label: 'Groupe 1') }
     let(:groupe_instructeur_2) { create(:groupe_instructeur, procedure: procedure, label: 'Groupe 2') }
     let(:instructeur_to_remove) { create(:instructeur, email: 'removed@test.fr') }
     let(:current_instructeur_email) { 'admin@test.fr' }
 
-    subject { described_class.notify_removed_instructeur_from_all_groupes(procedure, removed_from_groupes, instructeur_to_remove, current_instructeur_email, still_assigned) }
+    subject { described_class.notify_removed_instructeur_from_many_groupes(procedure, removed_from_groupes, instructeur_to_remove, current_instructeur_email, still_assigned) }
 
     context 'when instructeur is fully removed from procedure' do
       let(:removed_from_groupes) { [groupe_instructeur_1, groupe_instructeur_2] }
