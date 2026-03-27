@@ -50,6 +50,7 @@ AUTHORIZED_CONTENT_TYPES = PROCESSABLE_TYPES + AUTHORIZED_SPREADSHEET_TYPES + [
   'application/zip', # program x 25831
   'application/octet-stream', # program x 8923 autodesk, citadel
   'text/x-adasrc', # program x 5116 agricultaral data
+  'application/vnd.ms-outlook', # program .msg outlook
   'application/x-ole-storage', # program x 5015 msg message microsoft
   'application/x-zip-compressed', # program x 3242
   'text/csv', # program x 1901
