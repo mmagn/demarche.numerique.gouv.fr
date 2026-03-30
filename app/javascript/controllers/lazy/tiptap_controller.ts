@@ -29,7 +29,8 @@ export class TiptapController extends ApplicationController {
   static values = {
     insertAfterTag: { type: String, default: '' },
     attributes: { type: Object, default: {} },
-    previewUrl: { type: String, default: '' }
+    previewUrl: { type: String, default: '' },
+    singleLine: { type: Boolean, default: false }
   };
 
   declare editorTarget: Element;
@@ -39,6 +40,7 @@ export class TiptapController extends ApplicationController {
   declare insertAfterTagValue: string;
   declare attributesValue: Record<string, string>;
   declare previewUrlValue: string;
+  declare singleLineValue: boolean;
 
   // Link modal targets (optional - not all tiptap instances have the modal)
   declare hasLinkModalTarget: boolean;
@@ -57,11 +59,15 @@ export class TiptapController extends ApplicationController {
   #previewTimeout?: ReturnType<typeof setTimeout>;
 
   connect(): void {
+    if (this.singleLineValue) {
+      this.editorTarget.classList.add('tiptap--single-line');
+    }
     this.#editor = createEditor({
       editorElement: this.editorTarget,
       content: this.content,
       tags: this.tags,
       buttons: this.menuButtons,
+      singleLine: this.singleLineValue,
       attributes: { class: 'fr-input', ...this.attributesValue },
       onChange: ({ editor }) => {
         for (const button of this.buttonTargets) {
