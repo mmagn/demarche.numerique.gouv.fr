@@ -218,7 +218,7 @@ describe 'Piece justificative drag and drop', js: true do
   end
 
   context 'multiple files management' do
-    let(:types_de_champ_public) { [{ type: :piece_justificative, libelle: 'Documents' }, { type: :piece_justificative, libelle: 'Données géo', pj_limit_formats: '1', pj_format_families: ['donnees'] }] }
+    let(:types_de_champ_public) { [{ type: :piece_justificative, libelle: 'All types' }, { type: :piece_justificative, libelle: 'Données géo', pj_limit_formats: '1', pj_format_families: ['donnees'] }] }
     let(:procedure) { create(:procedure, :published, :for_individual, types_de_champ_public:) }
     let(:dossier) { user.dossiers.last }
 
@@ -232,12 +232,12 @@ describe 'Piece justificative drag and drop', js: true do
     end
 
     scenario 'manages multiple uploads, deletions and preserves dropzone visibility' do
-      within find('.editable-champ', text: 'Documents') do
+      within find('.editable-champ', text: 'All types') do
         # Drop zone visible initially
         expect(page).to have_css('.attachment-drop-zone')
 
         # Upload first file
-        attach_file('Documents', Rails.root.join('spec/fixtures/files/file.pdf'))
+        attach_file('All types', Rails.root.join('spec/fixtures/files/file.pdf'))
         expect(page).to have_text('file.pdf', wait: 5)
 
         # Drop zone should STILL be visible (max not reached)
@@ -245,7 +245,7 @@ describe 'Piece justificative drag and drop', js: true do
         expect(page).to have_button('Choisir des fichiers')
 
         # Upload second file
-        attach_file('Documents', Rails.root.join('spec/fixtures/files/white.png'))
+        attach_file('All types', Rails.root.join('spec/fixtures/files/white.png'))
         expect(page).to have_text('white.png', wait: 5)
 
         # Delete the first file
@@ -256,7 +256,7 @@ describe 'Piece justificative drag and drop', js: true do
         expect(page).to have_button('Choisir des fichiers')
 
         # Upload third file
-        attach_file('Documents', Rails.root.join('spec/fixtures/files/black.png'))
+        attach_file('All types', Rails.root.join('spec/fixtures/files/black.png'))
         expect(page).to have_text('black.png', wait: 5)
 
         # File list should contain white.png and black.png
@@ -264,6 +264,13 @@ describe 'Piece justificative drag and drop', js: true do
         expect(page).to have_text('white.png')
         expect(page).to have_text('black.png')
         expect(page).not_to have_text('file.pdf')
+      end
+
+      # Upload Outlook .msg on a regular PJ champ (browsers don't reliably map .msg to its MIME type)
+      within find('.editable-champ', text: 'All types') do
+        attach_file('All types', Rails.root.join('spec/fixtures/files/sample.msg'))
+        expect(page).to have_no_selector('.fr-message--error', wait: 3)
+        expect(page).to have_text('sample.msg', wait: 5)
       end
 
       # Upload KML on the donnees-restricted champ (browsers don't reliably map .kml to its MIME type)
