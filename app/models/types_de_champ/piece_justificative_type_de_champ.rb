@@ -88,7 +88,7 @@ class TypesDeChamp::PieceJustificativeTypeDeChamp < TypesDeChamp::TypeDeChampBas
           stable_id:,
           tdc_type: type_champ,
           label: "#{libelle_with_prefix(prefix)} – filled",
-          type: :boolean,
+          type: :text,
           displayable: true,
           mandatory: mandatory?
         ),
