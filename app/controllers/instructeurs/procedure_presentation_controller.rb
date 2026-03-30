@@ -96,10 +96,14 @@ module Instructeurs
         h[filter_name] = h.delete("filters") # move filters to the right key, ex: tous_filters
       end
 
-      # React ComboBox/MultiComboBox return [''] when no value is selected
-      # We need to remove them
       if h[:displayed_columns].present?
+        # React ComboBox/MultiComboBox return [''] when no value is selected
+        # We need to remove them
         h[:displayed_columns] = h[:displayed_columns].reject(&:empty?)
+
+        # when instructeur update displayed_columns, `customized` becomes true
+        # we consider he knows how to use the personnalization
+        h[:customized] = true
       end
 
       h
