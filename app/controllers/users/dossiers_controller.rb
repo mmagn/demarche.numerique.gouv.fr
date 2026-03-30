@@ -402,10 +402,29 @@ module Users
         dossier.resolve_pending_response!
 
         flash.notice = t('.message_send')
-        redirect_to messagerie_dossier_path(dossier)
+
+        respond_to do |format|
+          format.turbo_stream do
+            @dossier = dossier
+            @connected_user = current_user
+            @form_url = commentaire_dossier_path(dossier)
+            render template: 'shared/dossiers/create_commentaire'
+          end
+          format.html { redirect_to messagerie_dossier_path(dossier) }
+        end
       else
-        flash.now.alert = @commentaire.errors.full_messages
-        render :messagerie
+        respond_to do |format|
+          format.turbo_stream do
+            @dossier = dossier
+            @connected_user = current_user
+            @form_url = commentaire_dossier_path(dossier)
+            render template: 'shared/dossiers/create_commentaire', status: :unprocessable_entity
+          end
+          format.html do
+            flash.now.alert = @commentaire.errors.full_messages
+            render :messagerie, status: :unprocessable_entity
+          end
+        end
       end
     end
 

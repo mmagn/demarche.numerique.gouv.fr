@@ -113,6 +113,14 @@ class Attachment::FileFieldComponent < ApplicationComponent
     @drop_zone_decorator ||= Attachment::DropZoneDecorator.new(mode: :integrated)
   end
 
+  def field_name
+    file_input_component.field_name_or_default
+  end
+
+  def attachment_rerender_after_validation_error?
+    attached_file.record.new_record? && @attachments.any?
+  end
+
   private
 
   def infer_max

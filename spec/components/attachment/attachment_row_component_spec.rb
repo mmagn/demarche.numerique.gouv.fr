@@ -71,6 +71,29 @@ RSpec.describe Attachment::AttachmentRowComponent, type: :component do
     end
   end
 
+  context 'when the attachment is not persisted (e.g. model validation error)' do
+    let(:blob) do
+      ActiveStorage::Blob.create_and_upload!(io: StringIO.new("test"), filename: "test.txt", content_type: "text/plain")
+    end
+    let(:attachment) do
+      ActiveStorage::Attachment.new(
+        name: 'piece_jointe',
+        record: dossier.commentaires.build,
+        blob: blob
+      )
+    end
+    let(:context) do
+      Attachment::Context.new(attached_file: attachment.record.piece_jointe)
+    end
+
+    it 'renders a JS remove button instead of the server delete button' do
+      expect(attachment).not_to be_persisted
+      expect(subject).to have_content("test.txt")
+      expect(subject).not_to have_selector('input[name="_method"][value="delete"]')
+      expect(subject).to have_selector('button[data-action="element-remove#remove"]')
+    end
+  end
+
   context 'with non nominal or final antivirus status' do
     before do
       champ.piece_justificative_file[0].blob.update(virus_scan_result:)

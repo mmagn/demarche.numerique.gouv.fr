@@ -178,10 +178,29 @@ module Experts
         DossierNotification.create_notification(avis.dossier, :message)
 
         flash.notice = "Message envoyé"
-        redirect_to messagerie_expert_avis_path(avis.procedure, avis)
+
+        respond_to do |format|
+          format.turbo_stream do
+            @dossier = avis.dossier
+            @connected_user = current_expert
+            @form_url = commentaire_expert_avis_path(avis)
+            render template: 'shared/dossiers/create_commentaire'
+          end
+          format.html { redirect_to messagerie_expert_avis_path(avis.procedure, avis) }
+        end
       else
-        flash.alert = @commentaire.errors.full_messages
-        render :messagerie
+        respond_to do |format|
+          format.turbo_stream do
+            @dossier = avis.dossier
+            @connected_user = current_expert
+            @form_url = commentaire_expert_avis_path(avis)
+            render template: 'shared/dossiers/create_commentaire', status: :unprocessable_entity
+          end
+          format.html do
+            flash.alert = @commentaire.errors.full_messages
+            render :messagerie, status: :unprocessable_entity
+          end
+        end
       end
     end
 
