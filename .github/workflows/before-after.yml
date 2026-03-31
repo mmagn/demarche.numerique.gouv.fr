@@ -1,0 +1,37 @@
+name: Before/After Visual Regression
+
+on:
+  pull_request:
+    types: [labeled, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  before-after:
+    if: contains(github.event.pull_request.labels.*.name, 'haml-to-erb')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Wait for CI checks to pass
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          running-workflow-name: before-after
+          allowed-conclusions: success
+
+      - name: Comment on PR - started
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} \
+            --body "Before/After working..."
+
+      - uses: actions/checkout@v4
+
+      - name: Take screenshots
+        run: |
+          echo "TODO: implement before/after screenshots with Claude"
