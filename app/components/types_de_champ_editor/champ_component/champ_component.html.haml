@@ -80,7 +80,7 @@
                   class: 'fr-select small-margin small inline width-100',
                   id: dom_id(type_de_champ, :nature)
               - nature_dom_id = dom_id(type_de_champ, :nature)
-              - if type_de_champ.titre_identite_nature?
+              - if type_de_champ.titre_identite?
                 .fr-hr
                 .cell
                   = form.label :formats_accepted, t('.identity_formats.title'), for: nature_dom_id, class: 'fake-label'
@@ -133,15 +133,15 @@
                             - else
                               = form.label "pj_format_families_#{value}", label, for: dom_id(type_de_champ, "pj_format_#{value}"), class: 'fr-label'
 
-              - if !type_de_champ.titre_identite_nature?
+              - if !type_de_champ.titre_identite?
                 .fr-hr.fr-mt-2w
                 .cell
                   .fr-toggle
                     = form.check_box :pj_auto_purge, id: dom_id(type_de_champ, :pj_auto_purge), class: 'fr-toggle__input'
                     = form.label :pj_auto_purge, t('.auto_purge_label'), for: dom_id(type_de_champ, :pj_auto_purge), class: 'fr-toggle__label fr-label'
 
-            - if type_de_champ.piece_justificative_or_titre_identite?
-              .fr-hr{ class: class_names('fr-mt-2w': !type_de_champ.titre_identite_nature?) }
+            - if type_de_champ.piece_justificative?
+              .fr-hr{ class: class_names('fr-mt-2w': !type_de_champ.titre_identite?) }
               .cell
                 = form.label :piece_justificative_template, t('.template_label'), for: dom_id(type_de_champ, :piece_justificative_template)
                 %p.fr-hint-text= t('.max_file_size_hint', max_file_size: number_to_human_size(type_de_champ.max_file_size_bytes))
@@ -155,7 +155,7 @@
                         Dans le cadre de la RGPD, le titre d’identité sera supprimé lors de l’acceptation, du refus ou du classement sans suite du dossier.<br>
                         Aussi, pour des raisons de sécurité, un filigrane est automatiquement ajouté aux images.<br>
                         Finalement, le titre d’identité ne sera ni disponible dans les zip de dossiers, ni téléchargeable par API.
-              - elsif procedure.piece_justificative_multiple? && !type_de_champ.titre_identite_nature? && !type_de_champ.RIB?
+              - elsif procedure.piece_justificative_multiple? && !type_de_champ.titre_identite? && !type_de_champ.RIB?
                 .fr-hr.fr-mt-2w
                 .cell
                   %p= t('.multiple_files_hint')

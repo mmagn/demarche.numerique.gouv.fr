@@ -67,7 +67,7 @@ class Champs::PieceJustificativeChamp < Champ
     allowed_types = nil
     max_size = nil
 
-    if type_de_champ.titre_identite_nature?
+    if type_de_champ.titre_identite?
       allowed_types = type_de_champ.allowed_content_types
       max_size = type_de_champ.max_file_size_bytes
     elsif type_de_champ.RIB?

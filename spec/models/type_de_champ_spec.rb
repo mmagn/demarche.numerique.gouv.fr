@@ -336,7 +336,6 @@ describe TypeDeChamp do
     it_behaves_like "a prefillable type de champ", :type_de_champ_siret
 
     it_behaves_like "a non-prefillable type de champ", :type_de_champ_number
-    it_behaves_like "a non-prefillable type de champ", :type_de_champ_titre_identite
     it_behaves_like "a non-prefillable type de champ", :type_de_champ_linked_drop_down_list
     it_behaves_like "a non-prefillable type de champ", :type_de_champ_header_section
     it_behaves_like "a non-prefillable type de champ", :type_de_champ_explication

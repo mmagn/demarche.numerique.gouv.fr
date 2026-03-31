@@ -36,7 +36,7 @@ class Champ < ApplicationRecord
     :description,
     :max_file_size_bytes,
     :allowed_content_types,
-    :titre_identite_nature?,
+    :titre_identite?,
     :pj_limit_formats?,
     :pj_format_families,
     :pj_auto_purge?,
@@ -88,7 +88,7 @@ class Champ < ApplicationRecord
     to: :type_de_champ
 
   delegate(*TypeDeChamp.type_champs.values.map { "#{_1}?".to_sym }, to: :type_de_champ)
-  delegate :piece_justificative_or_titre_identite?, :any_drop_down_list?, to: :type_de_champ
+  delegate :any_drop_down_list?, to: :type_de_champ
 
   delegate :to_typed_id, :to_typed_id_for_query, to: :type_de_champ, prefix: true
 

@@ -51,7 +51,7 @@ RSpec.describe ChampValidateConcern do
     end
 
     context 'attachments' do
-      let(:types_de_champ_public) { [{ type: :piece_justificative }, { type: :titre_identite }] }
+      let(:types_de_champ_public) { [{ type: :piece_justificative }, { type: :piece_justificative, nature: 'TITRE_IDENTITE' }] }
 
       before {
         dossier.revision.revision_types_de_champ.delete_all

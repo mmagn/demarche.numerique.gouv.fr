@@ -2067,7 +2067,7 @@ describe Instructeurs::DossiersController, type: :controller do
       expect(response.body).to include('Pièce jointe à l’avis')
       expect(assigns(:gallery_attachments).count).to eq 4
       expect(assigns(:gallery_attachments)).to all(be_a(ActiveStorage::Attachment))
-      expect([Champs::PieceJustificativeChamp, Champs::TitreIdentiteChamp, Commentaire, Avis]).to include(*assigns(:gallery_attachments).map { _1.record.class })
+      expect([Champs::PieceJustificativeChamp, Commentaire, Avis]).to include(*assigns(:gallery_attachments).map { _1.record.class })
     end
   end
 

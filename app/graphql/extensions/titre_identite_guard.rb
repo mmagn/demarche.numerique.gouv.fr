@@ -10,7 +10,7 @@ module Extensions
   # @see https://graphql-ruby.org/type_definitions/field_extensions.html
   class TitreIdentiteGuard < GraphQL::Schema::FieldExtension
     def resolve(object:, arguments:, context:)
-      if object.object.titre_identite_nature?
+      if object.object.titre_identite?
         field.type.list? ? [] : nil
       else
         yield(object, arguments)
