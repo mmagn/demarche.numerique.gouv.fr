@@ -1,0 +1,97 @@
+name: Daily HAML to ERB Conversion
+
+on:
+  schedule:
+    - cron: '0 7 * * 1-5' # 7 UTC = 9 AM Paris (CET), weekdays only
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Find and convert first convertible HAML file
+        id: convert
+        run: |
+          # Find all HAML files, excluding worktrees
+          HAML_FILES=$(find . -name "*.haml" -not -path "./.worktrees/*" | sort)
+
+          if [ -z "$HAML_FILES" ]; then
+            echo "No HAML files found"
+            echo "converted=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          CONVERTED=false
+
+          for file in $HAML_FILES; do
+            echo "Trying dry-run on: $file"
+            if bundle exec haml_to_erb "$file" --dry-run 2>/dev/null; then
+              echo "Dry-run passed for: $file"
+              echo "Converting: $file"
+              bundle exec haml_to_erb "$file" --check --delete --force
+              CONVERTED=true
+              # Compute the ERB path (replace .haml with .erb)
+              erb_file="${file%.haml}.erb"
+              echo "file=$file" >> "$GITHUB_OUTPUT"
+              echo "erb_file=$erb_file" >> "$GITHUB_OUTPUT"
+              echo "converted=true" >> "$GITHUB_OUTPUT"
+              break
+            else
+              echo "Dry-run failed for: $file, skipping"
+            fi
+          done
+
+          if [ "$CONVERTED" = false ]; then
+            echo "No HAML file could be converted"
+            echo "converted=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit, push, and create Pull Request
+        if: steps.convert.outputs.converted == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          HAML_FILE="${{ steps.convert.outputs.file }}"
+          ERB_FILE="${{ steps.convert.outputs.erb_file }}"
+          BRANCH="auto/haml-to-erb-conversion"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git checkout -B "$BRANCH"
+
+          # Stage only the converted ERB and the deleted HAML
+          git add "$ERB_FILE"
+          git add "$HAML_FILE"
+
+          git commit -m "refactor: convert $HAML_FILE from HAML to ERB"
+          git push --force-with-lease origin "$BRANCH"
+
+          gh pr create \
+            --title "Tech: convertir $HAML_FILE de HAML en ERB" \
+            --body "$(cat <<'PREOF'
+          ## Summary
+          - Conversion automatique de `${{ steps.convert.outputs.file }}` de HAML en ERB via `haml_to_erb --check --delete`
+
+          ## Test plan
+          - [ ] Vérifier que le rendu ERB est identique au HAML original
+          - [ ] Lancer les tests liés au composant/vue converti
+          - [ ] Vérifier le lint ERB (`bun lint:herb`)
+
+          🤖 Généré automatiquement par le workflow `haml-to-erb-conversion`
+          PREOF
+          )" \
+            --head "$BRANCH" \
+            --base main || echo "PR already exists, updated branch"
