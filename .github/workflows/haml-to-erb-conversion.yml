@@ -28,6 +28,13 @@ jobs:
         run: |
           # Fetch titles of open PRs created by this workflow to skip already-converted files
           EXISTING_PRS=$(gh pr list --state open --label haml-to-erb --json title --jq '.[].title')
+          echo "=== Open haml-to-erb PRs ==="
+          if [ -z "$EXISTING_PRS" ]; then
+            echo "(none)"
+          else
+            echo "$EXISTING_PRS"
+          fi
+          echo "==========================="
 
           # Find all HAML files, excluding worktrees
           HAML_FILES=$(find . -name "*.haml" -not -path "./.worktrees/*" | sort)
@@ -38,14 +45,17 @@ jobs:
             exit 0
           fi
 
+          echo "Found $(echo "$HAML_FILES" | wc -l | tr -d ' ') HAML files"
           CONVERTED=false
 
           for file in $HAML_FILES; do
             # Check if there is already an open PR for this file
+            echo "Checking PR existence for: $file"
             if echo "$EXISTING_PRS" | grep -qF "$file"; then
-              echo "Skipping $file: open PR already exists"
+              echo "  -> Skipping: open PR already exists"
               continue
             fi
+            echo "  -> No existing PR found"
 
             echo "Trying dry-run on: $file"
             if bundle exec haml_to_erb "$file" --dry-run 2>/dev/null; then
@@ -102,7 +112,7 @@ jobs:
           git add "$HAML_FILE"
 
           git commit -m "refactor: convert $HAML_FILE from HAML to ERB"
-          git push --force-with-lease origin "$BRANCH"
+          git push --force origin "$BRANCH"
 
           gh pr create \
             --title "Tech: convertir $HAML_FILE de HAML en ERB" \
