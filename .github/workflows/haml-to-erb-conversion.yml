@@ -23,7 +23,12 @@ jobs:
 
       - name: Find and convert first convertible HAML file
         id: convert
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Fetch titles of open PRs created by this workflow to skip already-converted files
+          EXISTING_PRS=$(gh pr list --state open --label haml-to-erb --json title --jq '.[].title')
+
           # Find all HAML files, excluding worktrees
           HAML_FILES=$(find . -name "*.haml" -not -path "./.worktrees/*" | sort)
 
@@ -36,6 +41,12 @@ jobs:
           CONVERTED=false
 
           for file in $HAML_FILES; do
+            # Check if there is already an open PR for this file
+            if echo "$EXISTING_PRS" | grep -qF "$file"; then
+              echo "Skipping $file: open PR already exists"
+              continue
+            fi
+
             echo "Trying dry-run on: $file"
             if bundle exec haml_to_erb "$file" --dry-run 2>/dev/null; then
               echo "Dry-run passed for: $file"
@@ -58,6 +69,18 @@ jobs:
             echo "converted=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Set up Bun
+        if: steps.convert.outputs.converted == 'true'
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install JS dependencies
+        if: steps.convert.outputs.converted == 'true'
+        run: bun install --frozen-lockfile
+
+      - name: Format ERB file
+        if: steps.convert.outputs.converted == 'true'
+        run: bun format:herb -- ${{ steps.convert.outputs.erb_file }}
+
       - name: Commit, push, and create Pull Request
         if: steps.convert.outputs.converted == 'true'
         env:
@@ -65,7 +88,9 @@ jobs:
         run: |
           HAML_FILE="${{ steps.convert.outputs.file }}"
           ERB_FILE="${{ steps.convert.outputs.erb_file }}"
-          BRANCH="auto/haml-to-erb-conversion"
+          # Unique branch per file to allow multiple open PRs
+          SLUG=$(echo "$HAML_FILE" | sed 's|[./]|_|g')
+          BRANCH="auto/haml-to-erb/${SLUG}"
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -94,4 +119,5 @@ jobs:
           PREOF
           )" \
             --head "$BRANCH" \
+            --label "haml-to-erb" \
             --base main || echo "PR already exists, updated branch"
