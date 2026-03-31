@@ -1,0 +1,21 @@
+= rake-progressbar
+
+Progress bar for long runnung jobs in terminal - useful mostly for rake tasks (imports, exports, archives etc.)
+
+== Usage
+RakeProgressbar.new(maximal_count) - in maximal count you are passing number 1> ho many jobs (increments you will perform) 
+
+ bar = RakeProgressbar.new(100)
+ 100.times do 
+  bar.inc
+ end
+ bar.finished
+	
+It will generate:
+ 25.2% [#####_______________] 01:02:30 -> 00:25:13 
+	
+== Copyright
+
+Copyright (c) 2011 Ondrej Bartas. See LICENSE.txt for
+further details.
+

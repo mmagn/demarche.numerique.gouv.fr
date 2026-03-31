@@ -1,0 +1,58 @@
+require:
+  - rubocop-rspec
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - vendor/bundle/**/*
+  TargetRubyVersion: 2.6
+
+# TODO: require a minimum Ruby version (breaking change)
+Gemspec/RequiredRubyVersion:
+  Enabled: false
+
+Layout/LineLength:
+  Max: 140
+
+Layout/MultilineMethodCallIndentation:
+  Exclude:
+    - 'spec/**/*.rb'
+
+Lint/EmptyBlock:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
+
+RSpec/DescribeClass:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Max: 10
+
+RSpec/LeadingSubject:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Max: 3
+
+Style/Documentation:
+  Enabled: false
+
+Style/MixinUsage:
+  Enabled: false
+
+Style/OptionalBooleanParameter:
+  Enabled: false
+
+Style/ParallelAssignment:
+  Enabled: false
+
+Style/SignalException:
+  EnforcedStyle: semantic
+
+Style/SymbolArray:
+  EnforcedStyle: brackets
+
+Style/WordArray:
+  EnforcedStyle: brackets

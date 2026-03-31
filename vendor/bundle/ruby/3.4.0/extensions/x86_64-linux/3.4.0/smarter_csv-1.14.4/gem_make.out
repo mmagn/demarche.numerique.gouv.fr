@@ -1,0 +1,26 @@
+current directory: /Users/mathieumagnin/dev/pro/beta/mmagn-demarche.numerique.gouv.fr/vendor/bundle/ruby/3.4.0/gems/smarter_csv-1.14.4/ext/smarter_csv
+/opt/hostedtoolcache/Ruby/3.4.5/x64/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /Users/mathieumagnin/dev/pro/beta/mmagn-demarche.numerique.gouv.fr/vendor/bundle/ruby/3.4.0/gems/smarter_csv-1.14.4/ext/smarter_csv
+make DESTDIR\= sitearchdir\=./.gem.20260331-104-5l3hpt sitelibdir\=./.gem.20260331-104-5l3hpt clean
+
+current directory: /Users/mathieumagnin/dev/pro/beta/mmagn-demarche.numerique.gouv.fr/vendor/bundle/ruby/3.4.0/gems/smarter_csv-1.14.4/ext/smarter_csv
+make DESTDIR\= sitearchdir\=./.gem.20260331-104-5l3hpt sitelibdir\=./.gem.20260331-104-5l3hpt
+compiling smarter_csv.c
+smarter_csv.c: In function ‘rb_parse_csv_line’:
+smarter_csv.c:54:10: warning: unused variable ‘quote_len’ [-Wunused-variable]
+   54 |   size_t quote_len = strlen(quoteP);
+      |          ^~~~~~~~~
+smarter_csv.c: At top level:
+cc1: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics
+linking shared-object smarter_csv/smarter_csv.so
+
+current directory: /Users/mathieumagnin/dev/pro/beta/mmagn-demarche.numerique.gouv.fr/vendor/bundle/ruby/3.4.0/gems/smarter_csv-1.14.4/ext/smarter_csv
+make DESTDIR\= sitearchdir\=./.gem.20260331-104-5l3hpt sitelibdir\=./.gem.20260331-104-5l3hpt install
+/usr/bin/install -c -m 0755 smarter_csv.so ./.gem.20260331-104-5l3hpt/smarter_csv
+
+current directory: /Users/mathieumagnin/dev/pro/beta/mmagn-demarche.numerique.gouv.fr/vendor/bundle/ruby/3.4.0/gems/smarter_csv-1.14.4/ext/smarter_csv
+make DESTDIR\= sitearchdir\=./.gem.20260331-104-5l3hpt sitelibdir\=./.gem.20260331-104-5l3hpt clean

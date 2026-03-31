@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# This script lists the methods that aren't immediately preceded by a
+# comment. The output is empty and the exit status is successful if they
+# all have a comment.
+#
+# This is used in a test in project_spec.rb to ensure documentation
+# coverage.
+
+find lib -type f -name \*.rb ! -path lib/parsby/example/\* \
+| xargs grep -REh '^\s*(#|(class|module|def|define_combinator|end)\b)' \
+| awk '
+  function get_indent_level() {
+    return match($0, "[^[:blank:]]") - 1
+  }
+
+  /^\s*(module|class)\>/ {
+    match($0, /^\s*(class|module)\s*([^[:blank:]]+)/, matches)
+    indent_level = get_indent_level()
+    context[indent_level] = matches[2]
+    for (i in context) {
+      if (i > indent_level) {
+        delete context[i]
+      }
+    }
+  }
+
+  /^\s*(def|define_combinator)\>/ && !prev_line_is_comment {
+    indent_level = get_indent_level()
+    first = 1
+    for (i in context) {
+      if (i < indent_level) {
+        printf(first ? "%s" : "::%s", context[i])
+        first = 0
+      }
+    }
+    match($0, /^\s*(def|define_combinator)\s*(self\.|:)?([^([:blank:]]+)/, matches)
+    print (matches[2] == "self." ? "." : "#") matches[3]
+    at_least_one_missing = 1
+  }
+
+  {
+    prev_line_is_comment = /^\s*#/
+  }
+
+  END {
+    exit at_least_one_missing
+  }
+' | grep -v '[#.]included$'

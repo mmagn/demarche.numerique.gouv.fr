@@ -1,0 +1,18 @@
+current directory: /Users/mathieumagnin/dev/pro/beta/mmagn-demarche.numerique.gouv.fr/vendor/bundle/ruby/3.4.0/gems/bindex-0.8.1/ext/skiptrace
+/opt/hostedtoolcache/Ruby/3.4.5/x64/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /Users/mathieumagnin/dev/pro/beta/mmagn-demarche.numerique.gouv.fr/vendor/bundle/ruby/3.4.0/gems/bindex-0.8.1/ext/skiptrace
+make DESTDIR\= sitearchdir\=./.gem.20260331-104-sdvhpq sitelibdir\=./.gem.20260331-104-sdvhpq clean
+
+current directory: /Users/mathieumagnin/dev/pro/beta/mmagn-demarche.numerique.gouv.fr/vendor/bundle/ruby/3.4.0/gems/bindex-0.8.1/ext/skiptrace
+make DESTDIR\= sitearchdir\=./.gem.20260331-104-sdvhpq sitelibdir\=./.gem.20260331-104-sdvhpq
+compiling cruby.c
+linking shared-object skiptrace/internal/cruby.so
+
+current directory: /Users/mathieumagnin/dev/pro/beta/mmagn-demarche.numerique.gouv.fr/vendor/bundle/ruby/3.4.0/gems/bindex-0.8.1/ext/skiptrace
+make DESTDIR\= sitearchdir\=./.gem.20260331-104-sdvhpq sitelibdir\=./.gem.20260331-104-sdvhpq install
+/usr/bin/install -c -m 0755 cruby.so ./.gem.20260331-104-sdvhpq/skiptrace/internal
+
+current directory: /Users/mathieumagnin/dev/pro/beta/mmagn-demarche.numerique.gouv.fr/vendor/bundle/ruby/3.4.0/gems/bindex-0.8.1/ext/skiptrace
+make DESTDIR\= sitearchdir\=./.gem.20260331-104-sdvhpq sitelibdir\=./.gem.20260331-104-sdvhpq clean

@@ -1,0 +1,18 @@
+current directory: /Users/mathieumagnin/dev/pro/beta/mmagn-demarche.numerique.gouv.fr/vendor/bundle/ruby/3.4.0/gems/cgi-0.5.1/ext/cgi/escape
+/opt/hostedtoolcache/Ruby/3.4.5/x64/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /Users/mathieumagnin/dev/pro/beta/mmagn-demarche.numerique.gouv.fr/vendor/bundle/ruby/3.4.0/gems/cgi-0.5.1/ext/cgi/escape
+make DESTDIR\= sitearchdir\=./.gem.20260331-104-5dp5eq sitelibdir\=./.gem.20260331-104-5dp5eq clean
+
+current directory: /Users/mathieumagnin/dev/pro/beta/mmagn-demarche.numerique.gouv.fr/vendor/bundle/ruby/3.4.0/gems/cgi-0.5.1/ext/cgi/escape
+make DESTDIR\= sitearchdir\=./.gem.20260331-104-5dp5eq sitelibdir\=./.gem.20260331-104-5dp5eq
+compiling escape.c
+linking shared-object cgi/escape.so
+
+current directory: /Users/mathieumagnin/dev/pro/beta/mmagn-demarche.numerique.gouv.fr/vendor/bundle/ruby/3.4.0/gems/cgi-0.5.1/ext/cgi/escape
+make DESTDIR\= sitearchdir\=./.gem.20260331-104-5dp5eq sitelibdir\=./.gem.20260331-104-5dp5eq install
+/usr/bin/install -c -m 0755 escape.so ./.gem.20260331-104-5dp5eq/cgi
+
+current directory: /Users/mathieumagnin/dev/pro/beta/mmagn-demarche.numerique.gouv.fr/vendor/bundle/ruby/3.4.0/gems/cgi-0.5.1/ext/cgi/escape
+make DESTDIR\= sitearchdir\=./.gem.20260331-104-5dp5eq sitelibdir\=./.gem.20260331-104-5dp5eq clean

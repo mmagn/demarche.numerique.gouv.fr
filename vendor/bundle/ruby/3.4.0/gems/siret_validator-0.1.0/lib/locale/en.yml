@@ -1,0 +1,4 @@
+en:
+  errors:
+    messages:
+      wrong_siret_format: is the wrong length (should be 14 digits)

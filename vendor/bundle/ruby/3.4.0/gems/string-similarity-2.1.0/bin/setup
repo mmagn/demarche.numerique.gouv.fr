@@ -1,0 +1,8 @@
+#!/bin/sh
+# Install required dependencies and set up for development.
+
+set -e
+
+cd "$(dirname $0)/.."
+
+bundle install && bundle clean

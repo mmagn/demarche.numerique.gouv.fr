@@ -1,0 +1,119 @@
+<%
+  default = commands.delete(:default).map { |s| indent 2, s }.join(" &&\n")
+  build   = commands.delete(:build).map   { |s| indent 2, s }.join(" &&\n")
+  launch  = commands.delete(:launch).map  { |s| indent 2, s }.join(" &&\n")
+  clean   = commands.delete(:clean).map   { |s| indent 2, s }.join(" &&\n")
+%>
+#!/usr/bin/env bash
+
+# Go to the deploy path
+cd "<%= fetch(:deploy_to) %>" || (
+  echo "! ERROR: not set up."
+  echo "The path '<%= fetch(:deploy_to) %>' is not accessible on the server."
+  echo "You may need to run 'mina setup' first."
+  false
+) || exit 15
+
+# Check releases path
+if [ ! -d "<%= fetch(:releases_path) %>" ]; then
+  echo "! ERROR: not set up."
+  echo "The directory '<%= fetch(:releases_path) %>' does not exist on the server."
+  echo "You may need to run 'mina setup' first."
+  exit 16
+fi
+
+# Check lockfile
+if [ -e "<%= fetch(:lock_file) %>" ]; then
+  echo "! ERROR: another deployment is ongoing."
+  echo "The file '<%= fetch(:lock_file) %>' was found. File was last modified at $(stat -c %y <%= fetch(:lock_file) %>)"
+  echo "If no other deployment is ongoing, run 'mina deploy:force_unlock' to delete the file."
+  exit 17
+fi
+
+# Determine $previous_path and other variables
+[ -h "<%= fetch(:current_path) %>" ] && [ -d "<%= fetch(:current_path) %>" ] && previous_path=$(cd "<%= fetch(:current_path) %>" >/dev/null && pwd -LP)
+build_path="./tmp/build-$(date +%s)$RANDOM"
+
+version="<%= next_version %>"
+release_path="<%= fetch(:releases_path) %>/$version"
+
+# Sanity check
+if [ -e "$build_path" ]; then
+  echo "! ERROR: Path already exists."
+  exit 18
+fi
+
+# Bootstrap script (in deployer)
+(
+  echo "-----> Creating a temporary build path"
+  <%= echo_cmd %[touch "#{fetch(:lock_file)}"] %> &&
+  <%= echo_cmd %[mkdir -p "$build_path"] %> &&
+  <%= echo_cmd %[cd "$build_path"] %> &&
+  (
+<%= indent 2, (default.empty? ? "true" : default) %>
+  ) &&
+  echo "-----> Deploy finished"
+) &&
+
+#
+# Build
+(
+  echo "-----> Building"
+  echo "-----> Moving build to $release_path"
+  <%= echo_cmd %[mv "$build_path" "$release_path"] %> &&
+  <%= echo_cmd %[cd "$release_path"] %> &&
+  (
+<%= indent 2, (build.empty? ? "true" : build) %>
+  ) &&
+  echo "-----> Build finished"
+
+) &&
+
+#
+# Launching
+# Rename to the real release path, then symlink 'current'
+(
+  echo "-----> Launching"
+  echo "-----> Updating the <%= fetch(:current_path) %> symlink" &&
+  <%= echo_cmd %[ln -nfs "$release_path" "#{fetch(:current_path)}"] %>
+) &&
+
+# ============================
+# === Start up server => (in deployer)
+(
+  <%= echo_cmd %[cd "#{fetch(:current_path)}"] %>
+<%= indent 2, (launch.empty? ? "true" : launch) %>
+) &&
+
+# ============================
+# === Complete & unlock
+(
+  rm -f "<%= fetch(:lock_file) %>"
+  echo "-----> Done. Deployed version $version"
+) ||
+
+# ============================
+# === Failed deployment
+(
+  echo "! ERROR: Deploy failed."
+
+<%= indent 2, clean %>
+
+  echo "-----> Cleaning up build"
+  [ -e "$build_path" ] && (
+    <%= echo_cmd %[rm -rf "$build_path"] %>
+  )
+  [ -e "$release_path" ] && (
+    echo "Deleting release"
+    <%= echo_cmd %[rm -rf "$release_path"] %>
+  )
+  (
+    echo "Unlinking current"
+    [ -n "$previous_path" ] && <%= echo_cmd %[ln -nfs "$previous_path" "#{fetch(:current_path)}"] %>
+  )
+
+  # Unlock
+  <%= echo_cmd %[rm -f "#{fetch(:lock_file)}"] %>
+  echo "OK"
+  exit 19
+)

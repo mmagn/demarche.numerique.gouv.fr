@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "parsby"
+
+# You can add fixtures and/or initialization code here to make experimenting
+# with your gem easier. You can also use a different console, if you like.
+
+# (If you use this, don't forget to add pry to your Gemfile!)
+require "pry"
+
+def to_constant_representation(path)
+  path
+    .gsub("/", "::")
+    .gsub(/(\A|(?<=::)|_)./) {|x| x[-1].upcase }
+    .sub(/\.rb\z/, "")
+end
+
+def reload!
+  Dir["lib/**/*"]
+    .map {|p| Pathname.new(p).relative_path_from(Pathname.new("lib/")) }
+    .select {|p| p.to_s =~ /\.rb\z/ && p.to_s != "parsby/version.rb" }
+    .each do |p|
+      const = to_constant_representation(p.to_s)
+      # Don't bother removing children constants, since we'll remove the
+      # parents.
+      unless const =~ /::/ || !Object.const_defined?(const)
+        Object.send(:remove_const, const)
+      end
+    end
+    .each(&method(:load)) # Load everything only after having removed everything.
+
+  include Parsby::Combinators
+  extend Parsby::Combinators::ModuleMethods
+  nil
+end
+
+reload!
+
+Pry.start

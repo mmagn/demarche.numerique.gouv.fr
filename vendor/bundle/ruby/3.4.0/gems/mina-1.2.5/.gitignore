@@ -1,0 +1,9 @@
+doc
+test_env/deploy
+.rvmrc
+.ruby-gemset
+.ruby-version
+pkg/
+support/helpers.md
+support/modules.md
+coverage/

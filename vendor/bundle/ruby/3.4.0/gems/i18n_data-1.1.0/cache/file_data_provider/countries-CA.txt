@@ -1,0 +1,249 @@
+AW;;Aruba
+AF;;Afganistan
+AO;;Angola
+AI;;Anguilla
+AX;;Illes Åland
+AL;;Albània
+AD;;Andorra
+AE;;Emirats Àrabs Units
+AR;;Argentina
+AM;;Armènia
+AS;;Samoa Americana
+AQ;;Antàrtida
+TF;;Terres Australs Antàrtiques Franceses
+AG;;Antigua i Barbuda
+AU;;Austràlia
+AT;;Àustria
+AZ;;Azerbaidjan
+BI;;Burundi
+BE;;Bèlgica
+BJ;;Benín
+BQ;;Bonaire, Sint Eustatius i Saba
+BF;;Burkina Faso
+BD;;Bangladesh
+BG;;Bulgària
+BH;;Bahrain
+BS;;Bahames
+BA;;Bòsnia i Hercegovina
+BL;;Saint-Barthélemy
+BY;;Belarús
+BZ;;Belize
+BM;;Bermudes
+BO;;Bolívia
+BR;;Brasil
+BB;;Barbados
+BN;;Brunei
+BT;;Bhutan
+BV;;Illa Bouvet
+BW;;Botswana
+CF;;República Centreafricana
+CA;;Canadà
+CC;;Illes Cocos (Keeling)
+CH;;Suïssa
+CL;;Xile
+CN;;Xina
+CI;;Costa d'Ivori
+CM;;Camerun
+CD;;República Democràtica del Congo
+CG;;Congo
+CK;;Illes Cook
+CO;;Colòmbia
+KM;;Comores
+CV;;Cap Verd
+CR;;Costa Rica
+CU;;Cuba
+CW;;Curaçao
+CX;;Illa Christmas
+KY;;Illes Caiman
+CY;;Xipre
+CZ;;Txèquia
+DE;;Alemanya
+DJ;;Djibouti
+DM;;Dominica
+DK;;Dinamarca
+DO;;República Dominicana
+DZ;;Algèria
+EC;;Equador
+EG;;Egipte
+ER;;Eritrea
+EH;;Sàhara Occidental
+ES;;Espanya
+EE;;Estònia
+ET;;Etiòpia
+FI;;Finlàndia
+FJ;;Fiji
+FK;;Illes Falkland (Malvines)
+FR;;França
+FO;;Illes Fèroe
+FM;;Micronèsia, Estats Federats de
+GA;;Gabon
+GB;;Regne Unit
+GE;;Geòrgia
+GG;;Guernsey
+GH;;Ghana
+GI;;Gibraltar
+GN;;Guinea
+GP;;Guadalupe
+GM;;Gàmbia
+GW;;Guinea Bissau
+GQ;;Guinea Equatorial
+GR;;Grècia
+GD;;Grenada
+GL;;Groenlàndia
+GT;;Guatemala
+GF;;Guaiana Francesa
+GU;;Guam
+GY;;Guyana
+HK;;Hong Kong
+HM;;Illes Heard i McDonald
+HN;;Hondures
+HR;;Croàcia
+HT;;Haití
+HU;;Hongria
+ID;;Indonèsia
+IM;;Illa de Man
+IN;;Índia
+IO;;Territori Britànic de l'Oceà Índic
+IE;;Irlanda
+IR;;Iran
+IQ;;Iraq
+IS;;Islàndia
+IL;;Israel
+IT;;Itàlia
+JM;;Jamaica
+JE;;Jersey
+JO;;Jordània
+JP;;Japó
+KZ;;Kazakhstan
+KE;;Kenya
+KG;;Kirguizstan
+KH;;Cambodja
+KI;;Kiribati
+KN;;Saint Kitts i Nevis
+KR;;Corea del Sud
+KW;;Kuwait
+LA;;Lao
+LB;;Líban
+LR;;Libèria
+LY;;Líbia
+LC;;Saint Lucia
+LI;;Liechtenstein
+LK;;Sri Lanka
+LS;;Lesotho
+LT;;Lituània
+LU;;Luxemburg
+LV;;Letònia
+MO;;Macau
+MF;;Saint-Martin (part francesa)
+MA;;Marroc
+MC;;Mònaco
+MD;;Moldàvia
+MG;;Madagascar
+MV;;Maldives
+MX;;Mèxic
+MH;;Illes Marshall
+MK;;Macedònia del Nord
+ML;;Mali
+MT;;Malta
+MM;;Myanmar
+ME;;Montenegro
+MN;;Mongòlia
+MP;;Illes Mariannes Septentrionals
+MZ;;Moçambic
+MR;;Mauritània
+MS;;Montserrat
+MQ;;Martinica
+MU;;Maurici
+MW;;Malawi
+MY;;Malàisia
+YT;;Mayotte
+NA;;Namíbia
+NC;;Nova Caledònia
+NE;;Níger
+NF;;Illa Norfolk
+NG;;Nigèria
+NI;;Nicaragua
+NU;;Niue
+NL;;Països Baixos
+NO;;Noruega
+NP;;Nepal
+NR;;Nauru
+NZ;;Nova Zelanda
+OM;;Oman
+PK;;Pakistan
+PA;;Panamà
+PN;;Pitcairn
+PE;;Perú
+PH;;Filipines
+PW;;Palau
+PG;;Papua Nova Guinea
+PL;;Polònia
+PR;;Puerto Rico
+KP;;Corea del Nord
+PT;;Portugal
+PY;;Paraguai
+PS;;Palestina, Estat de
+PF;;Polinèsia francesa
+QA;;Qatar
+RE;;Illa de la Reunió
+RO;;Romania
+RU;;Federació Russa
+RW;;Ruanda
+SA;;Aràbia Saudita
+SD;;Sudan
+SN;;Senegal
+SG;;Singapur
+GS;;Illes Geòrgia del Sud i Sandwich del Sud
+SH;;Saint Helena, Ascension i Tristan da Cunha
+SJ;;Svalbard i Jan Mayen
+SB;;Illes Salomó
+SL;;Sierra Leone
+SV;;El Salvador
+SM;;San Marino
+SO;;Somàlia
+PM;;Saint-Pierre-et-Miquelon
+RS;;Sèrbia
+SS;;Sudan del Sud
+ST;;São Tomé i Príncipe
+SR;;Surinam
+SK;;Eslovàquia
+SI;;Eslovènia
+SE;;Suècia
+SZ;;Eswatini
+SX;;Sint Maarten (part neerlandesa)
+SC;;Seychelles
+SY;;Síria
+TC;;Illes Turks i Caicos
+TD;;Txad
+TG;;Togo
+TH;;Tailàndia
+TJ;;Tadjikistan
+TK;;Tokelau
+TM;;Turkmenistan
+TL;;Timor-Leste
+TO;;Tonga
+TT;;Trinidad i Tobago
+TN;;Tunísia
+TR;;Turquia
+TV;;Tuvalu
+TW;;Taiwan
+TZ;;Tanzània
+UG;;Uganda
+UA;;Ucraïna
+UM;;Illes Menors Allunyades dels Estats Units
+UY;;Uruguai
+US;;Estats Units
+UZ;;Uzbekistan
+VA;;Santa Seu (Estat del Vaticà)
+VC;;Saint Vincent i les Grenadines
+VE;;Veneçuela
+VG;;Illes Verges Britàniques
+VI;;Illes Verges dels EUA
+VN;;Vietnam
+VU;;Vanuatu
+WF;;Wallis i Futuna
+WS;;Samoa
+YE;;Iemen
+ZA;;Sud-àfrica
+ZM;;Zàmbia
+ZW;;Zimbàbue

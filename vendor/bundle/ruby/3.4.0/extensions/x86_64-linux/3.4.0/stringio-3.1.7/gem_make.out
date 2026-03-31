@@ -1,0 +1,19 @@
+current directory: /Users/mathieumagnin/dev/pro/beta/mmagn-demarche.numerique.gouv.fr/vendor/bundle/ruby/3.4.0/gems/stringio-3.1.7/ext/stringio
+/opt/hostedtoolcache/Ruby/3.4.5/x64/bin/ruby extconf.rb
+checking for rb_io_mode_t in ruby/io.h... no
+creating Makefile
+
+current directory: /Users/mathieumagnin/dev/pro/beta/mmagn-demarche.numerique.gouv.fr/vendor/bundle/ruby/3.4.0/gems/stringio-3.1.7/ext/stringio
+make DESTDIR\= sitearchdir\=./.gem.20260331-104-udr17f sitelibdir\=./.gem.20260331-104-udr17f clean
+
+current directory: /Users/mathieumagnin/dev/pro/beta/mmagn-demarche.numerique.gouv.fr/vendor/bundle/ruby/3.4.0/gems/stringio-3.1.7/ext/stringio
+make DESTDIR\= sitearchdir\=./.gem.20260331-104-udr17f sitelibdir\=./.gem.20260331-104-udr17f
+compiling stringio.c
+linking shared-object stringio.so
+
+current directory: /Users/mathieumagnin/dev/pro/beta/mmagn-demarche.numerique.gouv.fr/vendor/bundle/ruby/3.4.0/gems/stringio-3.1.7/ext/stringio
+make DESTDIR\= sitearchdir\=./.gem.20260331-104-udr17f sitelibdir\=./.gem.20260331-104-udr17f install
+/usr/bin/install -c -m 0755 stringio.so ./.gem.20260331-104-udr17f
+
+current directory: /Users/mathieumagnin/dev/pro/beta/mmagn-demarche.numerique.gouv.fr/vendor/bundle/ruby/3.4.0/gems/stringio-3.1.7/ext/stringio
+make DESTDIR\= sitearchdir\=./.gem.20260331-104-udr17f sitelibdir\=./.gem.20260331-104-udr17f clean

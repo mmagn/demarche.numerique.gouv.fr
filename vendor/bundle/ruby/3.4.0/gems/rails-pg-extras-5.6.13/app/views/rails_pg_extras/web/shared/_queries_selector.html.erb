@@ -1,0 +1,10 @@
+<%= form_tag queries_path, id: "queries", method: :get do |f| %>
+  <%= select_tag :query_name, options_for_select(@all_queries, params[:query_name]),
+                 { prompt: "diagnose", class: "border p-2 font-bold", autofocus: true } %>
+<% end %>
+
+<%= javascript_tag nonce: true do -%>
+  document.getElementById('queries').addEventListener('change', (e) => {
+    e.target.form.submit()
+  })
+<% end -%>

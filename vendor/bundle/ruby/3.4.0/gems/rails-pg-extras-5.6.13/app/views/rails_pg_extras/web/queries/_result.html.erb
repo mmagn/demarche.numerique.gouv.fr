@@ -1,0 +1,24 @@
+<h1 class="font-bold text-2xl my-6 text-gray-800"><%= title %></h1>
+
+<div class="overflow-x-auto bg-white shadow-md rounded-lg">
+  <table class="w-full border border-gray-300 rounded-lg overflow-hidden">
+    <thead>
+      <tr class="bg-gray-100 text-gray-700 text-left uppercase text-sm font-semibold">
+        <% headers.each do |header| %>
+          <th class="px-4 py-3 border"><%= header %></th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% rows.each.with_index do |row, i| %>
+        <tr class="transition hover:bg-blue-100 hover:text-white <%= i.even? ? "bg-gray-50" : "bg-gray-100" %>">
+          <% row.each do |column| %>
+            <td class="px-4 py-3 border text-gray-800"><%= column %></td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<p class="italic text-gray-500 text-sm mt-3">Run at: <%= Time.now.utc %></p>

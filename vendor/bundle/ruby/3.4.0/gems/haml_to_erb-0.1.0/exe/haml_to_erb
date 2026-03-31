@@ -1,0 +1,131 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "haml_to_erb"
+
+def print_usage
+  puts "Usage: haml_to_erb <path> [options]"
+  puts
+  puts "Options:"
+  puts "  --dry-run   Preview conversion without writing files"
+  puts "  --delete    Delete original .haml files after conversion"
+  puts "  --force     Skip confirmation prompts"
+  puts "  --check     Validate ERB output with Herb parser"
+  puts "  --debug     Show full error backtraces"
+  puts "  --help      Show this help message"
+  puts "  --version   Show version number"
+  puts
+  puts "Examples:"
+  puts "  haml_to_erb app/views              # Convert all HAML files in directory"
+  puts "  haml_to_erb app/views --dry-run    # Preview without writing"
+  puts "  haml_to_erb app/views --check      # Convert and validate with Herb"
+  puts "  haml_to_erb file.html.haml         # Convert a single file"
+end
+
+if ARGV.empty? || ARGV.include?("--help")
+  print_usage
+  exit ARGV.include?("--help") ? 0 : 1
+end
+
+if ARGV.include?("--version") || ARGV.include?("-v")
+  puts "haml_to_erb #{HamlToErb::VERSION}"
+  exit 0
+end
+
+path = ARGV.find { |arg| !arg.start_with?("--") }
+path = File.expand_path(path) if path
+dry_run = ARGV.include?("--dry-run")
+delete_original = ARGV.include?("--delete")
+validate = ARGV.include?("--check")
+force = ARGV.include?("--force")
+debug = ARGV.include?("--debug")
+
+unless path
+  puts "Error: No path specified"
+  print_usage
+  exit 1
+end
+
+if validate && !HamlToErb.herb_available?
+  puts "Error: --check requires the herb gem. Install with: gem install herb"
+  exit 1
+end
+
+if File.directory?(path)
+  files = Dir.glob(File.join(path, "**/*.haml"))
+  puts "#{"[DRY RUN] " if dry_run}Converting #{files.count} HAML files in #{path}..."
+  puts "Validation: #{validate ? "enabled (Herb)" : "disabled"}"
+
+  if delete_original && !force && !dry_run
+    print "Delete #{files.count} original .haml files after conversion? [y/N] "
+    exit 0 unless $stdin.gets&.strip&.downcase == "y"
+  end
+
+  success = 0
+  conversion_errors = []
+  validation_issues = []
+
+  files.each do |f|
+    result = HamlToErb.convert_file(f, delete_original: delete_original, validate: validate, dry_run: dry_run)
+    success += 1
+    print "." if (success % 50).zero?
+
+    validation_issues << { file: result[:path], errors: result[:errors] } if result[:errors].any?
+  rescue StandardError => e
+    conversion_errors << { file: f, error: e }
+  end
+
+  puts
+  puts "Successfully converted: #{success}/#{files.count}"
+
+  if conversion_errors.any?
+    puts
+    puts "Conversion errors: #{conversion_errors.count}"
+    conversion_errors.each do |err|
+      puts "  #{err[:file]}: #{err[:error].message}"
+      err[:error].backtrace.each { |line| puts "    #{line}" } if debug
+    end
+  end
+
+  if validation_issues.any?
+    puts
+    puts "Validation issues (Herb): #{validation_issues.count} files"
+    validation_issues.each do |issue|
+      puts "  #{issue[:file]}:"
+      issue[:errors].each do |err|
+        location = [ err[:line], err[:column] ].compact.join(":")
+        location = " (#{location})" unless location.empty?
+        puts "    - #{err[:message]}#{location}"
+      end
+    end
+  elsif validate
+    puts "Validation: All files passed Herb parsing"
+  end
+
+  if delete_original && !dry_run
+    puts "Deleted #{success} original .haml #{success == 1 ? "file" : "files"}."
+  end
+
+  puts "No files written (dry run)." if dry_run
+elsif File.file?(path)
+  result = HamlToErb.convert_file(path, delete_original: delete_original, validate: validate, dry_run: dry_run)
+
+  puts "#{dry_run ? "[DRY RUN] Would convert" : "Converted"}: #{path} -> #{result[:path]}"
+
+  if result[:errors].any?
+    puts "Validation issues:"
+    result[:errors].each do |err|
+      location = [ err[:line], err[:column] ].compact.join(":")
+      location = " (#{location})" unless location.empty?
+      puts "  - #{err[:message]}#{location}"
+    end
+  elsif validate
+    puts "Validation: Passed"
+  end
+
+  puts "Original deleted." if delete_original && !dry_run
+  puts "No file written (dry run)." if dry_run
+else
+  puts "Error: #{path} is not a file or directory"
+  exit 1
+end

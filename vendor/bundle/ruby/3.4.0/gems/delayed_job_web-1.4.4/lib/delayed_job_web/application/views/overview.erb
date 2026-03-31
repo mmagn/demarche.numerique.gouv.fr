@@ -1,0 +1,66 @@
+<h1>
+  Overview
+</h1>
+<p class="sub">
+  The list below shows an overview of the jobs in the delayed_job queue.
+</p>
+<table class="overview">
+  <tr>
+    <th>Status</th>
+    <th>Count</th>
+  </tr>
+  <tr>
+    <td class="status">
+      <a href="<%= u('/enqueued') %>">Enqueued Jobs</a>
+    </td>
+    <td>
+      <%= delayed_jobs(:enqueued, @queues).count %>
+    </td>
+  </tr>
+  <tr>
+    <td class="status">
+      <a href="<%= u('/working') %>">Working Jobs</a>
+    </td>
+    <td>
+      <%= delayed_jobs(:working, @queues).count %>
+    </td>
+  </tr>
+  <tr>
+    <td class="status">
+      <a href="<%= u('/pending') %>">Pending Jobs</a>
+    </td>
+    <td>
+      <%= delayed_jobs(:pending, @queues).count %>
+    </td>
+  </tr>
+  <tr class="<%= delayed_jobs(:failed, @queues).count > 0 ? 'failure' : '' %>">
+    <td class="status">
+      <a href="<%= u('/failed') %>">Failed Jobs</a>
+    </td>
+    <td>
+      <%= delayed_jobs(:failed, @queues).count %>
+    </td>
+  </tr>
+</table>
+
+<table class="overview">
+  <tr>
+    <th>Queue</th>
+    <th>Count</th>
+  </tr>
+
+  <% delayed_jobs(nil).group(:queue).size.each do |queue, count| %>
+    <tr>
+      <td class="status">
+        <a href="<%= queue_path(queue) %>">
+          <%= queue %>
+        </a>
+      </td>
+      <td>
+      <%= count %>
+      </td>
+    </tr>
+  <% end %>
+</table>
+
+<%= poll %>

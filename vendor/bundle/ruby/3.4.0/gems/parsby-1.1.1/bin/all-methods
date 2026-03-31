@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# This lists all instance and class methods defined in the project. It's
+# used along with the script tested-methods in a test in projects_spec.rb
+# to ensure test-coverage.
+
+grep -REh '^\s*(class|module|def|define_combinator|end)\b' lib | awk '
+  function get_indent_level() {
+    return match($0, "[^[:blank:]]") - 1
+  }
+
+  /^\s*(module|class)\>/ {
+    match($0, /^\s*(class|module)\s*([^[:blank:]]+)/, matches)
+    indent_level = get_indent_level()
+    context[indent_level] = matches[2]
+    for (i in context) {
+      if (i > indent_level) {
+        delete context[i]
+      }
+    }
+  }
+
+  /^\s*(def|define_combinator)\>/ {
+    indent_level = get_indent_level()
+    first = 1
+    for (i in context) {
+      if (i < indent_level) {
+        printf(first ? "%s" : "::%s", context[i])
+        first = 0
+      }
+    }
+    match($0, /^\s*(def|define_combinator)\s*(self\.|:)?([^,([:blank:]]+)/, matches)
+    print (matches[2] == "self." ? "." : "#") matches[3]
+  }
+' | grep -v '[#.]included$' | sort
