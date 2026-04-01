@@ -9,29 +9,330 @@ permissions:
   pull-requests: write
 
 jobs:
-  before-after:
+  visual-regression:
     if: contains(github.event.pull_request.labels.*.name, 'haml-to-erb')
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: tps_dev
+          POSTGRES_PASSWORD: tps_dev
+          POSTGRES_DB: tps_dev
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+
+    env:
+      RAILS_ENV: development
+      DATABASE_URL: postgres://tps_dev:tps_dev@localhost:5432/tps_dev
+      REDIS_URL: redis://localhost:6379
+
     steps:
-      - name: Wait for CI checks to pass
-        uses: lewagon/wait-on-check-action@v1.3.4
+      # ── SETUP ──
+      - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          running-workflow-name: before-after
-          allowed-conclusions: success
+          fetch-depth: 0
+
+      - name: Identify changed HAML templates
+        id: changed
+        run: |
+          HAML_FILES=$(git diff --name-only --diff-filter=D \
+            origin/${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.sha }} \
+            -- '*.html.haml' | head -3)
+          echo "haml_files<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$HAML_FILES" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+          COUNT=$(echo "$HAML_FILES" | grep -c '.haml' || true)
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "Found $COUNT deleted HAML templates (= migrated to ERB)"
+
+      - name: Skip if no template changes
+        if: steps.changed.outputs.count == '0'
+        run: |
+          echo "No HAML template changes detected, skipping visual regression"
+          exit 0
 
       - name: Comment on PR - started
+        if: steps.changed.outputs.count != '0'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh pr comment ${{ github.event.pull_request.number }} \
             --repo ${{ github.repository }} \
-            --body "Before/After working..."
+            --body "**Before/After Visual Regression** — en cours..."
 
-      - uses: actions/checkout@v4
+      - name: Setup Ruby
+        if: steps.changed.outputs.count != '0'
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
 
-      - name: Take screenshots
+      - name: Setup Bun
+        if: steps.changed.outputs.count != '0'
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install JS dependencies
+        if: steps.changed.outputs.count != '0'
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        if: steps.changed.outputs.count != '0'
+        run: bunx playwright install --with-deps chromium
+
+      - name: Install Claude Code
+        if: steps.changed.outputs.count != '0'
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Setup environment
+        if: steps.changed.outputs.count != '0'
         run: |
-          echo "TODO: implement before/after screenshots with Claude"
+          cp config/env.example .env
+          mkdir -p tmp/screenshots data
+
+      - name: Create auto-login initializer
+        if: steps.changed.outputs.count != '0'
+        run: |
+          cat > config/initializers/dev_auto_login.rb << 'RUBY'
+          return unless Rails.env.development?
+
+          Rails.application.config.to_prepare do
+            ApplicationController.class_eval do
+              prepend_before_action :auto_sign_in_dev_user
+              skip_before_action :redirect_if_untrusted, raise: false
+
+              def auto_sign_in_dev_user
+                return if user_signed_in?
+                user = User.first
+                sign_in(user, scope: :user) if user
+              end
+            end
+            ViewComponent::CompileCache.invalidate! if defined?(ViewComponent::CompileCache)
+          end
+          RUBY
+
+      # ── PASS 1: BEFORE (base branch with HAML) ──
+      - name: Checkout base branch
+        if: steps.changed.outputs.count != '0'
+        run: git checkout -f ${{ github.event.pull_request.base.ref }}
+
+      - name: Restore auto-login initializer (base)
+        if: steps.changed.outputs.count != '0'
+        run: |
+          cat > config/initializers/dev_auto_login.rb << 'RUBY'
+          return unless Rails.env.development?
+
+          Rails.application.config.to_prepare do
+            ApplicationController.class_eval do
+              prepend_before_action :auto_sign_in_dev_user
+              skip_before_action :redirect_if_untrusted, raise: false
+
+              def auto_sign_in_dev_user
+                return if user_signed_in?
+                user = User.first
+                sign_in(user, scope: :user) if user
+              end
+            end
+            ViewComponent::CompileCache.invalidate! if defined?(ViewComponent::CompileCache)
+          end
+          RUBY
+
+      - name: Setup database (base)
+        if: steps.changed.outputs.count != '0'
+        run: bin/rails db:schema:load db:seed
+
+      - name: Generate routes reference (base)
+        if: steps.changed.outputs.count != '0'
+        run: bin/rails routes > data/routes-reference.txt
+
+      - name: Precompile assets (base)
+        if: steps.changed.outputs.count != '0'
+        run: bin/rails assets:precompile
+
+      - name: Start Rails server (base)
+        if: steps.changed.outputs.count != '0'
+        env:
+          RAILS_SERVE_STATIC_FILES: 'true'
+        run: |
+          bin/rails server -p 3000 -d
+          for i in $(seq 1 30); do
+            curl -s http://localhost:3000 > /dev/null 2>&1 && break
+            sleep 2
+          done
+          echo "Server started on base branch"
+
+      - name: Take BEFORE screenshots
+        if: steps.changed.outputs.count != '0'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+        run: |
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            echo "Taking BEFORE screenshot for: $file"
+            claude --print "/before-after-screenshot $file tmp/screenshots before" \
+              --mcp "playwright npx -y @playwright/mcp@latest" \
+              --allowedTools "mcp__playwright__*,Bash(grep:*),Bash(stat:*),Bash(cat:*),Bash(ls:*),Bash(echo:*),Read" \
+              --max-turns 20 || echo "Warning: screenshot failed for $file"
+          done <<< '${{ steps.changed.outputs.haml_files }}'
+
+      - name: Stop Rails server (base)
+        if: steps.changed.outputs.count != '0'
+        run: kill $(cat tmp/pids/server.pid) 2>/dev/null || true
+
+      # ── PASS 2: AFTER (PR branch with ERB) ──
+      - name: Checkout PR branch
+        if: steps.changed.outputs.count != '0'
+        run: git checkout -f ${{ github.event.pull_request.head.sha }}
+
+      - name: Restore auto-login initializer (PR)
+        if: steps.changed.outputs.count != '0'
+        run: |
+          cat > config/initializers/dev_auto_login.rb << 'RUBY'
+          return unless Rails.env.development?
+
+          Rails.application.config.to_prepare do
+            ApplicationController.class_eval do
+              prepend_before_action :auto_sign_in_dev_user
+              skip_before_action :redirect_if_untrusted, raise: false
+
+              def auto_sign_in_dev_user
+                return if user_signed_in?
+                user = User.first
+                sign_in(user, scope: :user) if user
+              end
+            end
+            ViewComponent::CompileCache.invalidate! if defined?(ViewComponent::CompileCache)
+          end
+          RUBY
+
+      - name: Apply migrations (PR)
+        if: steps.changed.outputs.count != '0'
+        run: bin/rails db:migrate
+
+      - name: Generate routes reference (PR)
+        if: steps.changed.outputs.count != '0'
+        run: bin/rails routes > data/routes-reference.txt
+
+      - name: Precompile assets (PR)
+        if: steps.changed.outputs.count != '0'
+        run: bin/rails assets:precompile
+
+      - name: Start Rails server (PR)
+        if: steps.changed.outputs.count != '0'
+        env:
+          RAILS_SERVE_STATIC_FILES: 'true'
+        run: |
+          bin/rails server -p 3000 -d
+          for i in $(seq 1 30); do
+            curl -s http://localhost:3000 > /dev/null 2>&1 && break
+            sleep 2
+          done
+          echo "Server started on PR branch"
+
+      - name: Take AFTER screenshots
+        if: steps.changed.outputs.count != '0'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+        run: |
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            erb_file="${file%.haml}.erb"
+            echo "Taking AFTER screenshot for: $erb_file"
+            claude --print "/before-after-screenshot $erb_file tmp/screenshots after" \
+              --mcp "playwright npx -y @playwright/mcp@latest" \
+              --allowedTools "mcp__playwright__*,Bash(grep:*),Bash(stat:*),Bash(cat:*),Bash(ls:*),Bash(echo:*),Read" \
+              --max-turns 20 || echo "Warning: screenshot failed for $erb_file"
+          done <<< '${{ steps.changed.outputs.haml_files }}'
+
+      - name: Stop Rails server (PR)
+        if: steps.changed.outputs.count != '0'
+        run: kill $(cat tmp/pids/server.pid) 2>/dev/null || true
+
+      # ── UPLOAD & COMMENT ──
+      - name: Create gist with screenshots
+        if: steps.changed.outputs.count != '0'
+        id: gist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SCREENSHOT_COUNT=$(ls tmp/screenshots/*.png 2>/dev/null | wc -l || echo "0")
+          if [ "$SCREENSHOT_COUNT" -eq "0" ]; then
+            echo "has_screenshots=false" >> "$GITHUB_OUTPUT"
+            echo "No screenshots were taken"
+            exit 0
+          fi
+          echo "has_screenshots=true" >> "$GITHUB_OUTPUT"
+
+          GIST_NAME="before-after-pr-${{ github.event.pull_request.number }}"
+          GIST_OUTPUT=$(bash .claude/skills/screenshot-gist/create-gist.sh "$GIST_NAME")
+          GIST_URL=$(echo "$GIST_OUTPUT" | grep 'GIST_URL=' | cut -d= -f2)
+          GIST_ID=$(echo "$GIST_OUTPUT" | grep 'GIST_ID=' | cut -d= -f2)
+          echo "gist_url=$GIST_URL" >> "$GITHUB_OUTPUT"
+          echo "gist_id=$GIST_ID" >> "$GITHUB_OUTPUT"
+          echo "gist_name=$GIST_NAME" >> "$GITHUB_OUTPUT"
+
+          cp tmp/screenshots/*.png "tmp/$GIST_NAME/"
+
+          FILES=$(cd "tmp/$GIST_NAME" && ls *.png | tr '\n' ' ')
+          bash .claude/skills/screenshot-gist/push-gist.sh \
+            "$GIST_NAME" \
+            "${{ github.repository_owner }}" \
+            "$GIST_ID" \
+            $FILES
+
+      - name: Post PR comment with comparison
+        if: steps.changed.outputs.count != '0' && steps.gist.outputs.has_screenshots == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          GIST_ID="${{ steps.gist.outputs.gist_id }}"
+          GIST_URL="${{ steps.gist.outputs.gist_url }}"
+          OWNER="${{ github.repository_owner }}"
+
+          BODY="## Before/After Visual Regression\n\n"
+
+          for before_file in tmp/screenshots/before-*.png; do
+            [ -f "$before_file" ] || continue
+            basename=$(basename "$before_file")
+            after_basename="${basename/before-/after-}"
+            after_file="tmp/screenshots/$after_basename"
+
+            component_name=$(echo "$basename" | sed 's/^before-//' | sed 's/-[0-9]*\.png$//')
+
+            BODY+="### $component_name\n\n"
+            BODY+="| Before (HAML) | After (ERB) |\n"
+            BODY+="|---|---|\n"
+
+            before_url="https://gist.githubusercontent.com/$OWNER/$GIST_ID/raw/$basename"
+            if [ -f "$after_file" ]; then
+              after_url="https://gist.githubusercontent.com/$OWNER/$GIST_ID/raw/$after_basename"
+              BODY+="| ![before]($before_url) | ![after]($after_url) |\n\n"
+            else
+              BODY+="| ![before]($before_url) | *No screenshot* |\n\n"
+            fi
+          done
+
+          BODY+="\n[Voir tous les screenshots]($GIST_URL)\n\n"
+          BODY+="---\n*Generated by before-after visual regression workflow*"
+
+          echo -e "$BODY" | gh pr comment ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} \
+            --body-file -
+
+      - name: Post PR comment - no screenshots
+        if: steps.changed.outputs.count != '0' && steps.gist.outputs.has_screenshots != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} \
+            --body "## Before/After Visual Regression
+
+          Aucune route trouvee pour les composants migres. Verification manuelle recommandee.
+
+          ---
+          *Generated by before-after visual regression workflow*"
