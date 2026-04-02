@@ -1,0 +1,65 @@
+<div
+  class="flex justify-start section"
+  id="<%= dom_id(@groupe_instructeur, :routing_rule) %>"
+>
+  <%= form_tag admin_procedure_routing_rule_path(@procedure_id, @groupe_instructeur.id), method: :patch, data: { turbo: true, controller: 'autosave' }, class: 'form width-100' do %>
+    <div class="conditionnel width-100">
+      <div class="flex">
+        <% if @groupe_instructeur.routing_rule.nil? %>
+          <p class="fr-mb-1w fr-badge fr-badge--warning fr-badge--sm">
+            aucune règle
+          </p>
+        <% elsif @groupe_instructeur.invalid_rule? %>
+          <p class="fr-mb-1w fr-badge fr-badge--warning fr-badge--sm">
+            règle invalide
+          </p>
+        <% elsif @groupe_instructeur.non_unique_rule? %>
+          <p class="fr-mb-1w fr-badge fr-badge--warning fr-badge--sm">
+            r\u00E8gle d\u00E9j\u00E0 attribu\u00E9e \u00E0
+            <%= @groupe_instructeur.groups_with_same_rule %>
+          </p>
+        <% end %>
+      </div>
+
+      <%= render Conditions::ConditionsErrorsComponent.new(conditions: condition_per_row, source_tdcs: @source_tdcs) %>
+
+      <table class="condition-table">
+        <thead>
+          <tr>
+            <th class="far-left"></th>
+            <th class="target">Champ Cible</th>
+            <th class="operator">Opérateur</th>
+            <th class="value">Valeur</th>
+            <th class="delete-column"></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% rows.each.with_index do |(targeted_champ, operator_name, value), row_index| %>
+            <tr>
+              <td class="far-left"><%= far_left_tag(row_index) %></td>
+
+              <td class="target">
+                <%= left_operand_tag(targeted_champ, row_index) %>
+              </td>
+
+              <td class="operator">
+                <%= operator_tag(operator_name, targeted_champ, row_index) %>
+              </td>
+
+              <td class="value">
+                <%= right_operand_tag(targeted_champ, value, row_index, operator_name) %>
+              </td>
+
+              <td class="delete-column">
+                <%= delete_condition_tag(row_index) %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+
+      <div class="flex justify-end fr-mt-4v"><%= add_condition_tag %></div>
+    </div>
+  <% end %>
+</div>
