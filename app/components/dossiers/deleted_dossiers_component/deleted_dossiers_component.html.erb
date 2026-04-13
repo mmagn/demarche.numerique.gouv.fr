@@ -1,0 +1,72 @@
+<div class="fr-container">
+  <h1 class="fr-h4">
+    Historique des dossiers supprimés
+  </h1>
+</div>
+
+<div class="fr-container">
+  <% if @deleted_dossiers.present? %>
+    <%= render Dsfr::CalloutComponent.new(title: nil) do |c| %>
+      <% c.with_body do %>
+        <p><%= t('.deleted_explanation') %></p>
+
+        <ul>
+          <li><%= t(".deleted_explanation_first_#{role}") %></li>
+          <li><%= t(".deleted_explanation_second_#{role}") %></li>
+        </ul>
+      <% end %>
+    <% end %>
+    <div class="fr-table">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table>
+              <thead>
+                <tr>
+                  <th>N° dossier</th>
+                  <th>Libellé de la démarche</th>
+                  <th>Raison de suppression</th>
+                  <th>Date de suppression</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <% @deleted_dossiers.each do |deleted_dossier| %>
+                  <tr>
+                    <td class="fr-cell--numeric">
+                      <%= deleted_dossier.dossier_id %>
+                    </td>
+
+                    <td class="fr-cell--numeric">
+                      <%= deleted_dossier.procedure.libelle.truncate_words(10) %>
+                    </td>
+
+                    <td>
+                      <%= deletion_reason_badge(deleted_dossier.reason) %>
+                    </td>
+
+                    <td class="deleted-cell">
+                      <%= l(deleted_dossier.deleted_at, format: '%d/%m/%y') %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="fr-table__footer">
+        <div class="fr-table__footer--start"></div>
+
+        <div class="fr-table__footer--middle">
+          <%= helpers.paginate @deleted_dossiers, views_prefix: 'shared' %>
+        </div>
+
+        <div class="fr-table__footer--end flex-no-grow"></div>
+      </div>
+    </div>
+  <% else %>
+    <p><%= t('.no_deleted_dossiers') %></p>
+  <% end %>
+</div>
