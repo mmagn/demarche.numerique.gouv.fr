@@ -1,0 +1,17 @@
+<%= render Dsfr::CalloutComponent.new(title: t(".title"), icon: "fr-fi-information-line", heading_level: 'h2') do |c| %>
+  <% c.with_body do %>
+    <%= t(".body") %>
+  <% end %>
+
+  <% c.with_bottom do %>
+    <ul class="fr-mt-2w fr-btns-group fr-btns-group--inline">
+      <li>
+        <%= link_to t(".buttons.edit"), modifier_dossier_path(dossier), class: "fr-btn" %>
+      </li>
+
+      <li>
+        <%= button_to t(".buttons.submit"), modifier_dossier_path(dossier), class: "fr-btn fr-btn--secondary", method: :post %>
+      </li>
+    </ul>
+  <% end %>
+<% end %>
