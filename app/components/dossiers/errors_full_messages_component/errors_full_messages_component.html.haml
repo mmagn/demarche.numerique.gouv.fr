@@ -1,6 +1,0 @@
-.fr-alert.fr-alert--error.fr-mb-3w{ role: 'alert' }
-  - if dedup_errors.size > 0
-    %h2#sumup-errors.fr-alert__title{ data: { controller: 'autofocus' }, tabindex: '-1' }
-      = t('.sumup_html.title', count: dedup_errors.size)
-    %p= t('.sumup_html.content', count: dedup_errors.size)
-    = render ExpandableErrorList.new(errors: dedup_errors)
