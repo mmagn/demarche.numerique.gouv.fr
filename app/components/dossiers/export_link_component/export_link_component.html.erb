@@ -1,0 +1,31 @@
+<ul class="fr-raw-list" id="exports-list">
+  <% @exports.each do |export| %>
+    <li class="fr-mb-3w">
+      <div class="flex">
+        <span>
+          <strong><%= export_title(export) %></strong>
+
+          <span class="fr-text-mention--grey fr-mb-1w">
+            <%= time_info(export) %>
+          </span>
+
+          <% if export.export_template %>
+            <span class="fr-tag fr-tag--sm fr-ml-1w">
+              <%= export.export_template.name %>
+            </span>
+          <% end %>
+        </span>
+
+        <div class="fr-ml-auto"><%= badge(export) %></div>
+      </div>
+
+      <div class="flex flex-gap-2">
+        <%= export_button(export) %>
+
+        <% if export.failed? %>
+          <%= button_to refresh_button_options(export)[:title], download_export_path(export_template_id: export.export_template&.id, export_format: export.format, statut: export.statut), refresh_button_options(export) %>
+        <% end %>
+      </div>
+    </li>
+  <% end %>
+</ul>
