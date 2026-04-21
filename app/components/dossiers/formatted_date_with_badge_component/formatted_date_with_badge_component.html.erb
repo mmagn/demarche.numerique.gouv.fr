@@ -1,0 +1,9 @@
+<span data-to-copy="true"><%= date_creation %></span>
+
+<% if etablissement.entreprise_etat_administratif.present? %>
+  <span class="fr-badge fr-badge--sm fr-ml-1v <%= badge_class %>">
+    <%= badge_content %>
+  </span>
+<% end %>
+
+<span data-copy-message-placeholder="true"></span>
