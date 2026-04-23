@@ -1,0 +1,41 @@
+<% if champ.selections_utilisateur.present? %>
+  <div class="fr-label">Sélections utilisateur</div>
+  <div class="areas">
+    <ul>
+      <% champ.selections_utilisateur.slice(0, 50).each do |geo_area| %>
+        <%= render Dossiers::GeoAreaComponent.new(geo_area:, editing:) %>
+      <% end %>
+
+      <% if champ.selections_utilisateur.size > 50 %>
+        <li>
+          <span>
+            et <%= champ.selections_utilisateur.size - 50 %> autres points,
+            lignes ou polygones.
+          </span>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<% if champ.cadastres.present? %>
+  <div class="fr-label">Parcelles cadastrales</div>
+  <div class="areas">
+    <ul>
+      <% champ.cadastres.each do |geo_area| %>
+        <%= render Dossiers::GeoAreaComponent.new(geo_area:, editing:) %>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<% if champ.rpgs.present? %>
+  <div class="fr-label">Parcelles agricoles</div>
+  <div class="areas">
+    <ul>
+      <% champ.rpgs.each do |geo_area| %>
+        <%= render Dossiers::GeoAreaComponent.new(geo_area:, editing:) %>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
