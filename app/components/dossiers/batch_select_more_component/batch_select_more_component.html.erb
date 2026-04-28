@@ -1,0 +1,33 @@
+<tr class="hidden" id="js_batch_select_more">
+  <td class="fr-py-2w fr-background-alt--blue-france" colspan="100">
+    <div id="not_selected">
+      <p role="status">
+        <%= t('.pagination_files_selected_html') %>
+
+        <button
+          class="fr-btn fr-btn--sm fr-btn--tertiary"
+          id="js_select_more"
+          data="<%= not_selected_button_data %>"
+        >
+          <%= not_selected_text %>
+        </button>
+      </p>
+    </div>
+
+    <div class="hidden" id="selected">
+      <p role="status">
+        <%= selected_text %>
+
+        <button
+          class="fr-btn fr-btn--sm fr-btn--tertiary"
+          id="js_delete_selection"
+          data="<%= selected_button_data %>"
+        >
+          <%= t(".delete_selection") %>
+        </button>
+      </p>
+
+      <%= hidden_field_tag :"batch_operation[dossier_ids][]", "", form: dom_id(BatchOperation.new), id: dom_id(BatchOperation.new, "input_multiple_ids") %>
+    </div>
+  </td>
+</tr>
