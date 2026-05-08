@@ -1,0 +1,40 @@
+<%= content_tag(@wrapper, wrapper_options) do %>
+  <button
+    class="<%= button_class_names %>"
+    id="<%= button_id %>"
+    <%= 'disabled' if (disabled?) %>
+    title="<%= title %>"
+    data="<%= data %>"
+    aria-expanded="false"
+    aria-haspopup="true"
+    aria-controls="<%= menu_id %>"
+  >
+    <%= button_inner_html %>
+    <span class="fr-ml-2v" aria-hidden="true"></span>
+  </button>
+
+  <div
+    class="<%= menu_class_names %>"
+    id="<%= menu_id %>"
+    data-menu-button-target="menu"
+    aria-labelledby="<%= button_id %>"
+    role="<%= menu_role %>"
+    tabindex="<%= -1 %>"
+  >
+    <%= menu_header_html %>
+
+    <% if items? %>
+      <ul class="dropdown-items" role="none">
+        <% items.each do |dropdown_item| %>
+          <%= dropdown_item %>
+        <% end %>
+      </ul>
+    <% end %>
+
+    <% if forms? %>
+      <% forms.each do |form| %>
+        <%= form %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
