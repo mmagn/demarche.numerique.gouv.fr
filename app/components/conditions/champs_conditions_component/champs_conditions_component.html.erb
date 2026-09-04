@@ -1,0 +1,54 @@
+<div
+  class="flex justify-start section"
+  id="<%= dom_id(@tdc.stable_self, :condition) %>"
+  data-turbo-force="server"
+>
+  <%= form_tag admin_procedure_condition_path(@procedure_id, @tdc.stable_id), method: :patch, class: 'form' do %>
+    <div class="conditionnel fr-mt-4v">
+      <div class="flex">
+        <p>Logique conditionnelle <%= logic_conditionnel_button %></p>
+      </div>
+
+      <%= render Conditions::ConditionsErrorsComponent.new(conditions: condition_per_row, source_tdcs: @source_tdcs) %>
+
+      <% if @condition.present? %>
+        <table class="condition-table fr-mt-4v">
+          <thead>
+            <tr>
+              <th class="far-left"></th>
+              <th class="target">Champ Cible</th>
+              <th class="operator">Opérateur</th>
+              <th class="value">Valeur</th>
+              <th class="delete-column"></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% rows.each.with_index do |(targeted_champ, operator_name, value), row_index| %>
+              <tr>
+                <td class="far-left"><%= far_left_tag(row_index) %></td>
+
+                <td class="target">
+                  <%= left_operand_tag(targeted_champ, row_index) %>
+                </td>
+
+                <td class="operator">
+                  <%= operator_tag(operator_name, targeted_champ, row_index) %>
+                </td>
+
+                <td class="value">
+                  <%= right_operand_tag(targeted_champ, value, row_index, operator_name) %>
+                </td>
+
+                <td class="delete-column">
+                  <%= delete_condition_tag(row_index) %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+        <div class="flex justify-end fr-mt-4v"><%= add_condition_tag %></div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
